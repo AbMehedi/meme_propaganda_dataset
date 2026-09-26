@@ -12,7 +12,7 @@ from apify_client import ApifyClient
 # ---------- CONFIG ----------
 load_dotenv()
 APIFY_TOKEN = os.getenv("APIFY_TOKEN")
-DATASET_ID = "SpIzo6XVN0eFWrjns"
+DATASET_ID = "BFJgykNUKq7btKzEh"
 IMAGE_DIR = "raw_images"
 DB_PATH = "propaganda_dataset.db"
 # -----------------------------
