@@ -4,3 +4,4 @@ __pycache__/
 propaganda_dataset.db
 raw_images/*
 !raw_images/.gitkeep
+ocr_check/*
