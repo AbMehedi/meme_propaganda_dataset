@@ -385,6 +385,8 @@ For human annotators to review, edit, and ground-truth LLM pre-annotations throu
 
 | Environment | Action | Command |
 |---|---|---|
+| **Docker** | Start UI Server | `docker compose -f docker/docker-compose.yml exec -d app python annotation_ui/app.py` |
+| **Docker (Makefile)** | Start UI Server | `make -C docker ui` |
 | **Bare-Metal** | Start UI Server | `python annotation_ui/app.py` |
 
 Open **`http://localhost:5000`** in your web browser:

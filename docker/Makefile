@@ -52,6 +52,9 @@ annotate:
 results:
 	docker compose exec app python view_results.py --summary
 
+ui:
+	docker compose exec -d app python annotation_ui/app.py
+
 # ── Utilities ────────────────────────────────────────────────────────────────
 shell:
 	docker compose exec app bash

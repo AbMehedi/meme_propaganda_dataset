@@ -21,6 +21,8 @@ services:
     volumes:
       - ..:/app                              # live code mount (edit on host, run in container)
       - easyocr_models:/root/.EasyOCR       # persist EasyOCR model downloads
+    ports:
+      - "5000:5000"                         # Human Annotation UI (http://localhost:5000)
     env_file:
       - ../.env
     environment:
