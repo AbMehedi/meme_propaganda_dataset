@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Bangla Meme Propaganda HITL Verification{% endblock %}</title>
+  
+  <!-- Typography Tokens via Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Bold Typography Design System -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+
+  <!-- Top Navigation Bar -->
+  <header class="top-nav">
+    <a href="{{ url_for('index') }}" class="nav-brand">
+      <span class="brand-dot"></span>
+      ANNOTATION TOOL
+    </a>
+
+    <div class="nav-meta">
+      {% if current_annotator %}
+        <div class="annotator-pill">
+          <span class="bracket">[</span>
+          <span>{{ current_annotator }}</span>
+          <span class="bracket">]</span>
+        </div>
+
+        <div class="progress-stat">
+          <strong>{{ verified_count }}</strong> / {{ total_count }}
+        </div>
+
+        <a href="{{ url_for('adjudicate') }}" class="nav-link">Adjudicate</a>
+        <a href="{{ url_for('admin') }}" class="nav-link">Stats</a>
+        <a href="{{ url_for('logout') }}" class="nav-link">Logout &rarr;</a>
+      {% else %}
+        <span class="label-mono" style="margin-bottom:0;">HITL VERIFICATION PLATFORM</span>
+      {% endif %}
+    </div>
+  </header>
+
+  <!-- Main Content Wrapper -->
+  <main>
+    {% block content %}
+      {% if custom_content %}
+        <div class="container">
+          {{ custom_content | safe }}
+        </div>
+      {% endif %}
+    {% endblock %}
+  </main>
+
+  <script>
+    // Initialize Lucide Icons
+    if (window.lucide) {
+      lucide.createIcons();
+    }
+  </script>
+  {% block extra_scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}Verify — Bangla Meme Propaganda Annotation{% endblock %}
+
+{% block content %}
+<div class="login-wrap">
+  <div class="login-card">
+    <h1 class="login-hero">VERIFY<span class="dot">.</span></h1>
+    <p class="login-subhead">
+      Human verification system for multimodal Bangla propaganda memes. High-throughput review loop for model pre-annotations.
+    </p>
+
+    <form action="{{ url_for('login') }}" method="POST" class="login-form">
+      <div>
+        <label for="annotator_id" class="label-mono">YOUR ANNOTATOR ID / NAME</label>
+        <input 
+          type="text" 
+          id="annotator_id" 
+          name="annotator_id" 
+          class="input" 
+          placeholder="e.g. omor, mehedi, rafiq..." 
+          required 
+          autocomplete="off"
+          autofocus
+        >
+      </div>
+
+      <div>
+        <button type="submit" class="btn-primary">
+          START ANNOTATING
+          <i data-lucide="arrow-right" style="width:18px; height:18px; stroke-width:1.75;"></i>
+        </button>
+      </div>
+    </form>
+
+    <div class="stat-line">
+      <span>Active Queue</span>
+      <span><strong>{{ awaiting_review }}</strong> PREDICTIONS AWAIT REVIEW</span>
+    </div>
+  </div>
+</div>
+{% endblock %}

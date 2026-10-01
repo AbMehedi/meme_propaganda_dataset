@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard & Stats — Bangla Meme Propaganda{% endblock %}
+
+{% block content %}
+<div class="admin-container">
+  <div style="margin-bottom:2rem;">
+    <span class="label-mono">METRICS & OVERVIEW</span>
+    <h1 style="font-size:clamp(2.5rem, 6vw, 4rem); font-weight:900; letter-spacing:-0.05em; text-transform:uppercase;">
+      DATASET STATUS<span style="color:var(--accent);">.</span>
+    </h1>
+  </div>
+
+  <div class="stat-grid">
+    <div class="stat-card">
+      <div class="stat-number">{{ total_preds }}</div>
+      <div class="stat-label">TOTAL PREDICTIONS</div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-number green">{{ total_verified }}</div>
+      <div class="stat-label">HUMAN VERIFIED</div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-number">{{ total_skipped }}</div>
+      <div class="stat-label">SKIPPED / PENDING</div>
+    </div>
+
+    <div class="stat-card">
+      {% set pct = ((total_verified / total_preds * 100) if total_preds > 0 else 0) | round(1) %}
+      <div class="stat-number accent">{{ pct }}%</div>
+      <div class="stat-label">COMPLETION RATE</div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Annotator Breakdown -->
+  <div style="margin-top:2.5rem;">
+    <span class="label-mono">CONTRIBUTIONS BY ANNOTATOR</span>
+    
+    <div style="margin-top:1.5rem; display:flex; flex-direction:column; gap:1.25rem;">
+      {% if annotator_stats %}
+        {% for a in annotator_stats %}
+          <div style="border:1px solid var(--border); padding:1.25rem 1.5rem; background:var(--card); display:flex; align-items:center; justify-content:space-between;">
+            <div>
+              <span class="label-mono" style="margin-bottom:0.25rem;">ANNOTATOR</span>
+              <strong style="font-family:var(--font-mono); font-size:1.1rem; color:var(--fg);">{{ a.human_annotator_id }}</strong>
+            </div>
+            <div style="text-align:right;">
+              <span class="label-mono" style="margin-bottom:0.25rem;">TOTAL SUBMISSIONS</span>
+              <span style="font-family:var(--font-mono); font-size:1.2rem; font-weight:700; color:var(--conf-high);">{{ a.cnt }}</span>
+            </div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <p style="color:var(--muted-fg); font-family:var(--font-mono); font-size:0.85rem;">
+          No human annotations submitted yet. Start verifying in the workspace!
+        </p>
+      {% endif %}
+    </div>
+  </div>
+
+  <div style="margin-top:3rem;">
+    <a href="{{ url_for('annotate') }}" class="btn-primary">
+      RETURN TO ANNOTATION WORKSPACE &rarr;
+    </a>
+  </div>
+</div>
+{% endblock %}
