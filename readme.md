@@ -60,38 +60,47 @@ flowchart TD
 
 ```
 meme_propaganda_dataset/
+├── readme.md                      ← Start here
 ├── .env                           ← Secrets: APIFY_TOKEN, DATASET_ID (never commit)
-├── .env.example                   ← Template for environment variables
-├── .gitignore                     ← Ignores .env, raw_images/, .venv/, *.db
+├── .env.example                   ← Template — copy to .env and fill in values
+├── .gitignore
 ├── requirements.txt               ← Python dependencies
 │
-├── ── Docker Environment ─────────
-├── Dockerfile                     ← CUDA 12.4 + Python 3.11 + GPU PyTorch
-├── docker-compose.yml             ← App + Ollama container services (with GPU passthrough)
-├── docker-compose.cpu.yml         ← CPU-only override compose file
-├── .dockerignore                  ← Excludes unnecessary files from build context
-├── Makefile                       ← Shortcuts (make up, make ocr, make annotate, etc.)
+├── docker/                        ← All Docker-related files
+│   ├── Dockerfile                 ← CUDA 12.4 + Python 3.11 + GPU PyTorch
+│   ├── docker-compose.yml         ← App + Ollama services (GPU passthrough)
+│   ├── docker-compose.cpu.yml     ← CPU-only override
+│   ├── .dockerignore
+│   └── Makefile                   ← Shortcuts: make up, make ocr, make annotate, etc.
 │
-├── ── Pipeline Scripts ───────────
+├── ── Pipeline Scripts ──────────── (run in order)
 ├── download_and_hash.py           ← Step 2: Download images & compute hashes
-├── ocr_and_store.py               ← Step 3: EasyOCR extraction with grapheme clustering
-├── reconstruct_text.py            ← Step 4: Reading-order sorting & character offsets
-├── verify_ocr.py                  ← Step 5: Visual QA bounding box verification
-├── migrate_db.py                  ← Step 6: Create LLM_PREANNOTATION & ANNOTATION tables
-├── annotate_ollama.py             ← Step 7: Local LLM annotation via Ollama
-├── view_results.py                ← Step 8: View annotation statistics & review queue
-├── propaganda_dataset_inspect.py  ← Helper: Inspect DB tables, schemas, and counts
+├── ocr_and_store.py               ← Step 3: EasyOCR extraction (Bangla + English)
+├── reconstruct_text.py            ← Step 4: Reading-order text & character offsets
+├── verify_ocr.py                  ← Step 5: Visual QA bounding box check
+├── migrate_db.py                  ← Step 6: Create annotation tables in DB
+├── annotate_ollama.py             ← Step 7: LLM pre-annotation via Ollama
+├── view_results.py                ← Step 8: Review annotation results & audit queue
 │
-├── ── Guides & Codebooks ─────────
-├── bangla_meme_propaganda_codebook.md       ← Formal 8-technique annotation codebook
-├── hitl_llm_human_annotation_workflow.md    ← Human-in-the-loop workflow design
-├── gpt_prompt_design_guide.md               ← Prompt design guide
-├── multimodal_bangla_propaganda_dataset_plan.md ← Project architecture & plan
+├── annotation_ui/                 ← Web UI for human annotators (to be built)
+│   ├── app.py                     ← Flask backend
+│   ├── templates/                 ← HTML pages
+│   └── static/                   ← CSS & JS
 │
-├── ── Generated Data (Gitignored) ─
-├── propaganda_dataset.db          ← SQLite database storing all metadata & annotations
-├── raw_images/                    ← Downloaded raw meme images (.jpg)
-└── ocr_check/                     ← QA annotated bounding-box images (.png)
+├── utils/                         ← Helper/utility scripts
+│   └── propaganda_dataset_inspect.py  ← Print DB tables, schemas, row counts
+│
+├── docs/                          ← Documentation & research guides
+│   ├── bangla_meme_propaganda_codebook.md       ← 8-technique annotation codebook
+│   ├── human_verification_plan.md               ← Human verification UI workflow plan
+│   ├── hitl_llm_human_annotation_workflow.md    ← HITL annotation workflow design
+│   ├── gpt_prompt_design_guide.md               ← Prompt engineering guide
+│   └── multimodal_bangla_propaganda_dataset_plan.md ← Full dataset plan
+│
+└── ── Generated Data (Gitignored) ──
+    ├── propaganda_dataset.db      ← SQLite DB (metadata, OCR, annotations)
+    ├── raw_images/                ← Downloaded meme images (.jpg)
+    └── ocr_check/                 ← QA bounding-box annotated images (.png)
 ```
 
 ---
