@@ -379,6 +379,26 @@ Inspect model predictions, overall label distribution, and filter posts flagged 
 
 ---
 
+### Step 9: Human Verification Web UI (Annotation Tool)
+
+For human annotators to review, edit, and ground-truth LLM pre-annotations through an editorial web interface:
+
+| Environment | Action | Command |
+|---|---|---|
+| **Bare-Metal** | Start UI Server | `python annotation_ui/app.py` |
+
+Open **`http://localhost:5000`** in your web browser:
+1. Enter your annotator name (e.g., `omor`, `mehedi`, `rafiq`).
+2. Review the asymmetric 40/60 workspace displaying the meme image, reconstructed Bangla OCR text, AI prediction, confidence meter, and reasoning.
+3. Use keyboard shortcuts or one-click action buttons:
+   - **`A` / `✓ ACCEPT`**: Confirm model pre-annotation into `ANNOTATION` table.
+   - **`E` / `✎ EDIT`**: Slide out inline correction drawer to update technique, modality, or evidence span.
+   - **`R` / `✕ REJECT`**: Relabel incorrect predictions (defaults to T08 No Propaganda).
+   - **`S` / `⊘ SKIP`**: Defer post for later review.
+   - **`←` / `→`**: Navigate previous/next predictions.
+
+---
+
 ## 5. Database Schema Reference
 
 The database `propaganda_dataset.db` contains 7 relational tables:
