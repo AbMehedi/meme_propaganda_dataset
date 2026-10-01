@@ -12,13 +12,15 @@ from apify_client import ApifyClient
 # ---------- CONFIG ----------
 load_dotenv()
 APIFY_TOKEN = os.getenv("APIFY_TOKEN")
-DATASET_ID = "SpIzo6XVN0eFWrjns"
+DATASET_ID = os.getenv("DATASET_ID")
 IMAGE_DIR = "raw_images"
 DB_PATH = "propaganda_dataset.db"
 # -----------------------------
 
 if not APIFY_TOKEN:
     raise RuntimeError("APIFY_TOKEN is not set. Add it to .env or the environment.")
+if not DATASET_ID:
+    raise RuntimeError("DATASET_ID is not set. Add it to .env or the environment.")
 
 os.makedirs(IMAGE_DIR, exist_ok=True)
 client = ApifyClient(APIFY_TOKEN)

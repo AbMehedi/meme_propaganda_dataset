@@ -9,7 +9,7 @@ End-to-end pipeline for scraping, downloading, OCR-ing, annotating, and preparin
 ```bash
 git clone https://github.com/AbMehedi/meme_propaganda_dataset.git
 cd meme_propaganda_dataset
-cp .env.example .env                  # fill in APIFY_TOKEN
+cp .env.example .env                  # fill in APIFY_TOKEN & DATASET_ID
 docker compose up -d --build          # start app + Ollama containers
 docker compose exec app python ocr_and_store.py   # run any pipeline step
 ```
@@ -38,7 +38,7 @@ docker compose exec app python ocr_and_store.py   # run any pipeline step
 ```
 meme_propaganda_dataset/
 │
-├── .env                           ← APIFY_TOKEN (keep secret, never commit)
+├── .env                           ← APIFY_TOKEN, DATASET_ID (keep secret, never commit)
 ├── .env.example                   ← Template for teammates — copy to .env
 ├── .gitignore                     ← Ignores .env, raw_images/, .venv/, *.db
 ├── requirements.txt               ← Python dependencies
@@ -96,9 +96,10 @@ cd meme_propaganda_dataset
 cp .env.example .env
 ```
 
-Open `.env` and fill in your Apify token:
+Open `.env` and fill in your Apify token and dataset ID:
 ```env
 APIFY_TOKEN=your_apify_api_token_here
+DATASET_ID=your_apify_dataset_id_here
 ```
 
 #### Step 2: Start Containers (GPU)
@@ -212,9 +213,10 @@ cd meme_propaganda_dataset
 cp .env.example .env
 ```
 
-Open `.env` and add your Apify token:
+Open `.env` and add your Apify token and dataset ID:
 ```env
 APIFY_TOKEN=your_apify_api_token_here
+DATASET_ID=your_apify_dataset_id_here
 ```
 
 To get your token: [Apify Console](https://console.apify.com/) → **Settings** → **Integrations** → copy **Personal API token**.
@@ -339,9 +341,9 @@ This step runs in the browser, not locally.
    ```
 4. Click **Start**. When finished, copy the **Dataset ID** from the URL:
    `https://api.apify.com/v2/datasets/<DATASET_ID>`
-5. Open `download_and_hash.py` and paste the dataset ID:
-   ```python
-   DATASET_ID = "your_dataset_id_here"
+5. Add the dataset ID to your `.env` file:
+   ```env
+   DATASET_ID=your_dataset_id_here
    ```
 
 ### Step 2: Download Images & Store Hashes (Layer 2)
