@@ -19,6 +19,7 @@ End-to-end pipeline for scraping, downloading, OCR-ing, annotating, and analyzin
    - [Step 6: Database Migration for Annotations (Layer 4)](#step-6-database-migration-for-annotations-layer-4)
    - [Step 7: LLM Pre-Annotation with Ollama (Layer 4)](#step-7-llm-pre-annotation-with-ollama-layer-4)
    - [Step 8: Review & Audit Annotations](#step-8-review--audit-annotations)
+   - [Step 9: Run Human Verification Web UI (HITL Platform)](#step-9-run-human-verification-web-ui-hitl-platform)
 5. [Database Schema Reference](#5-database-schema-reference)
 6. [Script Reference & CLI Flags](#6-script-reference--cli-flags)
 7. [Verification & Useful SQL Queries](#7-verification--useful-sql-queries)
@@ -53,6 +54,7 @@ flowchart TD
 | **Layer 4** | Database schema setup for annotations | `migrate_db.py` | tables: `LLM_PREANNOTATION`, `ANNOTATION` |
 | **Layer 4** | Zero-shot / few-shot LLM propaganda labeling | `annotate_ollama.py` | table: `LLM_PREANNOTATION` |
 | **Audit** | Inspection and human-in-the-loop audit | `view_results.py` | Terminal summaries & review queue |
+| **HITL Web** | Human verification, browsing & conflict adjudication | `annotation_ui/app.py` | Ground-truth `ANNOTATION` table, gold consensus |
 
 ---
 
@@ -388,21 +390,52 @@ Inspect model predictions, overall label distribution, and filter posts flagged 
 
 ---
 
-### Step 9: Human Verification Web UI (Annotation & Adjudication Platform)
+### Step 9: Run Human Verification Web UI (HITL Platform)
 
-A full-featured Human-in-the-Loop (HITL) editorial web platform for annotators and lead researchers to review, edit, ground-truth, browse, and adjudicate LLM pre-annotations.
+A full-featured Human-in-the-Loop (HITL) editorial web platform for annotators and researchers to review, edit, ground-truth, browse, and adjudicate LLM pre-annotations.
 
-| Environment | Action | Command |
-|---|---|---|
-| **Docker** | Start UI Server | `docker compose -f docker/docker-compose.yml exec -d app python annotation_ui/app.py` |
-| **Docker (Makefile)** | Start UI Server | `make -C docker ui` |
-| **Bare-Metal** | Start UI Server | `python annotation_ui/app.py` |
+#### 1. How to Launch the Web UI
 
-Open **`http://localhost:5000`** in your web browser:
-1. Enter your annotator name (e.g., `omor`, `mehedi`, `rafiq`).
-2. Explore the five integrated modules via the top navigation bar:
+##### Option A: Using Docker (Recommended)
+Ensure containers are running (`docker compose -f docker/docker-compose.yml up -d`). Then launch the UI using any of these methods:
 
-#### 1. Annotation Workspace (`/annotate`)
+* **Background / Daemon Mode** (leaves terminal free):
+  ```bash
+  docker compose -f docker/docker-compose.yml exec -d app python annotation_ui/app.py
+  ```
+* **Makefile Shortcut**:
+  ```bash
+  make -C docker ui
+  ```
+* **Interactive / Live Console Logs Mode**:
+  ```bash
+  docker compose -f docker/docker-compose.yml exec app python annotation_ui/app.py
+  ```
+
+##### Option B: Bare-Metal (Local Python)
+Inside your activated virtual environment (`.venv`):
+```bash
+python annotation_ui/app.py
+```
+
+#### 2. Accessing & Managing the Server
+
+| Attribute | Value / Instruction |
+|---|---|
+| **Access URL** | [http://localhost:5000](http://localhost:5000) |
+| **Bound Host & Port** | `0.0.0.0:5000` (Docker host port mapped to `5000`) |
+| **Stream Live Logs** | `docker compose -f docker/docker-compose.yml logs -f app` |
+| **Restart Server** | `docker compose -f docker/docker-compose.yml restart app` |
+| **Stop Bare-Metal** | Press `Ctrl + C` in the running terminal |
+
+#### 3. Core Modules & Multi-Annotator Workflow
+
+Open **`http://localhost:5000`** in your browser:
+* **Login & Identity**: Enter your annotator handle (e.g. `omor`, `mehedi`). Each annotator's decisions are tracked separately. Multiple team members can evaluate posts concurrently in separate browser windows.
+
+Explore the five integrated platform modules:
+
+##### 1. Annotation Workspace (`/annotate`)
 * **Asymmetric 40/60 Layout**: High-resolution meme inspection frame alongside reconstructed Bangla OCR text, post captions, model predictions, rationale spans, and explanations.
 * **Confidence Meter & Review Flags**: Visual color-coded confidence bar (`HIGH`, `MED`, `LOW`) and automated review reason indicators.
 * **Rapid Action Controls & Shortcuts**:
@@ -412,21 +445,21 @@ Open **`http://localhost:5000`** in your web browser:
   - **`S` / `⊘ SKIP`**: Defer prediction for subsequent team review.
   - **`←` / `→`**: Instant keyboard pagination between records.
 
-#### 2. Dataset Browser (`/dataset`)
+##### 2. Dataset Browser (`/dataset`)
 * **Full Repository Directory**: Paginated directory (50 records/page) showing all 340 pre-annotations, confidence scores, human annotator tags, and review flags.
 * **Filter Tabs**: Instant filtering by `ALL (340)`, `ANNOTATED`, `UNANNOTATED`, and `NEEDS REVIEW`.
 * **Search & Sort**: Full-text search across IDs, Bangla captions, labels, and annotators, with multi-option sorting (Oldest, Newest, Confidence High→Low, Low→High).
 
-#### 3. Adjudication Workspace (`/adjudicate`)
+##### 3. Adjudication Workspace (`/adjudicate`)
 * **Multi-Annotator Consensus**: Automatically queues predictions where two or more annotators have submitted conflicting labels on the same post.
 * **Side-by-Side Comparison**: Lead adjudicators inspect divergent annotations, annotator IDs, and rationale evidence side-by-side.
 * **Gold-Standard Resolution**: Authoritative ground-truth label selection with rationale notes and resolution archive.
 
-#### 4. Annotator History (`/history`)
+##### 4. Annotator History (`/history`)
 * **Personal Decision Log**: Filterable log of every decision submitted by the active annotator (`VERIFIED`, `CORRECTED`, `REJECTED`, `SKIPPED`).
 * **Direct Navigation**: Click any historical row to re-open and review the post in the annotation workspace.
 
-#### 5. Dataset Analytics & Stats (`/admin`)
+##### 5. Dataset Analytics & Stats (`/admin`)
 * **Real-Time Progress**: Dynamic completion rate tracking across total, verified, and skipped items.
 * **Distribution Comparison**: Comparative visual distribution bars contrasting human-verified techniques against raw AI predictions.
 
@@ -558,6 +591,7 @@ erDiagram
 | | `--review-queue` | Filters posts that need human inspection |
 | | `--conf-threshold <f>` | Sets confidence cutoff for review queue (default: 0.65) |
 | | `--model <name>` | Filter results by specific model |
+| `annotation_ui/app.py` | *(none)* | Launches Flask HITL web server on port 5000 (`http://localhost:5000`) |
 | `utils/propaganda_dataset_inspect.py` | *(none)* | Quick summary of table schemas and row counts |
 
 ---
