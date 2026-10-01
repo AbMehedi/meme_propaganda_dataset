@@ -82,10 +82,19 @@ meme_propaganda_dataset/
 ├── annotate_ollama.py             ← Step 7: LLM pre-annotation via Ollama
 ├── view_results.py                ← Step 8: Review annotation results & audit queue
 │
-├── annotation_ui/                 ← Web UI for human annotators (to be built)
-│   ├── app.py                     ← Flask backend
-│   ├── templates/                 ← HTML pages
-│   └── static/                   ← CSS & JS
+├── annotation_ui/                 ← Human-in-the-Loop (HITL) Web Platform
+│   ├── app.py                     ← Flask backend & REST routing
+│   ├── templates/                 ← HTML templates (Brutalist UI)
+│   │   ├── base.html              ← Base layout & navigation sub-bar
+│   │   ├── annotate.html          ← 40/60 asymmetric annotation workspace
+│   │   ├── dataset.html           ← Full database browser with search & filter
+│   │   ├── adjudicate.html        ← Multi-annotator conflict resolution
+│   │   ├── history.html           ← Annotator personal decision history
+│   │   ├── admin.html             ← Dataset statistics & technique distributions
+│   │   └── login.html             ← Annotator identity selection
+│   └── static/                    ← CSS design tokens & client logic
+│       ├── style.css              ← Dark brutalist styling (#FF3D00, 0px radius)
+│       └── annotate.js            ← Keyboard shortcuts & drawer interaction
 │
 ├── utils/                         ← Helper/utility scripts
 │   └── propaganda_dataset_inspect.py  ← Print DB tables, schemas, row counts
@@ -379,9 +388,9 @@ Inspect model predictions, overall label distribution, and filter posts flagged 
 
 ---
 
-### Step 9: Human Verification Web UI (Annotation Tool)
+### Step 9: Human Verification Web UI (Annotation & Adjudication Platform)
 
-For human annotators to review, edit, and ground-truth LLM pre-annotations through an editorial web interface:
+A full-featured Human-in-the-Loop (HITL) editorial web platform for annotators and lead researchers to review, edit, ground-truth, browse, and adjudicate LLM pre-annotations.
 
 | Environment | Action | Command |
 |---|---|---|
@@ -391,13 +400,35 @@ For human annotators to review, edit, and ground-truth LLM pre-annotations throu
 
 Open **`http://localhost:5000`** in your web browser:
 1. Enter your annotator name (e.g., `omor`, `mehedi`, `rafiq`).
-2. Review the asymmetric 40/60 workspace displaying the meme image, reconstructed Bangla OCR text, AI prediction, confidence meter, and reasoning.
-3. Use keyboard shortcuts or one-click action buttons:
-   - **`A` / `✓ ACCEPT`**: Confirm model pre-annotation into `ANNOTATION` table.
-   - **`E` / `✎ EDIT`**: Slide out inline correction drawer to update technique, modality, or evidence span.
-   - **`R` / `✕ REJECT`**: Relabel incorrect predictions (defaults to T08 No Propaganda).
-   - **`S` / `⊘ SKIP`**: Defer post for later review.
-   - **`←` / `→`**: Navigate previous/next predictions.
+2. Explore the five integrated modules via the top navigation bar:
+
+#### 1. Annotation Workspace (`/annotate`)
+* **Asymmetric 40/60 Layout**: High-resolution meme inspection frame alongside reconstructed Bangla OCR text, post captions, model predictions, rationale spans, and explanations.
+* **Confidence Meter & Review Flags**: Visual color-coded confidence bar (`HIGH`, `MED`, `LOW`) and automated review reason indicators.
+* **Rapid Action Controls & Shortcuts**:
+  - **`A` / `✓ ACCEPT`**: Confirm model prediction into `ANNOTATION` table with `VERIFIED` status.
+  - **`E` / `✎ EDIT`**: Slide out inline drawer to correct technique (`T01`–`T08`), modality (`M1`, `M2`, `M3`), or evidence span (`CORRECTED` status).
+  - **`R` / `✕ REJECT`**: Relabel incorrect predictions (defaults to `T08 No Propaganda`).
+  - **`S` / `⊘ SKIP`**: Defer prediction for subsequent team review.
+  - **`←` / `→`**: Instant keyboard pagination between records.
+
+#### 2. Dataset Browser (`/dataset`)
+* **Full Repository Directory**: Paginated directory (50 records/page) showing all 340 pre-annotations, confidence scores, human annotator tags, and review flags.
+* **Filter Tabs**: Instant filtering by `ALL (340)`, `ANNOTATED`, `UNANNOTATED`, and `NEEDS REVIEW`.
+* **Search & Sort**: Full-text search across IDs, Bangla captions, labels, and annotators, with multi-option sorting (Oldest, Newest, Confidence High→Low, Low→High).
+
+#### 3. Adjudication Workspace (`/adjudicate`)
+* **Multi-Annotator Consensus**: Automatically queues predictions where two or more annotators have submitted conflicting labels on the same post.
+* **Side-by-Side Comparison**: Lead adjudicators inspect divergent annotations, annotator IDs, and rationale evidence side-by-side.
+* **Gold-Standard Resolution**: Authoritative ground-truth label selection with rationale notes and resolution archive.
+
+#### 4. Annotator History (`/history`)
+* **Personal Decision Log**: Filterable log of every decision submitted by the active annotator (`VERIFIED`, `CORRECTED`, `REJECTED`, `SKIPPED`).
+* **Direct Navigation**: Click any historical row to re-open and review the post in the annotation workspace.
+
+#### 5. Dataset Analytics & Stats (`/admin`)
+* **Real-Time Progress**: Dynamic completion rate tracking across total, verified, and skipped items.
+* **Distribution Comparison**: Comparative visual distribution bars contrasting human-verified techniques against raw AI predictions.
 
 ---
 
@@ -499,10 +530,12 @@ erDiagram
 | `modality` | TEXT | `M1` / `M2` / `M3` |
 | `start_char` / `end_char` | INTEGER | Character bounds in `reconstructed_text` |
 | `evidence_span` | TEXT | Ground-truth text span |
-| `annotation_source` | TEXT | `llm_preannotated` or `human` |
-| `verification_status` | TEXT | `PENDING`, `VERIFIED`, `REJECTED` |
-| `human_annotator_id` | TEXT | ID of reviewer |
+| `annotation_source` | TEXT | `human_verified`, `human_corrected`, or `gold_adjudicated` |
+| `verification_status` | TEXT | `VERIFIED`, `CORRECTED`, `REJECTED`, `SKIPPED` |
+| `human_annotator_id` | TEXT | ID of reviewer / annotator |
+| `adjudication_status` | TEXT | Consensus state (`NONE`, `PENDING`, `AGREED`, `ADJUDICATED`) |
 | `llm_preannotation_id` | INTEGER (FK) | Reference to `LLM_PREANNOTATION` |
+| `created_at` | TEXT | Annotation timestamp |
 
 ---
 
