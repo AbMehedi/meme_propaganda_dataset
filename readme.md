@@ -1,498 +1,378 @@
 # Bangla Meme Propaganda Dataset
 
-End-to-end pipeline for scraping, downloading, OCR-ing, annotating, and preparing Bangla propaganda memes for multimodal analysis. Covers dataset collection through LLM-assisted annotation.
+End-to-end pipeline for scraping, downloading, OCR-ing, annotating, and analyzing Bangla propaganda memes.
 
 ---
 
-## Quick Start (Docker — 5 Commands)
+## Table of Contents
+1. [Overview & Architecture](#1-overview--architecture)
+2. [Project Structure](#2-project-structure)
+3. [Environment Setup (Choose One)](#3-environment-setup)
+   - [Option A: Docker Setup (Recommended)](#option-a-docker-setup-recommended)
+   - [Option B: Bare-Metal Setup (Local Python)](#option-b-bare-metal-setup-local-python)
+4. [Step-by-Step Pipeline (From Scratch to End)](#4-step-by-step-pipeline-from-scratch-to-end)
+   - [Step 1: Scrape Facebook Posts (Layer 1)](#step-1-scrape-facebook-posts-layer-1)
+   - [Step 2: Download Images & Compute Hashes (Layer 2)](#step-2-download-images--compute-hashes-layer-2)
+   - [Step 3: Extract Text with EasyOCR (Layer 3)](#step-3-extract-text-with-easyocr-layer-3)
+   - [Step 4: Reconstruct Reading-Order Text (Layer 3+)](#step-4-reconstruct-reading-order-text-layer-3)
+   - [Step 5: Visual OCR Quality Assurance (QA)](#step-5-visual-ocr-quality-assurance-qa)
+   - [Step 6: Database Migration for Annotations (Layer 4)](#step-6-database-migration-for-annotations-layer-4)
+   - [Step 7: LLM Pre-Annotation with Ollama (Layer 4)](#step-7-llm-pre-annotation-with-ollama-layer-4)
+   - [Step 8: Review & Audit Annotations](#step-8-review--audit-annotations)
+5. [Database Schema Reference](#5-database-schema-reference)
+6. [Script Reference & CLI Flags](#6-script-reference--cli-flags)
+7. [Verification & Useful SQL Queries](#7-verification--useful-sql-queries)
+8. [Troubleshooting & FAQ](#8-troubleshooting--faq)
 
-```bash
-git clone https://github.com/AbMehedi/meme_propaganda_dataset.git
-cd meme_propaganda_dataset
-cp .env.example .env                  # fill in APIFY_TOKEN & DATASET_ID
-docker compose up -d --build          # start app + Ollama containers
-docker compose exec app python ocr_and_store.py   # run any pipeline step
+---
+
+## 1. Overview & Architecture
+
+The pipeline processes raw Facebook posts and memes into high-quality multimodal dataset layers with character-level text offsets and LLM pre-annotations:
+
+```mermaid
+flowchart TD
+    A[Facebook Pages] -->|1. Apify Scraper| B[Apify Dataset Cloud]
+    B -->|2. download_and_hash.py| C[(DB: PAGE, POST, IMAGE)]
+    B -->|2. download_and_hash.py| D[raw_images/*.jpg]
+    C & D -->|3. ocr_and_store.py| E[(DB: OCR_WORD)]
+    E -->|4. reconstruct_text.py| F[(DB: WORD_OFFSET + reconstructed_text)]
+    E & D -->|5. verify_ocr.py| G[ocr_check/*.png Visual QA]
+    F -->|6. migrate_db.py| H[(DB: LLM_PREANNOTATION, ANNOTATION)]
+    H -->|7. annotate_ollama.py| I[LLM Pre-annotations]
+    I -->|8. view_results.py| J[Human Review & Verification]
 ```
 
-> [!TIP]
-> If you don't have Docker or prefer a manual setup, see [Path B: Bare-Metal Setup](#path-b-bare-metal-setup-manual).
-
----
-
-## Pipeline Overview
-
-| Layer | What it does | Script | Output |
+| Layer | Purpose | Script / Tool | Output |
 |---|---|---|---|
-| **Layer 1** | Scrape Facebook pages/posts via Apify | *(Apify Console — browser)* | Apify Cloud Dataset |
-| **Layer 2** | Download images + compute exact & perceptual hashes | `download_and_hash.py` | `raw_images/`, tables: `PAGE`, `POST`, `IMAGE` |
-| **Layer 3** | OCR every image with EasyOCR (Bangla + English) | `ocr_and_store.py` | table: `OCR_WORD` |
-| **Layer 3+** | Reading-order text reconstruction + character offsets | `reconstruct_text.py` | `IMAGE.reconstructed_text`, table: `WORD_OFFSET` |
-| **QA** | Visual OCR verification & spot-check | `verify_ocr.py` | `ocr_check/*.png` |
-| **Layer 4** | LLM pre-annotation with propaganda taxonomy | `migrate_db.py` → `annotate_ollama.py` | tables: `LLM_PREANNOTATION`, `ANNOTATION` |
-| **Review** | View & audit annotation results | `view_results.py` | Terminal output |
+| **Layer 1** | Scrape Facebook meme pages/posts | Apify Browser Console | Apify Dataset (`DATASET_ID`) |
+| **Layer 2** | Download images + compute SHA-256 & pHash | `download_and_hash.py` | `raw_images/`, tables: `PAGE`, `POST`, `IMAGE` |
+| **Layer 3** | EasyOCR text extraction (Bangla + English) | `ocr_and_store.py` | table: `OCR_WORD` |
+| **Layer 3+** | Reading-order text reconstruction & char offsets | `reconstruct_text.py` | `IMAGE.reconstructed_text`, table: `WORD_OFFSET` |
+| **QA** | Visual OCR bounding box spot-check | `verify_ocr.py` | `ocr_check/*.png` |
+| **Layer 4** | Database schema setup for annotations | `migrate_db.py` | tables: `LLM_PREANNOTATION`, `ANNOTATION` |
+| **Layer 4** | Zero-shot / few-shot LLM propaganda labeling | `annotate_ollama.py` | table: `LLM_PREANNOTATION` |
+| **Audit** | Inspection and human-in-the-loop audit | `view_results.py` | Terminal summaries & review queue |
 
 ---
 
-## Project Structure
+## 2. Project Structure
 
 ```
 meme_propaganda_dataset/
-│
-├── .env                           ← APIFY_TOKEN, DATASET_ID (keep secret, never commit)
-├── .env.example                   ← Template for teammates — copy to .env
+├── .env                           ← Secrets: APIFY_TOKEN, DATASET_ID (never commit)
+├── .env.example                   ← Template for environment variables
 ├── .gitignore                     ← Ignores .env, raw_images/, .venv/, *.db
 ├── requirements.txt               ← Python dependencies
 │
-├── ── Docker ──────────────────────
+├── ── Docker Environment ─────────
 ├── Dockerfile                     ← CUDA 12.4 + Python 3.11 + GPU PyTorch
-├── docker-compose.yml             ← Two services: app + Ollama (GPU)
-├── docker-compose.cpu.yml         ← CPU-only override (no NVIDIA GPU)
-├── .dockerignore                  ← Keeps Docker build context small
-├── Makefile                       ← Convenience shortcuts (make ocr, make annotate, etc.)
+├── docker-compose.yml             ← App + Ollama container services (with GPU passthrough)
+├── docker-compose.cpu.yml         ← CPU-only override compose file
+├── .dockerignore                  ← Excludes unnecessary files from build context
+├── Makefile                       ← Shortcuts (make up, make ocr, make annotate, etc.)
 │
-├── ── Pipeline Scripts ────────────
-├── download_and_hash.py           ← Layer 2: download images, build PAGE/POST/IMAGE tables
-├── ocr_and_store.py               ← Layer 3: EasyOCR (bn+en) with grapheme-aware word splitting
-├── reconstruct_text.py            ← Layer 3+: sort words into reading order, record char offsets
-├── verify_ocr.py                  ← QA: draw line boxes (red) & word boxes (green/orange)
-├── migrate_db.py                  ← Add LLM_PREANNOTATION & ANNOTATION tables to DB
-├── annotate_ollama.py             ← Layer 4: Ollama LLM pre-annotation with hardware auto-detect
-├── view_results.py                ← Review annotation results, summary, and review queue
-├── propaganda_dataset_inspect.py  ← Utility: print all tables, schemas, and row counts
+├── ── Pipeline Scripts ───────────
+├── download_and_hash.py           ← Step 2: Download images & compute hashes
+├── ocr_and_store.py               ← Step 3: EasyOCR extraction with grapheme clustering
+├── reconstruct_text.py            ← Step 4: Reading-order sorting & character offsets
+├── verify_ocr.py                  ← Step 5: Visual QA bounding box verification
+├── migrate_db.py                  ← Step 6: Create LLM_PREANNOTATION & ANNOTATION tables
+├── annotate_ollama.py             ← Step 7: Local LLM annotation via Ollama
+├── view_results.py                ← Step 8: View annotation statistics & review queue
+├── propaganda_dataset_inspect.py  ← Helper: Inspect DB tables, schemas, and counts
 │
-├── ── Documentation ───────────────
-├── readme.md                      ← This file
-├── bangla_meme_propaganda_codebook.md       ← Strict annotation codebook (8 techniques)
-├── hitl_llm_human_annotation_workflow.md    ← HITL annotation workflow design
-├── gpt_prompt_design_guide.md               ← Prompt engineering guide for annotation
-├── multimodal_bangla_propaganda_dataset_plan.md ← Full dataset construction plan
+├── ── Guides & Codebooks ─────────
+├── bangla_meme_propaganda_codebook.md       ← Formal 8-technique annotation codebook
+├── hitl_llm_human_annotation_workflow.md    ← Human-in-the-loop workflow design
+├── gpt_prompt_design_guide.md               ← Prompt design guide
+├── multimodal_bangla_propaganda_dataset_plan.md ← Project architecture & plan
 │
-├── ── Data (gitignored) ───────────
-├── propaganda_dataset.db          ← SQLite database (all metadata, OCR, annotations)
-├── raw_images/                    ← Downloaded meme images (.jpg)
-└── ocr_check/                     ← QA annotated images (.png)
+├── ── Generated Data (Gitignored) ─
+├── propaganda_dataset.db          ← SQLite database storing all metadata & annotations
+├── raw_images/                    ← Downloaded raw meme images (.jpg)
+└── ocr_check/                     ← QA annotated bounding-box images (.png)
 ```
 
 ---
 
-## Setup — Choose Your Path
+## 3. Environment Setup
 
-### Path A: Docker Setup (Recommended)
+Choose **Option A** (Docker) or **Option B** (Bare-Metal). Configure your environment once, then proceed directly to [Step-by-Step Pipeline](#4-step-by-step-pipeline-from-scratch-to-end).
 
-Docker gives your teammate a fully reproducible environment — no manual CUDA, PyTorch, or Ollama installation.
+---
 
-#### Prerequisites
+### Option A: Docker Setup (Recommended)
 
-- **Docker Desktop** (Windows/Mac) or **Docker Engine** (Linux) — [Install Docker](https://docs.docker.com/get-docker/)
-- **NVIDIA Container Toolkit** (for GPU acceleration) — [Install Guide](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html)
-  - Requires an NVIDIA GPU driver already installed on the host
-  - **Not needed** for CPU-only mode (see below)
+Docker provides an isolated container with CUDA 12.4, PyTorch GPU, and Ollama pre-configured.
 
-#### Step 1: Clone & Configure
-
+#### 1. Clone & Configure Environment
 ```bash
 git clone https://github.com/AbMehedi/meme_propaganda_dataset.git
 cd meme_propaganda_dataset
 cp .env.example .env
 ```
 
-Open `.env` and fill in your Apify token and dataset ID:
+Open `.env` and fill in your values:
 ```env
-APIFY_TOKEN=your_apify_api_token_here
+APIFY_TOKEN=your_apify_token_here
 DATASET_ID=your_apify_dataset_id_here
 ```
 
-#### Step 2: Start Containers (GPU)
+#### 2. Start Containers
 
-```bash
-docker compose up -d --build
-```
+- **With NVIDIA GPU:**
+  ```bash
+  docker compose up -d --build
+  ```
 
-This starts two containers:
+- **Without GPU (CPU-Only):**
+  ```bash
+  docker compose -f docker-compose.yml -f docker-compose.cpu.yml up -d --build
+  ```
 
-```mermaid
-graph LR
-    subgraph "docker compose"
-        APP["app container<br/>Python 3.11 + CUDA 12.4<br/>EasyOCR + pipeline scripts"]
-        OLLAMA["ollama container<br/>LLM server on :11434"]
-    end
-    APP -- "http://ollama:11434" --> OLLAMA
-    APP -. "bind mount" .-> DB[(propaganda_dataset.db)]
-    APP -. "bind mount" .-> IMGS[raw_images/]
-    OLLAMA -. "named volume" .-> MODELS[(ollama_models)]
-```
-
-**CPU-Only (no NVIDIA GPU)?** Use this instead:
-```bash
-docker compose -f docker-compose.yml -f docker-compose.cpu.yml up -d --build
-```
-Everything works the same, just slower (EasyOCR: ~3–8s/image vs <0.8s on GPU).
-
-#### Step 3: Verify GPU
-
+#### 3. Verify Container GPU Access
 ```bash
 docker compose exec app python -c "import torch; print('CUDA:', torch.cuda.is_available()); print('Device:', torch.cuda.get_device_name(0) if torch.cuda.is_available() else 'CPU')"
 ```
 
-Expected output:
-```
-CUDA: True
-Device: NVIDIA GeForce RTX 3050 Laptop GPU
-```
-
-#### Step 4: Pull an LLM Model (One-Time)
-
+#### 4. Pull an Ollama Model (Inside Ollama Container)
 ```bash
 docker compose exec ollama ollama pull qwen2.5:3b
 ```
 
-#### Running Pipeline Steps (Docker)
-
-All pipeline commands use `docker compose exec app python <script>`:
-
-```bash
-docker compose exec app python download_and_hash.py
-docker compose exec app python ocr_and_store.py
-docker compose exec app python reconstruct_text.py
-docker compose exec app python verify_ocr.py
-docker compose exec app python migrate_db.py
-docker compose exec app python annotate_ollama.py --auto
-docker compose exec app python view_results.py --summary
-```
-
-#### Makefile Shortcuts
-
-If `make` is available, use these shortcuts instead:
-
-| Command | Action |
-|---|---|
-| `make up` | Start containers (GPU) |
-| `make up-cpu` | Start containers (CPU-only) |
-| `make download` | Layer 2: download images |
-| `make ocr` | Layer 3: EasyOCR extraction |
-| `make reconstruct` | Layer 3+: reading-order reconstruction |
-| `make verify` | QA: visual OCR check |
-| `make annotate` | LLM pre-annotation (auto hardware detect) |
-| `make results` | View annotation summary |
-| `make pull-model MODEL=qwen2.5:7b` | Pull a specific Ollama model |
-| `make gpu-check` | Verify GPU access |
-| `make shell` | Open bash shell in app container |
-| `make down` | Stop all containers |
-| `make logs` | Tail container logs |
-
-#### Stopping Docker
-
-```bash
-docker compose down       # stop containers (data persists)
-```
-
-> [!NOTE]
-> Your code is **bind-mounted** — edits on your host are instantly reflected inside the container. No rebuild needed unless you change `requirements.txt` (`docker compose up -d --build`).
+> **Note on Docker commands:** In Docker, you run any pipeline script using:  
+> `docker compose exec app python <script_name>.py`  
+> (or use `make <target>` shortcuts if `make` is installed).
 
 ---
 
-### Path B: Bare-Metal Setup (Manual)
+### Option B: Bare-Metal Setup (Local Python)
 
-For running directly on your machine without Docker.
+Run directly on your host operating system (Windows/Linux/macOS).
 
-#### Prerequisites
-
-- **Python 3.9+** (64-bit recommended)
-- **Apify Account** — [apify.com](https://apify.com) (free tier is sufficient)
-- **Ollama** — [ollama.com/download](https://ollama.com/download) (required for annotation)
-- **NVIDIA GPU** (strongly recommended for OCR):
-  - EasyOCR on CPU: ~3–8 seconds per image
-  - EasyOCR on GPU (CUDA): <0.3–0.8 seconds per image (~10–20× faster)
-  - Compatible with NVIDIA GTX/RTX cards (e.g., RTX 3050, 3060, 4060, etc.)
-
-#### Step 1: Clone & Configure
-
+#### 1. Clone & Configure Environment
 ```bash
 git clone https://github.com/AbMehedi/meme_propaganda_dataset.git
 cd meme_propaganda_dataset
 cp .env.example .env
 ```
 
-Open `.env` and add your Apify token and dataset ID:
+Open `.env` and fill in your values:
 ```env
-APIFY_TOKEN=your_apify_api_token_here
+APIFY_TOKEN=your_apify_token_here
 DATASET_ID=your_apify_dataset_id_here
 ```
 
-To get your token: [Apify Console](https://console.apify.com/) → **Settings** → **Integrations** → copy **Personal API token**.
-
-#### Step 2: Create & Activate Virtual Environment
-
+#### 2. Create & Activate Virtual Environment
 ```bash
 python -m venv .venv
 ```
 
-**Activate:**
+- **Windows (PowerShell):**
+  ```powershell
+  .venv\Scripts\Activate.ps1
+  ```
+  *(If restricted, run once: `Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser`)*
+- **Windows (CMD):**
+  ```cmd
+  .venv\Scripts\activate.bat
+  ```
+- **Linux / macOS:**
+  ```bash
+  source .venv/bin/activate
+  ```
 
-| Platform | Command |
-|---|---|
-| Windows (PowerShell) | `.venv\Scripts\Activate.ps1` |
-| Windows (CMD) | `.venv\Scripts\activate.bat` |
-| macOS / Linux | `source .venv/bin/activate` |
+#### 3. Install CUDA-Enabled PyTorch First
+Check your CUDA driver version using `nvidia-smi`, then install the matching wheel:
 
-> [!TIP]
-> If PowerShell blocks activation, run once: `Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser`
+- **CUDA 12.4+ (RTX 30xx/40xx):**
+  ```bash
+  pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu124
+  ```
+- **CUDA 12.1:**
+  ```bash
+  pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+  ```
+- **CUDA 11.8:**
+  ```bash
+  pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+  ```
+- **CPU-Only (No NVIDIA GPU):**
+  ```bash
+  pip install torch torchvision torchaudio
+  ```
 
-When active, `(.venv)` appears at the front of your terminal prompt. To exit: `deactivate`.
-
-#### Step 3: Check NVIDIA CUDA Version
-
-```bash
-nvidia-smi
-```
-
-Look at the top-right corner for `CUDA Version` (e.g., `12.7`, `12.4`, `12.1`, or `11.8`). Your driver supports any CUDA PyTorch wheel up to that version.
-
-#### Step 4: Install CUDA-Enabled PyTorch
-
-> [!IMPORTANT]
-> You **must** install CUDA PyTorch **first**, before `pip install -r requirements.txt`. Otherwise `easyocr` pulls CPU-only PyTorch from PyPI.
-
-Inside your activated `(.venv)`, pick the command matching your CUDA version:
-
-**CUDA 12.4 / 12.6+ (recommended — modern RTX cards, Driver 550+):**
-```bash
-pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu124
-```
-
-**CUDA 12.1:**
-```bash
-pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
-```
-
-**CUDA 11.8:**
-```bash
-pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
-```
-
-**No NVIDIA GPU (CPU only):**
-```bash
-pip install torch torchvision torchaudio
-```
-
-#### Step 5: Install Project Dependencies
-
+#### 4. Install Project Requirements
 ```bash
 pip install -r requirements.txt
 ```
 
-#### Step 6: Verify GPU Acceleration
-
+#### 5. Verify GPU Acceleration
 ```bash
 python -c "import torch; print('CUDA available:', torch.cuda.is_available()); print('Device:', torch.cuda.get_device_name(0) if torch.cuda.is_available() else 'CPU')"
 ```
 
-Expected (with GPU):
-```
-CUDA available: True
-Device: NVIDIA GeForce RTX 3050 Laptop GPU
-```
-
-If it outputs `CUDA available: False`, see [Troubleshooting](#troubleshooting--faq).
-
-#### Step 7: Install & Start Ollama
-
+#### 6. Install & Start Ollama
 1. Download from [ollama.com/download](https://ollama.com/download) and install.
-2. Open the Ollama app (it runs a local server on `http://localhost:11434`).
-3. Pull a model:
+2. Ensure Ollama is running (`ollama serve` or system tray app).
+3. Pull the required model:
    ```bash
    ollama pull qwen2.5:3b
    ```
 
 ---
 
-## Pipeline Walkthrough (Step-by-Step)
+## 4. Step-by-Step Pipeline (From Scratch to End)
 
-Follow these steps sequentially to build the dataset from scratch.
+Execute these steps in order to build and process the dataset from scratch.
 
-```mermaid
-flowchart TD
-    A[Facebook Pages] -->|Apify Scraper Actor| B[Apify Dataset]
-    B -->|download_and_hash.py| C[(SQLite: PAGE, POST, IMAGE)]
-    B -->|download_and_hash.py| D[raw_images/*.jpg]
-    C & D -->|ocr_and_store.py| E[(SQLite: OCR_WORD)]
-    E -->|reconstruct_text.py| F[(SQLite: WORD_OFFSET + reconstructed_text)]
-    E & D -->|verify_ocr.py| G[ocr_check/*.png]
-    F -->|migrate_db.py| H[(SQLite: LLM_PREANNOTATION, ANNOTATION)]
-    H -->|annotate_ollama.py| I[(Annotated Labels)]
-    I -->|view_results.py| J[Review & Audit]
-```
+---
 
-### Step 1: Scrape Posts on Apify (Layer 1)
+### Step 1: Scrape Facebook Posts (Layer 1)
 
-This step runs in the browser, not locally.
+*This step runs in your web browser via Apify Console.*
 
 1. Log in to [Apify Console](https://console.apify.com/).
-2. Navigate to **Store** → open the **Facebook Posts Scraper** (`apify/facebook-posts-scraper`).
-3. Provide page URLs and post limit:
+2. Go to **Store** → Select **Facebook Posts Scraper** (`apify/facebook-posts-scraper`).
+3. Enter the target Facebook page URLs and post limit:
    ```json
    {
      "startUrls": [
        { "url": "https://www.facebook.com/<target_page_1>" },
        { "url": "https://www.facebook.com/<target_page_2>" }
      ],
-     "resultsLimit": 40
+     "resultsLimit": 50
    }
    ```
-4. Click **Start**. When finished, copy the **Dataset ID** from the URL:
+4. Click **Start**. Once completed, copy the **Dataset ID** from the dataset URL:
    `https://api.apify.com/v2/datasets/<DATASET_ID>`
-5. Add the dataset ID to your `.env` file:
+5. Add your token and dataset ID to `.env`:
    ```env
+   APIFY_TOKEN=your_apify_api_token
    DATASET_ID=your_dataset_id_here
    ```
 
-### Step 2: Download Images & Store Hashes (Layer 2)
+---
 
-| | Command |
+### Step 2: Download Images & Compute Hashes (Layer 2)
+
+Fetches post metadata and downloads images locally. Computes SHA-256 (exact duplicate check) and pHash (perceptual near-duplicate check under resize/compression).
+
+| Environment | Command |
 |---|---|
 | **Docker** | `docker compose exec app python download_and_hash.py` |
-| **Bare-metal** | `python download_and_hash.py` |
+| **Bare-Metal** | `python download_and_hash.py` |
 
-**What it does:**
-- Fetches scraped posts, captions, and engagement metrics (`likes`, `comments`, `shares`)
-- Populates `PAGE` and `POST` tables
-- Downloads non-video images into `raw_images/<image_id>.jpg` (where `image_id` = MD5 of CDN URL)
-- Computes **`image_hash`** (SHA-256 — exact duplicate detection) and **`perceptual_hash`** (pHash — near-duplicate detection under resizing/compression/watermarks)
-- Preserves `fb_alt_text` (Facebook's auto-generated text) as provenance metadata
-
-### Step 3: Extract Text with EasyOCR (Layer 3)
-
-| | Command |
-|---|---|
-| **Docker** | `docker compose exec app python ocr_and_store.py` |
-| **Bare-metal** | `python ocr_and_store.py` |
-
-**What it does:**
-- Detects text in both **Bangla (`bn`)** and **English (`en`)**
-- Uses GPU automatically when CUDA is available
-- **Image preprocessing** — upscales low-res memes (<1000px), applies CLAHE contrast enhancement and bilateral denoising
-- **Grapheme cluster awareness** — uses `regex` library (`\X`) instead of `len()`. Bangla matras and conjuncts (যুক্তাক্ষর) are multiple codepoints but single on-screen characters. Proportional word splitting by grapheme count avoids bounding box drift
-- **Exact vs estimated boxes** — single-word lines get exact boxes (`bbox_is_estimated = 0`), multi-word lines split proportionally (`bbox_is_estimated = 1`)
-- **Safe re-runs** — existing `OCR_WORD` tables are backed up as `OCR_WORD_OLD_V1`, not deleted
-
-### Step 4: Reconstruct Reading-Order Text (Layer 3+)
-
-| | Command |
-|---|---|
-| **Docker** | `docker compose exec app python reconstruct_text.py` |
-| **Bare-metal** | `python reconstruct_text.py` |
-
-**What it does:**
-- Orders detected lines top-to-bottom (by `line_y1`) and words left-to-right (by `x1`)
-- Joins text into a clean reading format separated by spaces and newlines
-- Saves the full readable string into `IMAGE.reconstructed_text`
-- Populates the `WORD_OFFSET` table with `(start_char, end_char)` for each `ocr_id`, enabling bidirectional mapping:
-
-$$\text{Annotated Span} \Longleftrightarrow \text{Character Offsets} \Longleftrightarrow \text{OCR\_WORD (Bounding Box)}$$
-
-### Step 5: Visual OCR Quality Assurance
-
-| | Command |
-|---|---|
-| **Docker** | `docker compose exec app python verify_ocr.py` |
-| **Bare-metal** | `python verify_ocr.py` |
-
-Generates annotated sample images in `ocr_check/`:
-- 🔴 **Red** — line-level detection region from EasyOCR
-- 🟢 **Green** — exact single-word detection box (`bbox_is_estimated = 0`)
-- 🟠 **Orange** — proportionally estimated word box (`bbox_is_estimated = 1`)
-
-Open the images in `ocr_check/` and visually verify that boxes align with text.
-
-### Step 6: Migrate Database for Annotation (Layer 4)
-
-| | Command |
-|---|---|
-| **Docker** | `docker compose exec app python migrate_db.py` |
-| **Bare-metal** | `python migrate_db.py` |
-
-**What it does:**
-- Adds `LLM_PREANNOTATION` and `ANNOTATION` tables to the database
-- Safe to run multiple times (uses `CREATE TABLE IF NOT EXISTS`)
-- Required before running `annotate_ollama.py`
-
-### Step 7: LLM Pre-Annotation with Ollama
-
-| | Command |
-|---|---|
-| **Docker** | `docker compose exec app python annotate_ollama.py --auto` |
-| **Bare-metal** | `python annotate_ollama.py --auto` |
-
-> [!IMPORTANT]
-> **Ollama must be running** before this step. In Docker, Ollama starts automatically. For bare-metal, ensure the Ollama app is open or run `ollama serve`.
-
-**What it does:**
-- Auto-detects your hardware (RAM, VRAM, GPU) and selects the best model
-- Sends OCR text + caption + alt-text to the LLM with a strict propaganda codebook
-- Enforces JSON schema at the token level for structured output
-- Stores predictions in `LLM_PREANNOTATION` table
-
-**Propaganda Taxonomy (8 techniques):**
-
-| Code | Technique | Description |
-|---|---|---|
-| T01 | Loaded Language | Emotionally charged words provoking approval/disapproval |
-| T02 | Name Calling / Labeling | TARGET + DEROGATORY LABEL explicitly present |
-| T03 | Smears | TARGET + SPECIFIC NEGATIVE CLAIM + REPUTATIONAL DAMAGE |
-| T04 | Appeal to Fear/Prejudice | Deliberate THREAT / DANGER / FEAR construction |
-| T05 | Exaggeration/Minimisation | Substantial overstatement OR downplay of fact/event |
-| T06 | Slogans | Short rallying phrase substituting for reasoning |
-| T07 | Appeal to Strong Emotions | Intense NON-FEAR emotion deliberately provoked |
-| T08 | No Propaganda Technique | None of T01–T07 apply |
-
-**Hardware tiers (auto-detected):**
-
-| Model | Min VRAM | Min RAM | Best For |
-|---|---|---|---|
-| `qwen2.5:14b` | 10 GB | 14 GB | Best quality — RTX 10-12GB+ VRAM |
-| `qwen2.5:7b` | 5 GB | 7 GB | Good balance — RTX 6-8GB+ VRAM |
-| `llava-phi3` | 3.5 GB | 6 GB | Multimodal vision — RTX 4GB+ VRAM |
-| `qwen2.5:3b` | 0 GB | 3 GB | Lightweight — CPU-only or low RAM |
-
-**Useful flags:**
-```bash
-python annotate_ollama.py --auto              # auto-detect hardware, pick best model
-python annotate_ollama.py --model qwen2.5:7b  # manually pick a model
-python annotate_ollama.py --limit 5           # annotate only 5 posts
-python annotate_ollama.py --runs 3            # 3 runs per post (uncertainty scoring)
-python annotate_ollama.py --dry-run           # print prompts without calling model
-python annotate_ollama.py --info              # show hardware info and exit
-```
-
-### Step 8: View & Audit Results
-
-| | Command |
-|---|---|
-| **Docker** | `docker compose exec app python view_results.py --summary` |
-| **Bare-metal** | `python view_results.py --summary` |
-
-**What it does:**
-- Displays label distribution, average confidence, and review flags
-- **Human review queue** — posts are flagged for human review if:
-  1. Model explicitly set `needs_review=true`
-  2. Overall confidence < threshold (default: 0.65)
-  3. All labels are T08 but substantial OCR text exists (possible miss)
-  4. T08 mixed with other labels (codebook violation)
-
-**Useful flags:**
-```bash
-python view_results.py                        # full per-post detail
-python view_results.py --summary              # summary table only
-python view_results.py --review-queue         # only posts needing human review
-python view_results.py --model qwen2.5:3b     # filter by model
-python view_results.py --conf-threshold 0.5   # custom confidence cutoff
-```
+- **Output:** Populates `PAGE`, `POST`, and `IMAGE` tables in `propaganda_dataset.db`, and saves images into `raw_images/<image_id>.jpg`.
 
 ---
 
-## Database Schema Reference
+### Step 3: Extract Text with EasyOCR (Layer 3)
 
-The database `propaganda_dataset.db` contains 7 relational tables across 4 layers:
+Runs EasyOCR for Bangla (`bn`) and English (`en`) with contrast enhancement (CLAHE), bilateral denoising, and Unicode grapheme cluster splitting (`\X`) to prevent bounding box drift on conjuncts (যুক্তাক্ষর).
+
+| Environment | Command |
+|---|---|
+| **Docker** | `docker compose exec app python ocr_and_store.py` |
+| **Bare-Metal** | `python ocr_and_store.py` |
+
+- **Output:** Populates the `OCR_WORD` table with word tokens, confidence scores, and bounding boxes (`x1, y1, x2, y2`, `line_x1, line_y1, line_x2, line_y2`).
+
+---
+
+### Step 4: Reconstruct Reading-Order Text (Layer 3+)
+
+Sorts detected words into natural reading order (top-to-bottom, left-to-right), builds a readable string per image, and maps character offsets.
+
+| Environment | Command |
+|---|---|
+| **Docker** | `docker compose exec app python reconstruct_text.py` |
+| **Bare-Metal** | `python reconstruct_text.py` |
+
+- **Output:** Updates `IMAGE.reconstructed_text` and populates `WORD_OFFSET (ocr_id, image_id, start_char, end_char)`.
+
+---
+
+### Step 5: Visual OCR Quality Assurance (QA)
+
+Draws line bounding boxes (🔴 Red), exact word boxes (🟢 Green), and estimated word boxes (🟠 Orange) onto images for quality spot-checks.
+
+| Environment | Command |
+|---|---|
+| **Docker** | `docker compose exec app python verify_ocr.py` |
+| **Bare-Metal** | `python verify_ocr.py` |
+
+- **Output:** Saves annotated verification images in `ocr_check/*.png`. Open and inspect sample images visually.
+
+---
+
+### Step 6: Database Migration for Annotations (Layer 4)
+
+Initializes the schema for LLM pre-annotations and human verification records. Safe to run multiple times.
+
+| Environment | Command |
+|---|---|
+| **Docker** | `docker compose exec app python migrate_db.py` |
+| **Bare-Metal** | `python migrate_db.py` |
+
+- **Output:** Creates tables `LLM_PREANNOTATION` and `ANNOTATION` in `propaganda_dataset.db`.
+
+---
+
+### Step 7: LLM Pre-Annotation with Ollama (Layer 4)
+
+Feeds reconstructed OCR text, captions, and metadata to an Ollama LLM using a strict 8-technique propaganda taxonomy and constrained JSON output.
+
+| Environment | Command |
+|---|---|
+| **Docker** | `docker compose exec app python annotate_ollama.py --auto` |
+| **Bare-Metal** | `python annotate_ollama.py --auto` |
+
+#### Propaganda Taxonomy (8 Techniques)
+| Code | Technique | Description |
+|---|---|---|
+| **T01** | Loaded Language | Strongly emotional words/phrases designed to influence opinion |
+| **T02** | Name Calling / Labeling | Attaching derogatory labels directly to a target |
+| **T03** | Smears | Discrediting a target with damaging accusations/unsubstantiated claims |
+| **T04** | Appeal to Fear / Prejudice | Exploiting anxiety, existential danger, or collective bias |
+| **T05** | Exaggeration / Minimisation | Grossly overstating or minimizing reality |
+| **T06** | Slogans | Catchy rallying phrases used as a substitute for logical reasoning |
+| **T07** | Appeal to Strong Emotions | Provoking non-fear emotions (pride, anger, grief, pity) |
+| **T08** | No Propaganda Technique | Factual, neutral, or non-persuasive content |
+
+#### Recommended Hardware Models
+| Model | Min VRAM | Min System RAM | Recommended For |
+|---|---|---|---|
+| `qwen2.5:14b` | 10 GB | 16 GB | High accuracy (RTX 3080/4080/4090) |
+| `qwen2.5:7b` | 5 GB | 8 GB | Standard GPU workflow (RTX 3060/4060) |
+| `llava-phi3` | 3.5 GB | 8 GB | Multimodal vision analysis (RTX 3050+) |
+| `qwen2.5:3b` | 0 GB (CPU) | 4 GB | Fast CPU-only or low-VRAM machines |
+
+---
+
+### Step 8: Review & Audit Annotations
+
+Inspect model predictions, overall label distribution, and filter posts flagged for human verification.
+
+| Environment | Action | Command |
+|---|---|---|
+| **Docker** | Summary Stats | `docker compose exec app python view_results.py --summary` |
+| **Docker** | Review Queue | `docker compose exec app python view_results.py --review-queue` |
+| **Bare-Metal** | Summary Stats | `python view_results.py --summary` |
+| **Bare-Metal** | Review Queue | `python view_results.py --review-queue` |
+
+**Audit criteria for Human Review Queue:**
+- Model explicitly set `needs_review=1`.
+- Confidence score is below threshold (`--conf-threshold 0.65`).
+- Labeled as T08 (No Propaganda) despite lengthy emotional text present.
+- Contradictory technique combinations.
+
+---
+
+## 5. Database Schema Reference
+
+The database `propaganda_dataset.db` contains 7 relational tables:
 
 ```mermaid
 erDiagram
@@ -507,130 +387,132 @@ erDiagram
 ```
 
 ### Table: `PAGE`
-
 | Column | Type | Description |
 |---|---|---|
-| `page_id` | TEXT (PK) | Facebook page identifier extracted from post URL parameter |
-| `page_name` | TEXT | Page title / name |
-| `page_url` | TEXT | Direct URL to the Facebook page |
+| `page_id` | TEXT (PK) | Facebook page identifier |
+| `page_name` | TEXT | Facebook page name / title |
+| `page_url` | TEXT | Canonical page URL |
 
 ### Table: `POST`
-
 | Column | Type | Description |
 |---|---|---|
 | `post_id` | TEXT (PK) | Facebook `story_fbid` or hash of permalink |
-| `page_id` | TEXT (FK) | References `PAGE(page_id)` |
-| `post_url` | TEXT | Canonical URL to the post (provenance) |
+| `page_id` | TEXT (FK) | Reference to `PAGE(page_id)` |
+| `post_url` | TEXT | Permalink to post |
 | `timestamp` | TEXT | Post publication timestamp |
-| `caption` | TEXT | Raw post body text |
-| `scraped_at` | TEXT | Timestamp when Apify scraped the item |
-| `likes` | INTEGER | Post reaction / like count |
-| `comments` | INTEGER | Post comment count |
-| `shares` | INTEGER | Post share count |
+| `caption` | TEXT | Post body text |
+| `scraped_at` | TEXT | Scrape timestamp |
+| `likes` | INTEGER | Like reaction count |
+| `comments` | INTEGER | Comment count |
+| `shares` | INTEGER | Share count |
 
 ### Table: `IMAGE`
-
 | Column | Type | Description |
 |---|---|---|
-| `image_id` | TEXT (PK) | MD5 hash of image URL |
-| `post_id` | TEXT (FK) | References `POST(post_id)` |
-| `file_path` | TEXT | Path to local image file (e.g. `raw_images/<id>.jpg`) |
-| `width` | INTEGER | Image pixel width |
-| `height` | INTEGER | Image pixel height |
-| `image_hash` | TEXT | SHA-256 checksum of raw image bytes (exact duplicate check) |
-| `perceptual_hash` | TEXT | pHash 64-bit hex string (near-duplicate detection) |
-| `original_image_url` | TEXT | Original Facebook CDN source URL |
-| `fb_alt_text` | TEXT | Facebook automated alt-text metadata |
-| `reconstructed_text` | TEXT | Reconstructed reading-order text from `reconstruct_text.py` |
+| `image_id` | TEXT (PK) | MD5 hash of image source URL |
+| `post_id` | TEXT (FK) | Reference to `POST(post_id)` |
+| `file_path` | TEXT | Local file path (`raw_images/<id>.jpg`) |
+| `width` / `height` | INTEGER | Dimensions in pixels |
+| `image_hash` | TEXT | SHA-256 hash of raw bytes (exact duplicates) |
+| `perceptual_hash` | TEXT | 64-bit pHash hex string (near duplicates) |
+| `original_image_url` | TEXT | Facebook CDN source URL |
+| `fb_alt_text` | TEXT | Automated Facebook alt-text |
+| `reconstructed_text` | TEXT | Reading-order text created by `reconstruct_text.py` |
 
 ### Table: `OCR_WORD`
-
 | Column | Type | Description |
 |---|---|---|
-| `ocr_id` | INTEGER (PK) | Auto-incrementing primary key |
-| `image_id` | TEXT (FK) | References `IMAGE(image_id)` |
-| `line_id` | INTEGER | Index of the detected line in the image |
+| `ocr_id` | INTEGER (PK) | Auto-incrementing identifier |
+| `image_id` | TEXT (FK) | Reference to `IMAGE(image_id)` |
+| `line_id` | INTEGER | Line index within image |
 | `word` | TEXT | Recognized word token |
-| `confidence` | REAL | Model confidence score (0.0 to 1.0) |
-| `x1, y1, x2, y2` | INTEGER | Bounding box coordinates of the word token |
+| `confidence` | REAL | Confidence score (0.0 to 1.0) |
+| `x1, y1, x2, y2` | INTEGER | Word bounding box coordinates |
 | `line_x1, line_y1, line_x2, line_y2` | INTEGER | Parent line detection bounding box |
-| `bbox_is_estimated` | INTEGER | `0` = direct detection; `1` = proportional grapheme split |
+| `bbox_is_estimated` | INTEGER | `0` = direct detection, `1` = proportional grapheme split |
 
 ### Table: `WORD_OFFSET`
-
 | Column | Type | Description |
 |---|---|---|
-| `ocr_id` | INTEGER (PK, FK) | References `OCR_WORD(ocr_id)` |
-| `image_id` | TEXT (FK) | References `IMAGE(image_id)` |
-| `start_char` | INTEGER | Zero-based start index in `IMAGE.reconstructed_text` |
-| `end_char` | INTEGER | Zero-based end index (exclusive) in `IMAGE.reconstructed_text` |
+| `ocr_id` | INTEGER (PK, FK) | Reference to `OCR_WORD(ocr_id)` |
+| `image_id` | TEXT (FK) | Reference to `IMAGE(image_id)` |
+| `start_char` | INTEGER | Start index in `IMAGE.reconstructed_text` |
+| `end_char` | INTEGER | End index (exclusive) in `IMAGE.reconstructed_text` |
 
 ### Table: `LLM_PREANNOTATION`
-
 | Column | Type | Description |
 |---|---|---|
-| `llm_annotation_id` | INTEGER (PK) | Auto-incrementing primary key |
-| `post_id` | TEXT (FK) | References `POST(post_id)` |
-| `image_id` | TEXT | Associated image |
-| `model_name` | TEXT | Ollama model used (e.g. `qwen2.5:3b`) |
-| `prompt_version` | TEXT | Prompt version tag (e.g. `v1.0-ollama`) |
-| `run_id` | INTEGER | Run number (for multi-run uncertainty scoring) |
-| `predicted_label` | TEXT | Predicted technique code (T01–T08) |
-| `modality` | TEXT | M1 (text), M2 (image), M3 (both) |
-| `confidence_score` | REAL | Model confidence (0.0–1.0) |
-| `rationale_span` | TEXT | Text span that triggered the label |
-| `reasoning` | TEXT | Model's explanation for the label |
-| `raw_response` | TEXT | Full JSON response from Ollama |
-| `needs_review` | INTEGER | 1 if model flagged for human review |
-| `review_reason` | TEXT | Why model flagged it |
-| `overall_confidence` | REAL | Overall confidence for the entire post |
-| `created_at` | TEXT | Timestamp of annotation |
+| `llm_annotation_id` | INTEGER (PK) | Auto-incrementing identifier |
+| `post_id` | TEXT (FK) | Reference to `POST(post_id)` |
+| `image_id` | TEXT | Associated image ID |
+| `model_name` | TEXT | Model used (e.g. `qwen2.5:3b`) |
+| `prompt_version` | TEXT | Version tag (e.g. `v1.0-ollama`) |
+| `run_id` | INTEGER | Iteration run number |
+| `predicted_label` | TEXT | Technique code (`T01`–`T08`) |
+| `modality` | TEXT | `M1` (Text), `M2` (Image), `M3` (Multimodal) |
+| `confidence_score` | REAL | Technique confidence (0.0 to 1.0) |
+| `rationale_span` | TEXT | Extracted text span triggering the technique |
+| `reasoning` | TEXT | Model explanation |
+| `raw_response` | TEXT | Full JSON response |
+| `needs_review` | INTEGER | `1` if flagged for human review |
+| `review_reason` | TEXT | Reason flag was set |
+| `overall_confidence` | REAL | Post-level confidence score |
+| `created_at` | TEXT | Annotation timestamp |
 
 ### Table: `ANNOTATION`
-
 | Column | Type | Description |
 |---|---|---|
-| `annotation_id` | INTEGER (PK) | Auto-incrementing primary key |
-| `post_id` | TEXT (FK) | References `POST(post_id)` |
-| `image_id` | TEXT | Associated image |
-| `technique_label` | TEXT | Final technique label |
-| `modality` | TEXT | M1 / M2 / M3 |
-| `start_char` | INTEGER | Span start in `reconstructed_text` |
-| `end_char` | INTEGER | Span end in `reconstructed_text` |
-| `evidence_span` | TEXT | Text evidence for the label |
+| `annotation_id` | INTEGER (PK) | Final validated annotation identifier |
+| `post_id` | TEXT (FK) | Reference to `POST(post_id)` |
+| `technique_label` | TEXT | Validated technique label |
+| `modality` | TEXT | `M1` / `M2` / `M3` |
+| `start_char` / `end_char` | INTEGER | Character bounds in `reconstructed_text` |
+| `evidence_span` | TEXT | Ground-truth text span |
 | `annotation_source` | TEXT | `llm_preannotated` or `human` |
 | `verification_status` | TEXT | `PENDING`, `VERIFIED`, `REJECTED` |
-| `human_annotator_id` | TEXT | ID of the human reviewer |
-| `adjudication_status` | TEXT | `NONE`, `AGREED`, `ADJUDICATED` |
-| `llm_preannotation_id` | INTEGER (FK) | References `LLM_PREANNOTATION` |
-| `created_at` | TEXT | Timestamp |
+| `human_annotator_id` | TEXT | ID of reviewer |
+| `llm_preannotation_id` | INTEGER (FK) | Reference to `LLM_PREANNOTATION` |
 
 ---
 
-## Script Reference
+## 6. Script Reference & CLI Flags
 
-| Script | Purpose | Usage |
+| Script | Common Flags | Description |
 |---|---|---|
-| `download_and_hash.py` | Download images from Apify, compute hashes | `python download_and_hash.py` |
-| `ocr_and_store.py` | EasyOCR extraction (Bangla + English) | `python ocr_and_store.py` |
-| `reconstruct_text.py` | Reading-order text reconstruction | `python reconstruct_text.py` |
-| `verify_ocr.py` | Visual QA — draw bounding boxes on images | `python verify_ocr.py` |
-| `migrate_db.py` | Add annotation tables to DB | `python migrate_db.py` |
-| `annotate_ollama.py` | LLM pre-annotation via Ollama | `python annotate_ollama.py --auto` |
-| `view_results.py` | View/audit annotation results | `python view_results.py --summary` |
-| `propaganda_dataset_inspect.py` | Print all table schemas and row counts | `python propaganda_dataset_inspect.py` |
+| `download_and_hash.py` | *(none)* | Downloads images and generates database entries from `DATASET_ID` |
+| `ocr_and_store.py` | *(none)* | Performs EasyOCR on all unprocessed images in `IMAGE` |
+| `reconstruct_text.py` | *(none)* | Assembles words into natural reading order and populates `WORD_OFFSET` |
+| `verify_ocr.py` | *(none)* | Generates sample visual bounding boxes in `ocr_check/` |
+| `migrate_db.py` | *(none)* | Applies schema updates for `LLM_PREANNOTATION` and `ANNOTATION` |
+| `annotate_ollama.py` | `--auto` | Automatically detects RAM/VRAM and picks optimal model |
+| | `--model <name>` | Manually specify model (e.g. `qwen2.5:7b`) |
+| | `--limit <n>` | Only process `n` posts |
+| | `--runs <n>` | Number of runs per post for consistency estimation |
+| | `--dry-run` | Prints prompts and payloads without calling Ollama |
+| | `--info` | Inspects system hardware and supported model tier |
+| `view_results.py` | `--summary` | Displays aggregated label distribution and counts |
+| | `--review-queue` | Filters posts that need human inspection |
+| | `--conf-threshold <f>` | Sets confidence cutoff for review queue (default: 0.65) |
+| | `--model <name>` | Filter results by specific model |
+| `propaganda_dataset_inspect.py` | *(none)* | Quick summary of table schemas and row counts |
 
 ---
 
-## Verification & Useful Queries
+## 7. Verification & Useful SQL Queries
 
-Open the database:
+You can inspect the database at any time using SQLite:
 ```bash
 sqlite3 propaganda_dataset.db
 ```
 
+Or with the built-in python script:
+```bash
+python propaganda_dataset_inspect.py
+```
+
+### Useful SQL Queries
 ```sql
--- Check total records across all layers
+-- 1. Check counts across all layers
 SELECT
   (SELECT COUNT(*) FROM PAGE) AS pages,
   (SELECT COUNT(*) FROM POST) AS posts,
@@ -638,18 +520,7 @@ SELECT
   (SELECT COUNT(*) FROM OCR_WORD) AS ocr_words,
   (SELECT COUNT(DISTINCT image_id) FROM OCR_WORD) AS ocred_images;
 
--- Check annotation progress
-SELECT
-  (SELECT COUNT(*) FROM LLM_PREANNOTATION) AS llm_labels,
-  (SELECT COUNT(DISTINCT post_id) FROM LLM_PREANNOTATION) AS annotated_posts,
-  (SELECT COUNT(*) FROM LLM_PREANNOTATION WHERE needs_review = 1) AS needs_review;
-
--- Sample detected words and confidence
-SELECT word, confidence, bbox_is_estimated, x1, y1, x2, y2
-FROM OCR_WORD
-LIMIT 10;
-
--- Inspect reconstructed text and character offsets
+-- 2. Inspect reconstructed text and character offsets
 SELECT i.image_id, i.reconstructed_text, w.word, o.start_char, o.end_char
 FROM IMAGE i
 JOIN WORD_OFFSET o ON i.image_id = o.image_id
@@ -657,79 +528,50 @@ JOIN OCR_WORD w ON o.ocr_id = w.ocr_id
 WHERE i.reconstructed_text IS NOT NULL
 LIMIT 10;
 
--- Annotation label distribution
-SELECT predicted_label, COUNT(*) AS cnt,
-       ROUND(AVG(confidence_score), 3) AS avg_conf
+-- 3. Label distribution & average confidence
+SELECT predicted_label, COUNT(*) AS count,
+       ROUND(AVG(confidence_score), 3) AS avg_conf,
+       SUM(needs_review) AS flagged_for_review
 FROM LLM_PREANNOTATION
 GROUP BY predicted_label
-ORDER BY cnt DESC;
-```
-
-Or use the built-in inspector:
-```bash
-python propaganda_dataset_inspect.py
+ORDER BY count DESC;
 ```
 
 ---
 
-## Troubleshooting & FAQ
+## 8. Troubleshooting & FAQ
 
-### `CUDA available: False` after installing PyTorch
-- **Cause**: PyTorch was installed from PyPI default index (CPU-only), or installed outside the `.venv`.
-- **Fix**:
+### 1. `CUDA available: False`
+- **Cause:** PyTorch was installed from standard PyPI (CPU version).
+- **Fix:** Inside your `.venv`, reinstall with explicit CUDA wheel:
   ```bash
   pip uninstall -y torch torchvision torchaudio
   pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu124
   ```
 
-### `docker compose up` fails with GPU error
-- **Cause**: NVIDIA Container Toolkit not installed, or GPU driver too old.
-- **Fix**: Install the toolkit: `sudo apt install nvidia-container-toolkit` (Linux) or enable GPU support in Docker Desktop (Windows).
-- **Workaround**: Use CPU-only mode:
+### 2. Docker fails with NVIDIA GPU error
+- **Cause:** NVIDIA Container Toolkit is missing or outdated.
+- **Fix:** Install [NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html) or run CPU-only:
   ```bash
   docker compose -f docker-compose.yml -f docker-compose.cpu.yml up -d --build
   ```
 
-### `CUDA out of memory` during OCR
-- **Cause**: Large image dimensions or other GPU processes consuming VRAM.
-- **Fix**: Check `nvidia-smi` and close other GPU apps. EasyOCR processes one image at a time by default.
-
-### Missing text or over-merged boxes in OCR
-- Adjust detection thresholds in `ocr_and_store.py`:
-  ```python
-  DETECT_KWARGS = dict(width_ths=0.4, height_ths=0.4, slope_ths=0.1)
+### 3. Missing `APIFY_TOKEN` or `DATASET_ID` Error
+- **Cause:** `.env` file is missing or variables are unset.
+- **Fix:** Make sure `.env` contains:
+  ```env
+  APIFY_TOKEN=your_token
+  DATASET_ID=your_dataset_id
   ```
-  - Lower `width_ths` → less horizontal merging (finer boxes)
-  - Higher `width_ths` → more aggressive line merging
-  - Verify with: `python verify_ocr.py`
 
-### `sqlite3.OperationalError: no such column`
-- **Cause**: Database schema is outdated from an older version.
-- **Fix**: `ocr_and_store.py` automatically backs up old `OCR_WORD` tables. For `IMAGE.reconstructed_text`, `reconstruct_text.py` auto-runs `ALTER TABLE IMAGE ADD COLUMN reconstructed_text TEXT`.
+### 4. Ollama connection refused
+- **Docker:** Check container status with `docker compose logs ollama`. Restart with `docker compose restart ollama`.
+- **Bare-Metal:** Ensure Ollama desktop application is running or execute `ollama serve`. Verify at `http://localhost:11434`.
 
-### Ollama connection refused / annotate_ollama.py fails
-- **Docker**: Ollama starts automatically. Check `docker compose logs ollama`. Restart: `docker compose restart ollama`.
-- **Bare-metal**: Ensure Ollama is running — open the Ollama app or run `ollama serve`.
-- Verify: `curl http://localhost:11434` should return `Ollama is running`.
-
-### Ollama model not found
-- Pull the model first:
+### 5. `sqlite3.OperationalError: no such column`
+- **Cause:** Schema migration is missing.
+- **Fix:** Run:
   ```bash
-  # Docker
-  docker compose exec ollama ollama pull qwen2.5:3b
-
-  # Bare-metal
-  ollama pull qwen2.5:3b
+  python migrate_db.py
+  python reconstruct_text.py
   ```
-
-### Changes to Python scripts aren't reflected in Docker
-- Code is **bind-mounted** from your host. Edits are live — no rebuild needed. If you changed `requirements.txt`, rebuild: `docker compose up -d --build`.
-
----
-
-## Next Steps
-
-- **Human Annotation via Label Studio**: Use `reconstructed_text` for span-level propaganda annotation. Spans link back to `WORD_OFFSET` → `OCR_WORD` bounding boxes.
-- **Multimodal GNNs / Transformers**: Leverage `OCR_WORD` coordinates and image crops for layout-aware multimodal propaganda detection.
-- **Full HITL Workflow**: See `hitl_llm_human_annotation_workflow.md` for the complete human-in-the-loop annotation design.
-- **Codebook**: See `bangla_meme_propaganda_codebook.md` for the strict 8-technique annotation codebook with examples and edge cases.
