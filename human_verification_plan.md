@@ -1,288 +1,268 @@
-﻿# Human Verification Plan
-## LLM Pre-Annotation to Human-Verified Ground Truth
+﻿# Human Verification Plan (UI-Based)
+## LLM Pre-Annotation + Non-Technical Human Verification via Web Interface
 
 ---
 
 ## Why We Need Human Verification
 
-The LLM (annotate_ollama.py) has already run over all posts and stored its predictions in the LLM_PREANNOTATION table. These predictions are **not ground truth.** They are educated first-guesses by a language model.
+The LLM (annotate_ollama.py) already labeled all posts and stored them in LLM_PREANNOTATION.
+These are first-guess labels — NOT final ground truth. Humans must verify them because:
 
-### The Problem with Raw LLM Annotations
+- LLMs misread Bangla sarcasm as sincere
+- LLMs confuse similar techniques (T01 vs T07)
+- LLMs mark wrong evidence spans
+- LLMs cannot see the image — they miss visual propaganda
+- LLMs can be confidently wrong
 
-| LLM Error Type | Example |
-|---|---|
-| Hallucinated Confidence | Model says confidence=0.92 but the reasoning is wrong |
-| Literal misreading | Model reads Bangla sarcasm as sincere |
-| Code-switching confusion | Banglish misidentified or mislabeled |
-| Technique conflation | Confuses T01 (Loaded Language) with T07 (Appeal to Strong Emotions) |
-| Span boundary errors | Identifies the wrong words as the evidence span |
-| Modality errors | Assigns M1 (text-only) when the propaganda is in the image |
-| Systematic bias | Consistently over-labels T04 (Fear) for government-critical content |
-
-**Rule:** LLM predictions stored in LLM_PREANNOTATION are inputs for human annotators, not the final dataset.
+**Why a UI (not CLI)?**
+Annotators are linguists, Bangla speakers, and domain experts — not programmers.
+They need a web page in a browser. Nothing more.
 
 ---
 
-## What the Verification Process Produces
+## Big Picture: How It Works
 
-Every verified post writes its output into the ANNOTATION table, which becomes the ground truth of the dataset.
-
-`
-LLM_PREANNOTATION (raw prediction)
-        |
-        v
-Human Annotator reviews
-        |
-        v
-ANNOTATION table (verified ground truth)
-        |
-   |-- verification_status = VERIFIED  (accepted or corrected)
-   |-- verification_status = REJECTED  (completely wrong, human re-labelled)
-   -- verification_status = PENDING   (not yet reviewed)
-`
-
----
-
-## Verification Overview: 3-Tier System
-
-Based on LLM confidence and consistency, each post falls into one of three tiers:
-
-`
-               ALL POSTS
-                  |
-      .-----------+-----------.
-      |           |           |
-   TIER 1      TIER 2      TIER 3
-   HIGH        MEDIUM        LOW
- CONFIDENCE  CONFIDENCE  CONFIDENCE
-      |           |           |
-  Spot-check  1 Annotator  2 Annotators
-  (10-15%)    reviews     review + discuss
-`
+```
+[LLM runs annotate_ollama.py]
+           |
+           v
+[LLM_PREANNOTATION table in SQLite DB]
+           |
+           v
+[Flask Web App served at http://localhost:5000]
+           |
+    .------+------.
+    |              |
+[Annotator A]  [Annotator B]
+opens browser  opens browser
+    |              |
+sees meme + OCR + AI prediction
+    |              |
+clicks ACCEPT / EDIT / REJECT
+    |              |
+    v              v
+[ANNOTATION table — final ground truth]
+```
 
 ---
 
-## Step-by-Step Verification Process
+## What an Annotator Sees (One Post at a Time)
 
-### Step 1: Generate the Review Queue
+```
++------------------------------------------------------------------+
+|  POST 42 of 200          [<< PREV]              [NEXT >>]       |
+|  Confidence: HIGH                          [omor] [logout]      |
++------------------------------------------------------------------+
+|                                                                  |
+|  +--------------------+   OCR TEXT:                             |
+|  |                    |   এই দালাল সরকার দেশ বেচে দিচ্ছে       |
+|  |   [MEME IMAGE]     |                                         |
+|  |                    |   POST CAPTION:                         |
+|  +--------------------+   শেয়ার করুন সবাই জানুক                |
+|                                                                  |
++------------------------------------------------------------------+
+|  AI PREDICTION:                                                  |
+|  Technique : T02 - Name Calling / Labeling                      |
+|  Evidence  : "দালাল সরকার"                                      |
+|  Confidence: 0.91                                               |
+|  AI Reason : Derogatory label applied to government as target.  |
++------------------------------------------------------------------+
+|  YOUR DECISION:                                                  |
+|                                                                  |
+|    [ ACCEPT ]    [ EDIT ]    [ REJECT ]    [ SKIP ]             |
+|                                                                  |
++------------------------------------------------------------------+
+```
 
-`ash
-# See all posts that need human review
-python view_results.py --review-queue
-
-# Full annotation summary by label
-python view_results.py --summary
-
-# Filter by specific model
-python view_results.py --model qwen2.5:3b --review-queue
-
-# Lower confidence threshold (flag more posts)
-python view_results.py --conf-threshold 0.70 --review-queue
-`
-
-A post is automatically placed in the review queue if ANY of these are true:
-
-| Auto-Flag Condition | Why It Matters |
-|---|---|
-| needs_review = 1 | The model itself was uncertain |
-| confidence_score < 0.65 | Borderline prediction |
-| Only T08 predicted but long OCR text exists | Possible false negative |
-| T08 mixed with other techniques | Codebook violation - T08 is mutually exclusive |
-| Multiple runs produced different labels | Model self-inconsistency |
-
----
-
-### Step 2: Review Each Post (The Annotator's Job)
-
-#### 2.1 Read the Full Context
-1. Meme image - what is visually shown?
-2. OCR text - what words does the meme contain?
-3. Post caption - what did the page author write?
-4. LLM Rationale - what did the model say and why?
-
-#### 2.2 Apply the Codebook Decision Tree
-
-`
-START
-  |
-  v
-Is there enough image/text to judge?
-  |-- NO  -> Mark NEEDS_REVIEW
-  |
-  v
-Does the meme use a manipulative technique?
-  |-- NO  -> ONLY T08 (No Propaganda)
-  |
-  v
-Evaluate each technique independently:
-  |-- T01: Loaded Language?
-  |-- T02: Name Calling?
-  |-- T03: Smears?
-  |-- T04: Appeal to Fear?
-  |-- T05: Exaggeration?
-  |-- T06: Slogans?
-  -- T07: Appeal to Emotions?
-`
-
-#### 2.3 Decision Actions
-
-| Action | When to Use | DB Result |
-|---|---|---|
-| ACCEPT | LLM label, span, modality all correct | ANNOTATION with verification_status=VERIFIED, source=llm_preannotated_human_verified |
-| EDIT | Correct technique, wrong span/modality | ANNOTATION with corrections, status=VERIFIED |
-| REJECT + RELABEL | Completely wrong label | Correct labels to ANNOTATION, source=human |
-| REJECT + T08 | LLM found propaganda but there is none | T08 to ANNOTATION, source=human |
-| NEEDS_REVIEW | Cannot judge (bad image, no text) | status=PENDING, escalate |
+No terminal. No code. Just read and click.
 
 ---
 
-### Step 3: Tier-Based Review Depth
+## Annotator Decision Guide
 
-#### Tier 1: High Confidence (Spot-Check 10-15%)
-Criteria: confidence_score >= 0.85, needs_review = 0, all runs agreed.
-- Human randomly samples 10-15%.
-- Fast review: check label + rationale span only.
-- If error rate > 5%: escalate rest to Tier 2.
-- Goal: Catch systematic LLM bias even when confident.
+| Button | When to Click | What Happens |
+|--------|--------------|--------------|
+| ACCEPT | AI label, span, and modality are all correct | Saved as verified |
+| EDIT | Correct technique but wrong span or modality | Edit form appears — fix and submit |
+| REJECT | AI is completely wrong | Relabel form appears — pick correct label |
+| SKIP | Too blurry, no text, cannot judge | Flagged for senior review |
 
-#### Tier 2: Medium Confidence (Full Single-Expert Review)
-Criteria: 0.65 <= confidence_score < 0.85.
-- One annotator reads full context and decides (ACCEPT / EDIT / REJECT).
-- Uses codebook strictly.
-- Goal: Correct borderline cases.
+### If EDIT is clicked, the annotator sees:
+- Technique dropdown (T01 to T08)
+- Text input to correct the evidence span
+- Radio buttons: Text-only / Image-only / Both
 
-#### Tier 3: Low Confidence / Disagreement (Dual-Expert + Adjudication)
-Criteria: confidence_score < 0.65 OR needs_review = 1 OR inconsistent runs.
-- Two independent annotators review the same post separately.
-- If they agree: write to ANNOTATION, adjudication_status = AGREED.
-- If they disagree: escalate to senior annotator -> ADJUDICATED.
-- Goal: Maximum scrutiny on the hardest cases.
+### If REJECT is clicked, same form but all blank — annotator labels from scratch.
 
 ---
 
-### Step 4: What the Annotator Writes
+## Simplified Workflow (Step by Step)
 
-For every verified post, fill the ANNOTATION table:
+```
+STEP 1: Project lead starts the server
+        docker compose up -d
+        OR: python annotation_ui/app.py
 
-| Field | What to Fill |
-|---|---|
-| post_id | Same post ID |
-| technique_label | Final verified code (T01-T08) |
-| modality | M1 (Text), M2 (Image), M3 (Both) |
-| start_char / end_char | Character offset in reconstructed_text |
-| evidence_span | Exact text proving the technique |
-| annotation_source | llm_preannotated_human_verified or human |
-| verification_status | VERIFIED or PENDING |
-| human_annotator_id | Who verified (e.g., omor, mehedi) |
-| adjudication_status | NONE, AGREED, or ADJUDICATED |
-| llm_preannotation_id | FK to original LLM prediction |
+STEP 2: Project lead shares URL with team
+        http://localhost:5000
 
----
+STEP 3: Annotator opens URL in browser
+        Logs in with their name (e.g. "mehedi")
 
-### Step 5: Inter-Annotator Agreement (IAA)
+STEP 4: See a meme post
+        Image on left, OCR text and AI prediction on right
 
-Measure after every batch using Cohen's Kappa:
+STEP 5: Read the AI reasoning
+        Does the AI make sense?
 
-| Kappa Value | Interpretation | Action |
-|---|---|---|
-| < 0.40 | Poor | Stop batch, review codebook, retrain annotators |
-| 0.40 - 0.60 | Moderate | Identify patterns, refine boundary rules |
-| 0.60 - 0.80 | Substantial | Acceptable, continue with adjudication |
-| >= 0.80 | Near-perfect | Strong, proceed confidently |
+STEP 6: Click ACCEPT / EDIT / REJECT / SKIP
 
-Track separately for: Label agreement, Span agreement, Modality agreement.
+STEP 7: Automatically moves to next post
+        Progress bar: 42 / 200 done
+
+STEP 8: Done for the day — just close the browser
+        Progress is saved automatically
+```
 
 ---
 
-### Step 6: Error Analysis and Prompt Improvement Loop
+## The 3 Review Tiers (Handled Automatically by the UI)
 
-`
-Batch Annotated
-      |
-      v
-Analyze LLM errors (where humans rejected/edited)
-      |
-      v
-Identify failure pattern:
-  |-- Sarcasm misread?      -> Add example to prompt
-  |-- Banglish confusion?   -> Add Banglish examples to prompt
-  |-- Span boundary wrong?  -> Tighten span instruction
-  -- Wrong technique?      -> Add negative examples to codebook
-      |
-      v
-Update annotate_ollama.py prompt
-      |
-      v
-Run next batch with improved prompt
-`
+Annotators do NOT need to know about tiers. The UI handles assignment.
+
+| Badge Color | Tier | Criteria | Who Reviews |
+|-------------|------|----------|-------------|
+| GREEN | High Confidence | confidence >= 0.85 | Random 10-15% spot-check only |
+| YELLOW | Medium Confidence | 0.65 <= confidence < 0.85 | Every annotator sees and decides |
+| RED | Needs Review | confidence < 0.65 or needs_review=1 | 2 annotators assigned independently |
+
+For RED posts, both annotators review the same post without seeing each other's answer.
+If they agree — done. If they disagree — senior adjudicator sees both answers and decides.
 
 ---
 
-## Annotation Tool Options
+## Adjudication (When Annotators Disagree)
 
-### Option 1: Label Studio (Recommended)
-Free, open-source annotation platform at labelstud.io.
-- Displays meme image + OCR text side-by-side.
-- Supports span-level labeling in text.
-- Tracks annotator IDs.
-- Exports JSON/CSV to import back into propaganda_dataset.db.
+The senior reviewer has a special view showing:
 
-Workflow:
-1. Export posts from propaganda_dataset.db to JSON.
-2. Import into Label Studio with LLM predictions as pre-filled suggestions.
-3. Annotators review and approve/edit/reject.
-4. Export verified labels.
-5. Write final labels back into ANNOTATION table.
-
-### Option 2: Custom verify_annotation.py Script
-A lightweight terminal script that:
-- Shows one post at a time (image path, OCR text, LLM prediction).
-- Prompts for ACCEPT / EDIT / REJECT.
-- Writes directly to ANNOTATION table.
-
----
-
-## Dataset Splits After Verification
-
-`
-All Verified Posts
-        |
-   .----+--------------------.
-   |                         |
-TRAINING SET            TEST / GOLD SET
-(70-80%)                (20-30%)
-   |                         |
-LLM preannotated        100% human-annotated
-+ human verified        or human-verified ONLY
-(acceptable)            (NO unverified LLM labels)
-`
-
-CRITICAL: The test set must contain zero unverified LLM labels.
-Evaluating a trained model against labels from another model is circular and scientifically invalid.
+```
++------------------------------------------------------------------+
+|  POST #87 — DISAGREEMENT                                        |
++------------------------------------------------------------------+
+|  [MEME IMAGE]   OCR: "তোর বাপ চোর..."                          |
++------------------------------------------------------------------+
+|  Annotator A (omor):     T03 - Smears                           |
+|  Evidence span: "তোর বাপ চোর"                                  |
+|  Reason: Damaging claim about family member                      |
+|                                                                  |
+|  Annotator B (mehedi):   T02 - Name Calling                     |
+|  Evidence span: "তোর বাপ"                                       |
+|  Reason: Derogatory labeling of a person                        |
++------------------------------------------------------------------+
+|  SENIOR DECISION:                                               |
+|  [ T01 ] [ T02 ] [ T03 ] [ T04 ] [ T05 ] [ T06 ] [ T07 ] [T08]|
+|  Evidence span: [________________]                              |
+|  [ SUBMIT FINAL DECISION ]                                      |
++------------------------------------------------------------------+
+```
 
 ---
 
-## Quick Reference: Who Does What
+## Admin Dashboard (Project Lead Only)
 
-| Role | Task |
-|---|---|
-| LLM (automated) | Generates first-pass predictions, stored in LLM_PREANNOTATION |
-| Tier 1 Annotator | Spot-checks high-confidence posts (10-15%), catches systematic bias |
-| Tier 2 Annotator | Full review of medium-confidence posts, ACCEPT/EDIT/REJECT |
-| Tier 3 Annotator A | Independent review of uncertain/flagged posts |
-| Tier 3 Annotator B | Independent review of same posts as Annotator A |
-| Senior Adjudicator | Resolves Tier 3 disagreements, makes final binding decision |
-| Project Lead | Measures IAA after each batch, updates codebook and LLM prompt |
+Accessible at http://localhost:5000/admin
+
+Shows:
+- Total posts: 200 | Verified: 142 (71%) | Pending: 58
+- Posts needing adjudication: 7
+- Per-annotator progress (who reviewed how many)
+- Label distribution (how many T01, T02, T03...)
+- LLM accuracy: what % the AI got right vs human
+- IAA score (Cohen Kappa — annotator agreement)
+- Export button: download final ANNOTATION as CSV or JSON
 
 ---
 
-## Summary: Why This Works
+## What to Build: Flask + Vanilla JS
 
-| Problem | Solution |
-|---|---|
-| LLM is wrong or overconfident | Human verification catches errors before they enter ground truth |
-| Manual annotation is too slow | LLM pre-fills 80%+ of labels, human only accepts/edits |
-| Inconsistent annotators | IAA measurement and codebook anchor consistency |
-| Hard edge cases missed | Tier 3 dual-expert + adjudication |
-| LLM improves over time | Error analysis feeds back into prompt refinement |
-| Dataset quality is auditable | Provenance fields in ANNOTATION track every decision |
+```
+annotation_ui/
+  app.py              <- Flask backend
+    - GET  /          : login page
+    - GET  /annotate  : fetch next post for this annotator
+    - POST /submit    : save ACCEPT/EDIT/REJECT to ANNOTATION table
+    - GET  /admin     : dashboard
+    - GET  /adjudicate: adjudication queue for senior reviewer
+
+  templates/
+    login.html        <- Name/ID entry, no password needed
+    annotate.html     <- Main page: image + OCR + AI prediction + buttons
+    adjudicate.html   <- Side-by-side disagreement view
+    admin.html        <- Progress dashboard
+
+  static/
+    style.css         <- Clean readable styling
+    annotate.js       <- ACCEPT/EDIT/REJECT button logic
+```
+
+Database reads from: LLM_PREANNOTATION, POST, IMAGE, OCR_WORD
+Database writes to:  ANNOTATION
+
+---
+
+## Implementation Phases
+
+### Phase 1 — Core Annotation (Week 1)
+- [ ] Flask app.py with login and annotation routes
+- [ ] annotate.html showing image, OCR, AI prediction, and 4 buttons
+- [ ] Submit ACCEPT writes directly to ANNOTATION table
+- [ ] Submit REJECT/EDIT shows inline form and saves corrections
+- [ ] Progress tracking (posts done per annotator)
+
+### Phase 2 — Adjudication (Week 2)
+- [ ] Tier 3 logic: assign same post to two annotators
+- [ ] Detect disagreements after both submit
+- [ ] adjudicate.html: senior reviewer side-by-side view
+- [ ] Write final adjudicated decision to ANNOTATION
+
+### Phase 3 — Dashboard and Export (Week 3)
+- [ ] admin.html: live progress, label distribution, IAA score
+- [ ] Export ANNOTATION to CSV and JSON
+- [ ] Add annotation_ui as a Docker service in docker-compose.yml
+
+---
+
+## What Already Exists vs What to Build
+
+| Component | Status |
+|-----------|--------|
+| LLM predictions (annotate_ollama.py) | DONE |
+| LLM_PREANNOTATION table | DONE — has data |
+| ANNOTATION table schema | DONE — migrate_db.py created it |
+| view_results.py (CLI only) | DONE — but CLI, not for non-technical users |
+| annotation_ui/app.py | TO BUILD |
+| annotation_ui/templates/ | TO BUILD |
+| Admin dashboard | TO BUILD |
+| Docker service for annotation_ui | TO BUILD |
+
+---
+
+## Final Summary
+
+```
+[DONE]  LLM labeled all posts -> stored in LLM_PREANNOTATION
+
+[BUILD] Flask web app at http://localhost:5000
+
+[DONE]  ANNOTATION table schema ready to receive verified labels
+
+ANNOTATOR FLOW (no technical knowledge needed):
+  Open browser -> Log in -> See meme -> Click ACCEPT/EDIT/REJECT -> Done
+
+PROJECT LEAD FLOW:
+  Check admin dashboard -> Export final verified CSV when complete
+
+OUTPUT:
+  ANNOTATION table = final human-verified ground truth
+  Ready for model training and evaluation
+```
