@@ -22,6 +22,7 @@ import sqlite3
 import json
 import subprocess
 import sys
+import os
 import argparse
 
 # Fix Windows console encoding
@@ -35,7 +36,7 @@ DB_PATH = "propaganda_dataset.db"
 DEFAULT_MODEL = "qwen2.5:3b"
 PROMPT_VERSION = "v1.0-ollama"
 TEMPERATURE = 0.1   # low for deterministic structured output
-OLLAMA_HOST = "http://localhost:11434"
+OLLAMA_HOST = os.environ.get("OLLAMA_HOST", "http://localhost:11434")
 
 # ──────────────────────────────────────────────────────────────────────────────
 # JSON SCHEMA — enforced at token level by Ollama
@@ -139,7 +140,7 @@ Return ONLY valid JSON matching the required schema. No preamble or explanation 
 def get_unprocessed_posts(conn, limit=None, model_name=None):
     sql = """
         SELECT p.post_id, p.caption,
-               i.image_id, i.reconstructed_text, i.fb_alt_text
+               i.image_id, i.reconstructed_text, i.fb_alt_text, i.file_path
         FROM POST p
         LEFT JOIN IMAGE i ON p.post_id = i.post_id
         WHERE p.post_id NOT IN (
@@ -214,16 +215,29 @@ ALT_TEXT:
 {alt_text or '(no alt text)'}"""
 
 
-def call_ollama(client, model_name, user_message):
-    """Call Ollama with JSON schema enforcement."""
+def is_vision_model(model_name):
+    """Check if model supports multimodal image input."""
+    name = (model_name or "").lower()
+    return any(k in name for k in ["llava", "vision", "moondream", "minicpm", "-vl", "vl:"])
+
+
+def call_ollama(client, model_name, user_message, image_path=None):
+    """Call Ollama with JSON schema enforcement, passing image if model is vision-capable."""
+    user_msg_dict = {"role": "user", "content": user_message}
+    if image_path and os.path.exists(image_path) and is_vision_model(model_name):
+        user_msg_dict["images"] = [image_path]
+
     response = client.chat(
         model=model_name,
         messages=[
             {"role": "system", "content": SYSTEM_PROMPT},
-            {"role": "user", "content": user_message},
+            user_msg_dict,
         ],
         format=OUTPUT_SCHEMA,
-        options={"temperature": TEMPERATURE},
+        options={
+            "temperature": TEMPERATURE,
+            "num_predict": 350,
+        },
     )
     return response.message.content
 
@@ -255,10 +269,10 @@ def check_model_available(client, model_name):
 # Model tier definitions: (model_name, min_free_ram_gb, min_vram_gb, description)
 MODEL_TIERS = [
     # (model,              min_sys_ram, min_vram, label)
-    ("qwen2.5:14b", 14.0, 10.0, "Best quality  — RTX 10-12GB+ VRAM"),
-    ("qwen2.5:7b", 7.0, 5.0, "Good balance  — RTX 6-8GB+ VRAM"),
-    ("qwen2.5:7b", 10.0, 0.0, "Good balance  — CPU-only 10GB+ RAM"),
-    ("qwen2.5:3b", 3.0, 0.0, "Lightweight   — CPU-only or low RAM"),
+    ("qwen2.5:14b", 14.0, 10.0, "Best quality text — RTX 10-12GB+ VRAM"),
+    ("qwen2.5:7b", 7.0, 5.0, "Good balance text  — RTX 6-8GB+ VRAM"),
+    ("llava-phi3", 6.0, 3.5, "Multimodal Vision  — RTX 4GB+ VRAM (image + text)"),
+    ("qwen2.5:3b", 3.0, 0.0, "Lightweight text   — CPU-only or low RAM"),
 ]
 
 
@@ -424,7 +438,7 @@ def main():
 
     # ── Annotate ─────────────────────────────────────────────────────────────
     total_labels = 0
-    for idx, (post_id, caption, image_id, reconstructed_text, fb_alt_text) in enumerate(posts, 1):
+    for idx, (post_id, caption, image_id, reconstructed_text, fb_alt_text, file_path) in enumerate(posts, 1):
         short_id = post_id[:30] + "..."
         print(f"[{idx}/{len(posts)}] {short_id}")
 
@@ -433,13 +447,15 @@ def main():
         if args.dry_run:
             print("  --- PROMPT PREVIEW ---")
             print(user_msg[:500])
+            if file_path and is_vision_model(model_name):
+                print(f"  [VISION IMAGE ATTACHED]: {file_path}")
             print("  ---\n")
             continue
 
         for run_id in range(1, args.runs + 1):
             run_label = f" (run {run_id}/{args.runs})" if args.runs > 1 else ""
             try:
-                raw = call_ollama(client, model_name, user_msg)
+                raw = call_ollama(client, model_name, user_msg, image_path=file_path)
                 inserted = store_preannotation(conn, post_id, image_id, run_id, model_name, raw)
                 total_labels += inserted
 

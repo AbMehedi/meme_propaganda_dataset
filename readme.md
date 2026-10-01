@@ -366,7 +366,103 @@ LIMIT 10;
 
 ---
 
-## 8. Next Steps (Annotation & Modeling)
+## 8. Docker Setup (Recommended for Team Collaboration)
+
+Docker provides a fully reproducible environment — no manual CUDA, PyTorch, or Ollama installation required. One command gets everything running.
+
+### Prerequisites
+
+- **Docker Desktop** (Windows/Mac) or **Docker Engine** (Linux) — [Install Docker](https://docs.docker.com/get-docker/)
+- **NVIDIA Container Toolkit** (for GPU acceleration) — [Install Guide](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html)
+  - Requires an NVIDIA GPU driver already installed on the host
+  - **Not needed** for CPU-only mode
+
+### Quick Start (GPU)
+
+```bash
+# 1. Clone and configure
+git clone <repo-url>
+cd meme_propaganda_dataset
+cp .env.example .env          # fill in your APIFY_TOKEN
+
+# 2. Start both containers (app + Ollama)
+docker compose up -d --build
+
+# 3. Pull an LLM model (one-time)
+docker compose exec ollama ollama pull qwen2.5:3b
+
+# 4. Verify GPU is available
+docker compose exec app python -c "import torch; print('CUDA:', torch.cuda.is_available())"
+
+# 5. Run pipeline steps
+docker compose exec app python download_and_hash.py
+docker compose exec app python ocr_and_store.py
+docker compose exec app python reconstruct_text.py
+docker compose exec app python annotate_ollama.py --auto
+docker compose exec app python view_results.py --summary
+```
+
+### Quick Start (CPU-Only — No NVIDIA GPU)
+
+For teammates on Mac, AMD, or Intel-only machines:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.cpu.yml up -d --build
+```
+
+Everything works the same, just slower:
+- EasyOCR: ~3–8s per image (vs <0.8s on GPU)
+- Ollama: CPU inference (functional but slower)
+
+### Makefile Shortcuts
+
+If `make` is available, use these shortcuts instead of typing full `docker compose exec` commands:
+
+| Command | Action |
+|---|---|
+| `make up` | Start containers (GPU) |
+| `make up-cpu` | Start containers (CPU-only) |
+| `make download` | Run Layer 2: download images |
+| `make ocr` | Run Layer 3: EasyOCR extraction |
+| `make reconstruct` | Run Layer 3+: reading-order reconstruction |
+| `make verify` | Run QA: visual OCR check |
+| `make annotate` | Run LLM pre-annotation (auto hardware detect) |
+| `make results` | View annotation summary |
+| `make pull-model MODEL=qwen2.5:7b` | Pull an Ollama model |
+| `make gpu-check` | Verify GPU is accessible |
+| `make shell` | Open bash shell in app container |
+| `make down` | Stop all containers |
+
+### Docker Architecture
+
+```mermaid
+graph LR
+    subgraph "docker compose"
+        APP["app container<br/>Python 3.11 + CUDA 12.4<br/>EasyOCR + pipeline scripts"]
+        OLLAMA["ollama container<br/>LLM server on :11434"]
+    end
+    APP -- "http://ollama:11434" --> OLLAMA
+    APP -. "bind mount" .-> DB[(propaganda_dataset.db)]
+    APP -. "bind mount" .-> IMGS[raw_images/]
+    OLLAMA -. "named volume" .-> MODELS[(ollama_models)]
+```
+
+### Docker Troubleshooting
+
+#### `docker compose up` fails with GPU error
+- **Cause**: NVIDIA Container Toolkit not installed, or GPU driver too old.
+- **Fix**: Install the toolkit: `sudo apt install nvidia-container-toolkit` (Linux) or ensure Docker Desktop has GPU support enabled (Windows).
+- **Workaround**: Use CPU-only mode: `docker compose -f docker-compose.yml -f docker-compose.cpu.yml up -d --build`
+
+#### Ollama model downloads are slow
+- Models are stored in a named Docker volume (`meme_ollama_models`). They persist across container restarts and rebuilds — you only download once.
+
+#### Changes to Python scripts aren't reflected
+- Code is **bind-mounted** from your host into the container. Edits are live — no rebuild needed. If you change `requirements.txt`, rebuild with: `docker compose up -d --build`
+
+---
+
+## 9. Next Steps (Annotation & Modeling)
 
 - **Annotation via Label Studio**: Use `reconstructed_text` for span-level propaganda annotation. Spans link back to `WORD_OFFSET` $\rightarrow$ `OCR_WORD` bounding boxes.
 - **Multimodal GNNs / Transformers**: Leverage `OCR_WORD` coordinates and image crops for layout-aware multimodal propaganda detection.

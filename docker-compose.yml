@@ -1,0 +1,60 @@
+# ============================================================================
+# Bangla Meme Propaganda Dataset — Docker Compose
+# ============================================================================
+# Usage:
+#   docker compose up -d --build        # start both services
+#   docker compose exec app python ocr_and_store.py
+#   docker compose exec ollama ollama pull qwen2.5:3b
+#   docker compose down                 # stop everything
+#
+# CPU-only (no NVIDIA GPU):
+#   docker compose -f docker-compose.yml -f docker-compose.cpu.yml up -d --build
+# ============================================================================
+
+services:
+  # ── Python Pipeline Container ──────────────────────────────────────────────
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: meme-pipeline
+    volumes:
+      - .:/app                              # live code mount (edit on host, run in container)
+      - easyocr_models:/root/.EasyOCR       # persist EasyOCR model downloads
+    env_file:
+      - .env
+    environment:
+      - OLLAMA_HOST=http://ollama:11434     # container-to-container networking
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    depends_on:
+      - ollama
+    stdin_open: true
+    tty: true
+
+  # ── Ollama LLM Server ─────────────────────────────────────────────────────
+  ollama:
+    image: ollama/ollama:latest
+    container_name: meme-ollama
+    volumes:
+      - ollama_models:/root/.ollama         # persist pulled LLM models
+    ports:
+      - "11434:11434"                       # expose Ollama API to host too
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
+volumes:
+  easyocr_models:
+    name: meme_easyocr_models
+  ollama_models:
+    name: meme_ollama_models

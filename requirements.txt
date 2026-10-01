@@ -1,5 +1,16 @@
+# --- Core Pipeline Dependencies ---
 apify-client
 ImageHash
 Pillow
 python-dotenv
 requests
+regex>=2023.0.0
+easyocr
+opencv-python-headless
+numpy
+ollama
+
+# --- GPU / PyTorch Note ---
+# For GPU acceleration (NVIDIA CUDA), do NOT install torch from standard PyPI.
+# Instead, install CUDA-enabled PyTorch first using your CUDA version (e.g., CUDA 12.4):
+#   pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu124

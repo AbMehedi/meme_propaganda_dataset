@@ -1,0 +1,12 @@
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.py[cod]
+.git/
+.gitignore
+raw_images/
+ocr_check/
+propaganda_dataset.db
+.env
+*.md
