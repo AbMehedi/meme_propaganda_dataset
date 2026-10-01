@@ -9,7 +9,7 @@
 #
 # CPU-only (no NVIDIA GPU):
 #   docker compose -f docker/docker-compose.yml -f docker/docker-compose.cpu.yml up -d --build
-# ============================================================================
+name: meme_propaganda_dataset
 
 services:
   # ── Python Pipeline Container ──────────────────────────────────────────────
