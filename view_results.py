@@ -6,9 +6,9 @@ Usage:
     py -3 view_results.py --review-queue # show ONLY posts needing human review
     py -3 view_results.py --model qwen2.5:3b  # filter by model
 """
+import argparse
 import sqlite3
 import sys
-import argparse
 
 # Fix Windows console encoding
 if hasattr(sys.stdout, "reconfigure"):
@@ -111,7 +111,8 @@ def main():
 
     sep = "=" * 65
     print(f"\n{sep}")
-    print(f"  LLM_PREANNOTATION SUMMARY" + (f"  [model: {args.model}]" if args.model else ""))
+    model_tag = f"  [model: {args.model}]" if args.model else ""
+    print(f"  LLM_PREANNOTATION SUMMARY{model_tag}")
     print(sep)
     print(f"  {'Label':<8} {'Name':<30} {'Count':>6} {'Avg Conf':>9} {'Review':>7}")
     print(f"  {'-'*8} {'-'*30} {'-'*6} {'-'*9} {'-'*7}")

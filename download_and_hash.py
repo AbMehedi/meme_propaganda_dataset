@@ -1,13 +1,14 @@
+import hashlib
 import os
 import sqlite3
-import requests
-import hashlib
+from io import BytesIO
+from urllib.parse import parse_qs, urlparse
+
 import imagehash
+import requests
+from apify_client import ApifyClient
 from dotenv import load_dotenv
 from PIL import Image
-from io import BytesIO
-from urllib.parse import urlparse, parse_qs
-from apify_client import ApifyClient
 
 # ---------- CONFIG ----------
 load_dotenv()
@@ -157,7 +158,7 @@ for item in client.dataset(DATASET_ID).iterate_items():
         try:
             resp = requests.get(img_url, timeout=15)
             resp.raise_for_status()
-        except Exception as e:
+        except requests.RequestException as e:
             print(f"Failed to download {img_url}: {e}")
             skipped += 1
             continue
@@ -166,7 +167,7 @@ for item in client.dataset(DATASET_ID).iterate_items():
 
         try:
             img = Image.open(BytesIO(img_bytes)).convert("RGB")
-        except Exception as e:
+        except (OSError, ValueError) as e:
             print(f"Could not open image {img_url}: {e}")
             skipped += 1
             continue

@@ -33,10 +33,15 @@
       {% endif %}
     </div>
 
-    <div>
+    <div style="display:flex; align-items:center; gap:0.75rem;">
+      {% if item.needs_review %}
+        <span class="badge badge-review" title="{{ item.review_reason or 'AI flagged this prediction as requiring manual verification' }}">
+          ⚠ NEEDS REVIEW
+        </span>
+      {% endif %}
       <span class="badge {{ conf_meta.badge_class }}">
         <span class="badge-dot"></span>
-        {{ conf_meta.label }}
+        {{ conf_meta.pct }}% {{ conf_meta.label }}
       </span>
     </div>
   </div>
@@ -130,7 +135,7 @@
           <span class="confidence-score">{{ (item.confidence_score or 0.0) | round(2) }} ({{ conf_meta.pct }}%)</span>
         </div>
         <div class="confidence-track">
-          <div class="confidence-fill" style="width: {{ conf_meta.pct }}%; background-color: {{ conf_meta.color }};"></div>
+          <div class="confidence-fill conf-fill-{{ conf_meta.tier }}" data-pct="{{ conf_meta.pct }}"></div>
         </div>
       </div>
 

@@ -26,8 +26,9 @@ new run looks good:
 """
 
 import sqlite3
-import regex  # pip install regex --break-system-packages  (supports \X grapheme clusters; stdlib `re` does not)
+
 import easyocr
+import regex  # pip install regex --break-system-packages  (supports \X grapheme clusters; stdlib `re` does not)
 
 
 def backup_old_table_if_exists(cur):
@@ -57,7 +58,7 @@ LANGUAGES = ['bn', 'en']  # Bangla + English
 # one box, i.e. more (smaller) regions per image. Tune on a handful of
 # sample images before running the full batch -- too low can over-split
 # a single word into fragments.
-DETECT_KWARGS = dict(width_ths=0.4, height_ths=0.4, slope_ths=0.1)
+DETECT_KWARGS = {"width_ths": 0.4, "height_ths": 0.4, "slope_ths": 0.1}
 # -----------------------------
 
 GRAPHEME_RE = regex.compile(r'\X')  # \X = one user-perceived character (grapheme cluster)
@@ -116,7 +117,7 @@ def main():
             print(f"File not found, skipping: {file_path}")
             failed += 1
             continue
-        except Exception as e:
+        except (RuntimeError, ValueError, OSError) as e:
             print(f"OCR error on {image_id}: {e}")
             failed += 1
             continue

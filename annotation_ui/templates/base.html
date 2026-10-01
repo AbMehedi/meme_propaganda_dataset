@@ -38,8 +38,21 @@
           <strong>{{ verified_count }}</strong> / {{ total_count }}
         </div>
 
-        <a href="{{ url_for('adjudicate') }}" class="nav-link">Adjudicate</a>
-        <a href="{{ url_for('admin') }}" class="nav-link">Stats</a>
+        <a href="{{ url_for('annotate') }}" class="nav-link {% if request.endpoint == 'annotate' %}active{% endif %}">Annotate</a>
+        <a href="{{ url_for('dataset') }}" class="nav-link {% if request.endpoint == 'dataset' %}active{% endif %}">Database</a>
+        <a href="{{ url_for('history') }}" class="nav-link {% if request.endpoint == 'history' %}active{% endif %}">History</a>
+        <a href="{{ url_for('adjudicate') }}" class="nav-link {% if request.endpoint == 'adjudicate' %}active{% endif %}">
+          Adjudicate
+          {% if pending_adjudication_count and pending_adjudication_count > 0 %}
+            <span class="nav-link-badge" style="background:#38BDF8;" title="{{ pending_adjudication_count }} conflicts pending adjudication">{{ pending_adjudication_count }}</span>
+          {% endif %}
+        </a>
+        <a href="{{ url_for('admin') }}" class="nav-link {% if request.endpoint == 'admin' %}active{% endif %}">
+          Stats
+          {% if needs_review_remaining and needs_review_remaining > 0 %}
+            <span class="nav-link-badge" title="{{ needs_review_remaining }} items flagged for review">{{ needs_review_remaining }}</span>
+          {% endif %}
+        </a>
         <a href="{{ url_for('logout') }}" class="nav-link">Logout &rarr;</a>
       {% else %}
         <span class="label-mono" style="margin-bottom:0;">HITL VERIFICATION PLATFORM</span>
@@ -63,6 +76,10 @@
     if (window.lucide) {
       lucide.createIcons();
     }
+    // Initialize dynamic percentage width bars
+    document.querySelectorAll('[data-pct]').forEach(function(el) {
+      el.style.width = el.getAttribute('data-pct') + '%';
+    });
   </script>
   {% block extra_scripts %}{% endblock %}
 </body>

@@ -18,12 +18,14 @@ Usage:
     py -3 annotate_ollama.py --info              # show hardware info and recommended model, then exit
 """
 
-import sqlite3
+import argparse
 import json
+import os
+import sqlite3
 import subprocess
 import sys
-import os
-import argparse
+import urllib.error
+import urllib.request
 
 # Fix Windows console encoding
 if hasattr(sys.stdout, "reconfigure"):
@@ -106,13 +108,13 @@ STRICT RULES:
 11. Do NOT fact-check. Label based on propagandistic presentation.
 12. Political content alone != propaganda. Criticism alone != propaganda.
 13. Banglish text: annotate normally.
-14. If insufficient info: set needs_review=true.
+14. If confidence_score is below 0.75, or if you cannot determine the technique with certainty, or if context is ambiguous: MUST set needs_review=true and provide an explicit review_reason string.
 
 CONFIDENCE SCORES:
-  0.9-1.0 : Strong unambiguous evidence
-  0.7-0.89: Clear with minor ambiguity
-  0.5-0.69: Uncertain, needs human attention
-  <0.5    : Very uncertain, set needs_review=true
+  0.90-1.0 : Strong unambiguous evidence
+  0.75-0.89: Clear with minor nuance
+  0.50-0.74: Uncertain, needs human verification — set needs_review=true
+  <0.50    : Highly ambiguous or insufficient evidence — set needs_review=true
 
 EXAMPLES:
 
@@ -245,10 +247,9 @@ def call_ollama(client, model_name, user_message, image_path=None):
 def check_ollama_running():
     """Check if Ollama service is reachable."""
     try:
-        import urllib.request
         urllib.request.urlopen(OLLAMA_HOST, timeout=3)
         return True
-    except Exception:
+    except (urllib.error.URLError, TimeoutError, OSError):
         return False
 
 
@@ -258,7 +259,7 @@ def check_model_available(client, model_name):
         models = client.list()
         available = [m.model for m in models.models]
         return any(model_name in m for m in available)
-    except Exception:
+    except (AttributeError, KeyError, OSError, RuntimeError):
         return False
 
 
@@ -302,7 +303,7 @@ def get_system_info():
                 timeout=5, text=True
             ).strip()
             total_ram_gb = int(out2) / 1e9
-        except Exception:
+        except (subprocess.SubprocessError, OSError, ValueError):
             total_ram_gb, free_ram_gb = 0.0, 0.0
 
     # --- GPU VRAM (NVIDIA only via nvidia-smi) ---
@@ -338,18 +339,15 @@ def auto_select_model():
 
     # Walk tiers from best to smallest
     for model, min_ram, min_vram, desc in MODEL_TIERS:
-        if vram >= min_vram and (min_vram > 0):   # GPU path
-            if free_ram >= min_ram or total_ram >= min_ram:
-                print(f"  [AUTO] Selected: {model}")
-                print(f"         Reason  : {desc}")
-                print()
-                return model
-        elif min_vram == 0 and vram == 0:           # CPU path
-            if free_ram >= min_ram or total_ram >= min_ram:
-                print(f"  [AUTO] Selected: {model}")
-                print(f"         Reason  : {desc}")
-                print()
-                return model
+        has_gpu = (min_vram > 0) and (vram >= min_vram)
+        has_cpu = (min_vram == 0) and (vram == 0)
+        has_ram = (free_ram >= min_ram) or (total_ram >= min_ram)
+
+        if (has_gpu or has_cpu) and has_ram:
+            print(f"  [AUTO] Selected: {model}")
+            print(f"         Reason  : {desc}")
+            print()
+            return model
 
     # Absolute fallback
     print("  [AUTO] Selected: qwen2.5:3b")
@@ -468,10 +466,10 @@ def main():
                     )
                     review = " [NEEDS REVIEW]" if parsed.get("needs_review") else ""
                     print(f"  -> {labels_str}{review}{run_label}")
-                except Exception:
+                except (json.JSONDecodeError, KeyError, TypeError):
                     print(f"  -> (raw: {raw[:100]})")
 
-            except Exception as e:
+            except (RuntimeError, ValueError, OSError) as e:
                 print(f"  [!] Error on run {run_id}: {e}")
 
     conn.close()

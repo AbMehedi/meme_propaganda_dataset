@@ -1,0 +1,266 @@
+{% extends "base.html" %}
+
+{% block title %}My Annotation History — HITL Verification{% endblock %}
+
+{% block content %}
+<div class="history-container">
+
+  <!-- Header -->
+  <div style="margin-bottom: 2rem;">
+    <span class="label-mono">LOGGED ANNOTATOR: {{ current_annotator }}</span>
+    <h1 style="font-size:clamp(2.2rem, 5vw, 3.5rem); font-weight:900; letter-spacing:-0.05em; text-transform:uppercase;">
+      MY ANNOTATIONS<span style="color:var(--accent);">.</span>
+    </h1>
+    <p style="color:var(--muted-fg); margin-top:0.5rem; font-size:0.95rem;">
+      Review all past submissions, inspect AI vs. Human decisions, and reopen any post to adjust or update your labels.
+    </p>
+  </div>
+
+  <!-- Summary Cards -->
+  <div class="stat-grid" style="margin: 1.5rem 0 2.5rem 0; gap: 1.25rem;">
+    <div class="stat-card" style="padding:1.5rem;">
+      <div class="stat-number">{{ summary.all }}</div>
+      <div class="stat-label">TOTAL SUBMITTED</div>
+    </div>
+    <div class="stat-card" style="padding:1.5rem;">
+      <div class="stat-number green">{{ summary.verified }}</div>
+      <div class="stat-label">ACCEPTED / VERIFIED</div>
+    </div>
+    <div class="stat-card" style="padding:1.5rem;">
+      <div class="stat-number" style="color:#38BDF8;">{{ summary.corrected }}</div>
+      <div class="stat-label">HUMAN CORRECTED</div>
+    </div>
+    <div class="stat-card" style="padding:1.5rem;">
+      <div class="stat-number accent">{{ summary.rejected }}</div>
+      <div class="stat-label">REJECTED (T08)</div>
+    </div>
+  </div>
+
+  <!-- History Filters & Search Toolbar -->
+  <div class="history-toolbar">
+    <div class="filter-group" id="filterButtonGroup">
+      <button type="button" class="filter-btn active" data-filter="all">
+        ALL <span class="filter-count">({{ summary.all }})</span>
+      </button>
+      <button type="button" class="filter-btn" data-filter="VERIFIED">
+        VERIFIED <span class="filter-count">({{ summary.verified }})</span>
+      </button>
+      <button type="button" class="filter-btn" data-filter="CORRECTED">
+        CORRECTED <span class="filter-count">({{ summary.corrected }})</span>
+      </button>
+      <button type="button" class="filter-btn" data-filter="REJECTED">
+        REJECTED <span class="filter-count">({{ summary.rejected }})</span>
+      </button>
+      <button type="button" class="filter-btn" data-filter="SKIPPED">
+        SKIPPED <span class="filter-count">({{ summary.skipped }})</span>
+      </button>
+      <button type="button" class="filter-btn" data-filter="needs_review">
+        <span style="color:var(--accent);">⚠</span> NEEDS REVIEW <span class="filter-count">({{ summary.needs_review }})</span>
+      </button>
+    </div>
+
+    <div class="search-input-box">
+      <i data-lucide="search" style="width:14px; height:14px; color:var(--muted-fg);"></i>
+      <input type="text" id="historySearchInput" placeholder="Filter ID, label, caption...">
+    </div>
+  </div>
+
+  <!-- History Table -->
+  {% if history and history|length > 0 %}
+  <div class="table-wrapper">
+    <table class="data-table" id="historyTable">
+      <thead>
+        <tr>
+          <th>PRED #</th>
+          <th>POST CAPTION / TEXT</th>
+          <th>AI PREDICTION</th>
+          <th>YOUR DECISION</th>
+          <th>STATUS</th>
+          <th>AI REVIEW FLAG</th>
+          <th>SUBMITTED AT</th>
+          <th style="text-align:right;">ACTION</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in history %}
+        <tr 
+          class="history-row" 
+          data-status="{{ row.verification_status }}" 
+          data-needs-review="{{ '1' if row.needs_review else '0' }}"
+          data-search="{{ row.llm_preannotation_id }} {{ row.post_id }} {{ row.ai_label }} {{ row.your_label }} {{ row.caption or '' }} {{ row.verification_status }}"
+        >
+          <!-- Pred ID -->
+          <td class="cell-mono" style="font-weight:700;">
+            <a href="{{ url_for('annotate', id=row.llm_preannotation_id) }}" style="color:var(--fg); text-decoration:none;">
+              #{{ row.llm_preannotation_id }}
+            </a>
+          </td>
+
+          <!-- Caption snippet -->
+          <td class="cell-caption" title="{{ row.caption or 'No caption available' }}">
+            {% if row.caption %}
+              {{ row.caption[:65] }}{% if row.caption|length > 65 %}...{% endif %}
+            {% else %}
+              <span style="color:var(--muted-fg); font-style:italic;">(Text-only / no caption)</span>
+            {% endif %}
+          </td>
+
+          <!-- AI Prediction -->
+          <td>
+            <div style="display:flex; align-items:center; gap:0.5rem;">
+              <span class="cell-mono" style="font-weight:700; color:var(--muted-fg);">{{ row.ai_label }}</span>
+              <span style="font-size:0.8rem; color:var(--muted-fg);">{{ row.ai_technique.name }}</span>
+            </div>
+            <span class="cell-mono" style="font-size:0.68rem; color:#555;">{{ row.ai_modality or 'M1' }}</span>
+          </td>
+
+          <!-- Your Decision -->
+          <td>
+            <div style="display:flex; align-items:center; gap:0.5rem;">
+              <span class="cell-mono" style="font-weight:700; color:var(--fg);">{{ row.your_label }}</span>
+              <span style="font-size:0.8rem;">{{ row.your_technique.name }}</span>
+            </div>
+            <span class="cell-mono" style="font-size:0.68rem; color:var(--muted-fg);">{{ row.your_modality or 'M1' }}</span>
+          </td>
+
+          <!-- Status Pill -->
+          <td>
+            {% if row.verification_status == 'VERIFIED' %}
+              <span class="badge badge-verified"><span class="badge-dot"></span>VERIFIED</span>
+            {% elif row.verification_status == 'CORRECTED' %}
+              <span class="badge badge-corrected"><span class="badge-dot"></span>CORRECTED</span>
+            {% elif row.verification_status == 'REJECTED' %}
+              <span class="badge badge-rejected"><span class="badge-dot"></span>REJECTED</span>
+            {% elif row.verification_status == 'SKIPPED' %}
+              <span class="badge badge-skipped"><span class="badge-dot"></span>SKIPPED</span>
+            {% else %}
+              <span class="badge badge-neutral">{{ row.verification_status }}</span>
+            {% endif %}
+          </td>
+
+          <!-- Needs Review Indicator -->
+          <td>
+            {% if row.needs_review %}
+              <span class="badge badge-review" title="{{ row.review_reason or 'Flagged by model as requiring human verification' }}">
+                ⚠ NEEDS REVIEW
+              </span>
+            {% else %}
+              <span style="color:var(--border); font-family:var(--font-mono); font-size:0.75rem;">—</span>
+            {% endif %}
+          </td>
+
+          <!-- Date / Time -->
+          <td class="cell-mono" style="color:var(--muted-fg); font-size:0.75rem; white-space:nowrap;">
+            {{ row.created_at or '—' }}
+          </td>
+
+          <!-- Action -->
+          <td style="text-align:right;">
+            <a href="{{ url_for('annotate', id=row.llm_preannotation_id) }}" class="action-link" title="Open in annotation workspace">
+              <span>EDIT</span>
+              <i data-lucide="external-link" style="width:12px; height:12px;"></i>
+            </a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div id="noMatchMessage" style="display:none; padding:3rem; text-align:center; border:1px dashed var(--border); margin-top:1.5rem;">
+    <p style="color:var(--muted-fg); font-family:var(--font-mono); font-size:0.85rem;">
+      No annotations match the selected filter.
+    </p>
+  </div>
+
+  {% else %}
+  <div style="border:1px dashed var(--border); padding:4rem 2rem; text-align:center; margin-top:2rem;">
+    <span class="label-mono">NO SUBMISSIONS YET</span>
+    <h3 style="font-size:1.5rem; margin:1rem 0; font-weight:800;">YOU HAVE NOT ANNOTATED ANY POSTS YET.</h3>
+    <p style="color:var(--muted-fg); max-width:40ch; margin:0 auto 2rem auto; font-size:0.9rem;">
+      Submissions you accept, edit, or reject will appear here chronologically for your review and auditing.
+    </p>
+    <a href="{{ url_for('annotate') }}" class="btn-primary">
+      START ANNOTATING NOW &rarr;
+    </a>
+  </div>
+  {% endif %}
+
+  <!-- Bottom Nav -->
+  <div style="margin-top:3rem; display:flex; justify-content:space-between; align-items:center;">
+    <a href="{{ url_for('annotate') }}" class="btn-primary">
+      &larr; BACK TO ANNOTATION WORKSPACE
+    </a>
+    <a href="{{ url_for('admin') }}" class="action-link" style="font-size:0.78rem;">
+      VIEW GLOBAL DATASET STATS &rarr;
+    </a>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const filterButtons = document.querySelectorAll(".filter-btn");
+  const searchInput = document.getElementById("historySearchInput");
+  const tableRows = document.querySelectorAll(".history-row");
+  const noMatchMsg = document.getElementById("noMatchMessage");
+
+  let activeFilter = "all";
+  let searchQuery = "";
+
+  function applyFilters() {
+    let visibleCount = 0;
+    const query = searchQuery.trim().toLowerCase();
+
+    tableRows.forEach(row => {
+      const status = row.getAttribute("data-status");
+      const needsReview = row.getAttribute("data-needs-review") === "1";
+      const searchText = (row.getAttribute("data-search") || "").toLowerCase();
+
+      // Check status filter
+      let matchesFilter = true;
+      if (activeFilter === "needs_review") {
+        matchesFilter = needsReview;
+      } else if (activeFilter !== "all") {
+        matchesFilter = (status === activeFilter);
+      }
+
+      // Check text search
+      let matchesSearch = true;
+      if (query.length > 0) {
+        matchesSearch = searchText.includes(query);
+      }
+
+      if (matchesFilter && matchesSearch) {
+        row.style.display = "";
+        visibleCount++;
+      } else {
+        row.style.display = "none";
+      }
+    });
+
+    if (noMatchMsg) {
+      noMatchMsg.style.display = (visibleCount === 0 && tableRows.length > 0) ? "block" : "none";
+    }
+  }
+
+  filterButtons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      filterButtons.forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      activeFilter = btn.getAttribute("data-filter");
+      applyFilters();
+    });
+  });
+
+  if (searchInput) {
+    searchInput.addEventListener("input", (e) => {
+      searchQuery = e.target.value;
+      applyFilters();
+    });
+  }
+});
+</script>
+{% endblock %}

@@ -16,9 +16,7 @@
 #   make logs        — tail container logs
 # ============================================================================
 
-.PHONY: up up-cpu down logs shell \
-        download ocr reconstruct verify annotate results \
-        pull-model gpu-check
+.PHONY: up up-cpu down logs shell download ocr reconstruct verify annotate results ui pull-model gpu-check
 
 # ── Docker Lifecycle ─────────────────────────────────────────────────────────
 up:

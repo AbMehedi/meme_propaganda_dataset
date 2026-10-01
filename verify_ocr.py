@@ -9,8 +9,9 @@ back onto a sample of images, so you can eyeball whether:
 Saves annotated copies to ./ocr_check/ -- open a handful and look.
 """
 
-import sqlite3
 import os
+import sqlite3
+
 from PIL import Image, ImageDraw, ImageFont
 
 DB_PATH = "propaganda_dataset.db"
@@ -31,7 +32,7 @@ samples = cur.fetchall()
 
 try:
     font = ImageFont.truetype("DejaVuSans.ttf", 14)
-except Exception:
+except (OSError, RuntimeError):
     font = ImageFont.load_default()
 
 for image_id, file_path in samples:

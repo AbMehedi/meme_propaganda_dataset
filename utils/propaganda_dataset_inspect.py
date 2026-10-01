@@ -1,4 +1,6 @@
-import sqlite3, sys
+import sqlite3
+import sys
+
 sys.stdout.reconfigure(encoding='utf-8')
 
 conn = sqlite3.connect('propaganda_dataset.db')
