@@ -1,8 +1,13 @@
 import os
 import sys
 import sqlite3
-import json
-from flask import Flask, render_template, request, redirect, url_for, session, send_file, abort, jsonify
+from flask import Flask, render_template, request, redirect, url_for, session, send_file, abort
+
+# Ensure UTF-8 output on Windows console to prevent charmap encoding errors
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+if hasattr(sys.stderr, "reconfigure"):
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
 
 # Base paths
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -206,7 +211,7 @@ def annotate():
       COALESCE(i1.width, i2.width) AS image_width,
       COALESCE(i1.height, i2.height) AS image_height
     FROM LLM_PREANNOTATION llp
-    JOIN POST p ON llp.post_id = p.post_id
+    LEFT JOIN POST p ON llp.post_id = p.post_id
     LEFT JOIN IMAGE i1 ON llp.image_id = i1.image_id
     LEFT JOIN (
         SELECT post_id, image_id, file_path, reconstructed_text, width, height
