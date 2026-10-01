@@ -9,6 +9,7 @@ easyocr
 opencv-python-headless
 numpy
 ollama
+flask
 
 # --- GPU / PyTorch Note ---
 # For GPU acceleration (NVIDIA CUDA), do NOT install torch from standard PyPI.
