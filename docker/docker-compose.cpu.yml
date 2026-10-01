@@ -1,8 +1,8 @@
 # ============================================================================
 # CPU-Only Override — for teammates WITHOUT an NVIDIA GPU
 # ============================================================================
-# Usage:
-#   docker compose -f docker-compose.yml -f docker-compose.cpu.yml up -d --build
+# Usage (from project root):
+#   docker compose -f docker/docker-compose.yml -f docker/docker-compose.cpu.yml up -d --build
 #
 # This removes GPU reservations from both services.
 # EasyOCR will automatically fall back to CPU (slower: ~3-8s per image).

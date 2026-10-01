@@ -132,27 +132,27 @@ DATASET_ID=your_apify_dataset_id_here
 
 - **With NVIDIA GPU:**
   ```bash
-  docker compose up -d --build
+  docker compose -f docker/docker-compose.yml up -d --build
   ```
 
 - **Without GPU (CPU-Only):**
   ```bash
-  docker compose -f docker-compose.yml -f docker-compose.cpu.yml up -d --build
+  docker compose -f docker/docker-compose.yml -f docker/docker-compose.cpu.yml up -d --build
   ```
 
 #### 3. Verify Container GPU Access
 ```bash
-docker compose exec app python -c "import torch; print('CUDA:', torch.cuda.is_available()); print('Device:', torch.cuda.get_device_name(0) if torch.cuda.is_available() else 'CPU')"
+docker compose -f docker/docker-compose.yml exec app python -c "import torch; print('CUDA:', torch.cuda.is_available()); print('Device:', torch.cuda.get_device_name(0) if torch.cuda.is_available() else 'CPU')"
 ```
 
 #### 4. Pull an Ollama Model (Inside Ollama Container)
 ```bash
-docker compose exec ollama ollama pull qwen2.5:3b
+docker compose -f docker/docker-compose.yml exec ollama ollama pull qwen2.5:3b
 ```
 
 > **Note on Docker commands:** In Docker, you run any pipeline script using:  
-> `docker compose exec app python <script_name>.py`  
-> (or use `make <target>` shortcuts if `make` is installed).
+> `docker compose -f docker/docker-compose.yml exec app python <script_name>.py`  
+> (or use `make -C docker <target>` shortcuts if `make` is installed).
 
 ---
 
@@ -270,7 +270,7 @@ Fetches post metadata and downloads images locally. Computes SHA-256 (exact dupl
 
 | Environment | Command |
 |---|---|
-| **Docker** | `docker compose exec app python download_and_hash.py` |
+| **Docker** | `docker compose -f docker/docker-compose.yml exec app python download_and_hash.py` |
 | **Bare-Metal** | `python download_and_hash.py` |
 
 - **Output:** Populates `PAGE`, `POST`, and `IMAGE` tables in `propaganda_dataset.db`, and saves images into `raw_images/<image_id>.jpg`.
@@ -283,7 +283,7 @@ Runs EasyOCR for Bangla (`bn`) and English (`en`) with contrast enhancement (CLA
 
 | Environment | Command |
 |---|---|
-| **Docker** | `docker compose exec app python ocr_and_store.py` |
+| **Docker** | `docker compose -f docker/docker-compose.yml exec app python ocr_and_store.py` |
 | **Bare-Metal** | `python ocr_and_store.py` |
 
 - **Output:** Populates the `OCR_WORD` table with word tokens, confidence scores, and bounding boxes (`x1, y1, x2, y2`, `line_x1, line_y1, line_x2, line_y2`).
@@ -296,7 +296,7 @@ Sorts detected words into natural reading order (top-to-bottom, left-to-right), 
 
 | Environment | Command |
 |---|---|
-| **Docker** | `docker compose exec app python reconstruct_text.py` |
+| **Docker** | `docker compose -f docker/docker-compose.yml exec app python reconstruct_text.py` |
 | **Bare-Metal** | `python reconstruct_text.py` |
 
 - **Output:** Updates `IMAGE.reconstructed_text` and populates `WORD_OFFSET (ocr_id, image_id, start_char, end_char)`.
@@ -309,7 +309,7 @@ Draws line bounding boxes (🔴 Red), exact word boxes (🟢 Green), and estimat
 
 | Environment | Command |
 |---|---|
-| **Docker** | `docker compose exec app python verify_ocr.py` |
+| **Docker** | `docker compose -f docker/docker-compose.yml exec app python verify_ocr.py` |
 | **Bare-Metal** | `python verify_ocr.py` |
 
 - **Output:** Saves annotated verification images in `ocr_check/*.png`. Open and inspect sample images visually.
@@ -322,7 +322,7 @@ Initializes the schema for LLM pre-annotations and human verification records. S
 
 | Environment | Command |
 |---|---|
-| **Docker** | `docker compose exec app python migrate_db.py` |
+| **Docker** | `docker compose -f docker/docker-compose.yml exec app python migrate_db.py` |
 | **Bare-Metal** | `python migrate_db.py` |
 
 - **Output:** Creates tables `LLM_PREANNOTATION` and `ANNOTATION` in `propaganda_dataset.db`.
@@ -335,7 +335,7 @@ Feeds reconstructed OCR text, captions, and metadata to an Ollama LLM using a st
 
 | Environment | Command |
 |---|---|
-| **Docker** | `docker compose exec app python annotate_ollama.py --auto` |
+| **Docker** | `docker compose -f docker/docker-compose.yml exec app python annotate_ollama.py --auto` |
 | **Bare-Metal** | `python annotate_ollama.py --auto` |
 
 #### Propaganda Taxonomy (8 Techniques)
@@ -366,8 +366,8 @@ Inspect model predictions, overall label distribution, and filter posts flagged 
 
 | Environment | Action | Command |
 |---|---|---|
-| **Docker** | Summary Stats | `docker compose exec app python view_results.py --summary` |
-| **Docker** | Review Queue | `docker compose exec app python view_results.py --review-queue` |
+| **Docker** | Summary Stats | `docker compose -f docker/docker-compose.yml exec app python view_results.py --summary` |
+| **Docker** | Review Queue | `docker compose -f docker/docker-compose.yml exec app python view_results.py --review-queue` |
 | **Bare-Metal** | Summary Stats | `python view_results.py --summary` |
 | **Bare-Metal** | Review Queue | `python view_results.py --review-queue` |
 
@@ -503,7 +503,7 @@ erDiagram
 | | `--review-queue` | Filters posts that need human inspection |
 | | `--conf-threshold <f>` | Sets confidence cutoff for review queue (default: 0.65) |
 | | `--model <name>` | Filter results by specific model |
-| `propaganda_dataset_inspect.py` | *(none)* | Quick summary of table schemas and row counts |
+| `utils/propaganda_dataset_inspect.py` | *(none)* | Quick summary of table schemas and row counts |
 
 ---
 
@@ -516,7 +516,7 @@ sqlite3 propaganda_dataset.db
 
 Or with the built-in python script:
 ```bash
-python propaganda_dataset_inspect.py
+python utils/propaganda_dataset_inspect.py
 ```
 
 ### Useful SQL Queries
@@ -562,7 +562,7 @@ ORDER BY count DESC;
 - **Cause:** NVIDIA Container Toolkit is missing or outdated.
 - **Fix:** Install [NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html) or run CPU-only:
   ```bash
-  docker compose -f docker-compose.yml -f docker-compose.cpu.yml up -d --build
+  docker compose -f docker/docker-compose.yml -f docker/docker-compose.cpu.yml up -d --build
   ```
 
 ### 3. Missing `APIFY_TOKEN` or `DATASET_ID` Error
@@ -574,7 +574,7 @@ ORDER BY count DESC;
   ```
 
 ### 4. Ollama connection refused
-- **Docker:** Check container status with `docker compose logs ollama`. Restart with `docker compose restart ollama`.
+- **Docker:** Check container status with `docker compose -f docker/docker-compose.yml logs ollama`. Restart with `docker compose -f docker/docker-compose.yml restart ollama`.
 - **Bare-Metal:** Ensure Ollama desktop application is running or execute `ollama serve`. Verify at `http://localhost:11434`.
 
 ### 5. `sqlite3.OperationalError: no such column`
