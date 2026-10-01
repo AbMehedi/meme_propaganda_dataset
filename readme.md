@@ -218,7 +218,7 @@ python -c "import torch; print('CUDA available:', torch.cuda.is_available()); pr
 2. Ensure Ollama is running (`ollama serve` or system tray app).
 3. Pull the required model:
    ```bash
-   ollama pull qwen2.5:3b
+   ollama pull qwen2.5:1.5b
    ```
 
 ---
