@@ -397,20 +397,28 @@ A full-featured Human-in-the-Loop (HITL) editorial web platform for annotators a
 #### 1. How to Launch the Web UI
 
 ##### Option A: Using Docker (Recommended)
-Ensure containers are running (`docker compose -f docker/docker-compose.yml up -d`). Then launch the UI using any of these methods:
+1. Ensure the containers are running:
+   ```bash
+   docker compose -f docker/docker-compose.yml up -d
+   ```
+2. Start the web UI server inside the `app` container:
+   * **Background / Daemon Mode** (leaves terminal free):
+     ```bash
+     docker compose -f docker/docker-compose.yml exec -d app python annotation_ui/app.py
+     ```
+   * **Interactive / Live Console Logs Mode**:
+     ```bash
+     docker compose -f docker/docker-compose.yml exec app python annotation_ui/app.py
+     ```
+   * **Makefile Shortcut** *(Linux / macOS / WSL)*:
+     ```bash
+     make -C docker ui
+     ```
 
-* **Background / Daemon Mode** (leaves terminal free):
-  ```bash
-  docker compose -f docker/docker-compose.yml exec -d app python annotation_ui/app.py
-  ```
-* **Makefile Shortcut**:
-  ```bash
-  make -C docker ui
-  ```
-* **Interactive / Live Console Logs Mode**:
-  ```bash
-  docker compose -f docker/docker-compose.yml exec app python annotation_ui/app.py
-  ```
+> **Tip (Windows / Docker Desktop):** If you ever see `python: can't open file '/app/annotation_ui/app.py': No such file or directory`, your container's host bind-mount is stale after Docker Desktop restarted. Recreate it with:
+> ```bash
+> docker compose -f docker/docker-compose.yml up -d --force-recreate
+> ```
 
 ##### Option B: Bare-Metal (Local Python)
 Inside your activated virtual environment (`.venv`):
@@ -673,3 +681,23 @@ ORDER BY count DESC;
   python migrate_db.py
   python reconstruct_text.py
   ```
+
+### 6. `python: can't open file '/app/annotation_ui/app.py': No such file or directory`
+- **Cause:** When Docker Desktop restarts, existing containers can retain a stale Windows host bind-mount handle, leaving `/app` temporarily empty inside the container.
+- **Fix:** Recreate the container to refresh the bind-mount:
+  ```bash
+  docker compose -f docker/docker-compose.yml up -d --force-recreate
+  docker compose -f docker/docker-compose.yml exec -d app python annotation_ui/app.py
+  ```
+
+### 7. `'make' is not recognized as an internal or external command`
+- **Cause:** Standard Windows PowerShell does not ship with GNU `make`.
+- **Fix:** Run the direct `docker compose` command instead of `make`:
+  ```powershell
+  docker compose -f docker/docker-compose.yml exec -d app python annotation_ui/app.py
+  ```
+
+### 8. `failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine`
+- **Cause:** Docker Desktop is closed, stopped, or still initializing.
+- **Fix:** Open Docker Desktop from the Start menu, wait until the whale icon in the Windows taskbar system tray is steady (running), then run your `docker compose` command.
+
