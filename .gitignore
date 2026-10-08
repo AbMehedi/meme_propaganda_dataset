@@ -10,3 +10,5 @@ raw_images_new/*
 !raw_images_new/.gitkeep
 ocr_check/*
 !ocr_check/.gitkeep
+ocr_check_new/*
+!ocr_check_new/.gitkeep

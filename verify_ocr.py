@@ -12,10 +12,13 @@ Saves annotated copies to ./ocr_check/ -- open a handful and look.
 import os
 import sqlite3
 
+from dotenv import load_dotenv
 from PIL import Image, ImageDraw, ImageFont
 
+load_dotenv()
+
 DB_PATH = "propaganda_dataset.db"
-OUT_DIR = "ocr_check"
+OUT_DIR = os.getenv("OCR_CHECK_DIR", "ocr_check_new")
 SAMPLE_SIZE = 15  # how many images to spot-check
 
 os.makedirs(OUT_DIR, exist_ok=True)

@@ -25,10 +25,14 @@ new run looks good:
     DROP TABLE OCR_WORD_OLD_V1;
 """
 
+import os
 import sqlite3
 
 import easyocr
 import regex  # pip install regex --break-system-packages  (supports \X grapheme clusters; stdlib `re` does not)
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 def backup_old_table_if_exists(cur):
@@ -52,6 +56,7 @@ def backup_old_table_if_exists(cur):
 
 # ---------- CONFIG ----------
 DB_PATH = "propaganda_dataset.db"
+IMAGE_DIR = os.getenv("IMAGE_DIR", "raw_images_new")  # folder where download_and_hash.py saved images
 LANGUAGES = ['bn', 'en']  # Bangla + English
 
 # Detection tuning: lower thresholds = less merging of nearby text into
@@ -97,6 +102,7 @@ def main():
     """)
     conn.commit()
 
+    print(f"Reading images from: {IMAGE_DIR}/")
     reader = easyocr.Reader(LANGUAGES)
 
     cur.execute("""
