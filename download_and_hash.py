@@ -21,8 +21,15 @@ import argparse
 import hashlib
 import os
 import sqlite3
+import sys
 from io import BytesIO
 from urllib.parse import parse_qs, urlparse
+
+if hasattr(sys.stdout, "reconfigure"):
+    try:
+        sys.stdout.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
 
 import imagehash
 import requests
@@ -35,7 +42,7 @@ load_dotenv()
 APIFY_TOKEN = os.getenv("APIFY_TOKEN")
 # Support both old DATASET_ID (single) and new DATASET_IDS (multi)
 _raw_ids = os.getenv("DATASET_IDS") or os.getenv("DATASET_ID", "")
-IMAGE_DIR = "raw_images"
+_env_image_dir = os.getenv("IMAGE_DIR", "raw_images_new")
 DB_PATH = "propaganda_dataset.db"
 # ----------------------------
 
@@ -51,7 +58,15 @@ parser.add_argument(
     metavar="ID",
     help="Process a single dataset ID (overrides DATASET_IDS from .env).",
 )
+parser.add_argument(
+    "--image-dir",
+    metavar="DIR",
+    default=_env_image_dir,
+    help="Directory to save downloaded images (defaults to IMAGE_DIR from .env or 'raw_images_new').",
+)
 args = parser.parse_args()
+
+IMAGE_DIR = args.image_dir
 
 # ─── Resolve dataset IDs ─────────────────────────────────────────────────────
 if args.dataset_id:
@@ -68,8 +83,9 @@ if not DATASET_IDS:
         "or pass --dataset-id <id>."
     )
 
-print(f"Apify account token loaded ✓")
+print(f"Apify account token loaded [OK]")
 print(f"Datasets to process ({len(DATASET_IDS)}): {DATASET_IDS}")
+print(f"Target image directory: {IMAGE_DIR}/")
 
 if args.dry_run:
     print("\n[dry-run] Exiting without downloading.")
@@ -274,7 +290,7 @@ def process_dataset(dataset_id):
             image_count += 1
 
     conn.commit()
-    print(f"  → Done: {item_count} posts, {image_count} images saved, {skipped} skipped.")
+    print(f"  -> Done: {item_count} posts, {image_count} images saved, {skipped} skipped.")
     return item_count, image_count, skipped
 
 
