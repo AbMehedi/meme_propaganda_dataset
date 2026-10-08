@@ -51,12 +51,7 @@ WORKDIR /app
 # persist across container rebuilds.
 ENV EASYOCR_MODULE_PATH=/root/.EasyOCR
 
-# Default Ollama host for container-to-container networking.
-# Overridden to http://localhost:11434 when running outside Docker.
-ENV OLLAMA_HOST=http://ollama:11434
- 
-# Expose annotation UI web port
-EXPOSE 5000
+
 
 # Keep container alive for interactive `docker compose exec` usage
 CMD ["tail", "-f", "/dev/null"]

@@ -1,27 +1,24 @@
 # Bangla Meme Propaganda Dataset
 
-End-to-end pipeline for scraping, downloading, OCR-ing, annotating, and analyzing Bangla propaganda memes.
+Pipeline for scraping, downloading, database storage, OCR extraction, and text reconstruction for Bangla propaganda memes.
 
 ---
 
 ## Table of Contents
 1. [Overview & Architecture](#1-overview--architecture)
 2. [Project Structure](#2-project-structure)
-3. [Environment Setup (Choose One)](#3-environment-setup)
+3. [Environment Setup](#3-environment-setup)
    - [Option A: Docker Setup (Recommended)](#option-a-docker-setup-recommended)
    - [Option B: Bare-Metal Setup (Local Python)](#option-b-bare-metal-setup-local-python)
-4. [Step-by-Step Pipeline (From Scratch to End)](#4-step-by-step-pipeline-from-scratch-to-end)
+4. [Step-by-Step Pipeline](#4-step-by-step-pipeline)
    - [Step 1: Scrape Facebook Posts (Layer 1)](#step-1-scrape-facebook-posts-layer-1)
    - [Step 2: Download Images & Compute Hashes (Layer 2)](#step-2-download-images--compute-hashes-layer-2)
-   - [Step 3: Extract Text with EasyOCR (Layer 3)](#step-3-extract-text-with-easyocr-layer-3)
-   - [Step 4: Reconstruct Reading-Order Text (Layer 3+)](#step-4-reconstruct-reading-order-text-layer-3)
-   - [Step 5: Visual OCR Quality Assurance (QA)](#step-5-visual-ocr-quality-assurance-qa)
-   - [Step 6: Database Migration for Annotations (Layer 4)](#step-6-database-migration-for-annotations-layer-4)
-   - [Step 7: LLM Pre-Annotation with Ollama (Layer 4)](#step-7-llm-pre-annotation-with-ollama-layer-4)
-   - [Step 8: Review & Audit Annotations](#step-8-review--audit-annotations)
-   - [Step 9: Run Human Verification Web UI (HITL Platform)](#step-9-run-human-verification-web-ui-hitl-platform)
+   - [Step 3: Database Schema Migration & Verification](#step-3-database-schema-migration--verification)
+   - [Step 4: Extract Text with EasyOCR (Layer 3)](#step-4-extract-text-with-easyocr-layer-3)
+   - [Step 5: Reconstruct Reading-Order Text (Layer 3+)](#step-5-reconstruct-reading-order-text-layer-3)
+   - [Step 6: Visual OCR Quality Assurance (QA)](#step-6-visual-ocr-quality-assurance-qa)
 5. [Database Schema Reference](#5-database-schema-reference)
-6. [Script Reference & CLI Flags](#6-script-reference--cli-flags)
+6. [Script Reference](#6-script-reference)
 7. [Verification & Useful SQL Queries](#7-verification--useful-sql-queries)
 8. [Troubleshooting & FAQ](#8-troubleshooting--faq)
 
@@ -29,32 +26,27 @@ End-to-end pipeline for scraping, downloading, OCR-ing, annotating, and analyzin
 
 ## 1. Overview & Architecture
 
-The pipeline processes raw Facebook posts and memes into high-quality multimodal dataset layers with character-level text offsets and LLM pre-annotations:
+The pipeline processes raw Facebook posts and memes into high-quality multimodal dataset layers with bounding boxes and character-level text offsets:
 
 ```mermaid
 flowchart TD
     A[Facebook Pages] -->|1. Apify Scraper| B[Apify Dataset Cloud]
     B -->|2. download_and_hash.py| C[(DB: PAGE, POST, IMAGE)]
     B -->|2. download_and_hash.py| D[raw_images/*.jpg]
-    C & D -->|3. ocr_and_store.py| E[(DB: OCR_WORD)]
-    E -->|4. reconstruct_text.py| F[(DB: WORD_OFFSET + reconstructed_text)]
-    E & D -->|5. verify_ocr.py| G[ocr_check/*.png Visual QA]
-    F -->|6. migrate_db.py| H[(DB: LLM_PREANNOTATION, ANNOTATION)]
-    H -->|7. annotate_ollama.py| I[LLM Pre-annotations]
-    I -->|8. view_results.py| J[Human Review & Verification]
+    C -->|3. migrate_db.py| E[(DB: Core Schema)]
+    D & E -->|4. ocr_and_store.py| F[(DB: OCR_WORD)]
+    F -->|5. reconstruct_text.py| G[(DB: WORD_OFFSET + reconstructed_text)]
+    D & F -->|6. verify_ocr.py| H[ocr_check/*.png Visual QA]
 ```
 
 | Layer | Purpose | Script / Tool | Output |
 |---|---|---|---|
 | **Layer 1** | Scrape Facebook meme pages/posts | Apify Browser Console | Apify Dataset (`DATASET_ID`) |
 | **Layer 2** | Download images + compute SHA-256 & pHash | `download_and_hash.py` | `raw_images/`, tables: `PAGE`, `POST`, `IMAGE` |
+| **DB Setup** | Database schema verification | `migrate_db.py` | Validated table schemas |
 | **Layer 3** | EasyOCR text extraction (Bangla + English) | `ocr_and_store.py` | table: `OCR_WORD` |
 | **Layer 3+** | Reading-order text reconstruction & char offsets | `reconstruct_text.py` | `IMAGE.reconstructed_text`, table: `WORD_OFFSET` |
 | **QA** | Visual OCR bounding box spot-check | `verify_ocr.py` | `ocr_check/*.png` |
-| **Layer 4** | Database schema setup for annotations | `migrate_db.py` | tables: `LLM_PREANNOTATION`, `ANNOTATION` |
-| **Layer 4** | Zero-shot / few-shot LLM propaganda labeling | `annotate_ollama.py` | table: `LLM_PREANNOTATION` |
-| **Audit** | Inspection and human-in-the-loop audit | `view_results.py` | Terminal summaries & review queue |
-| **HITL Web** | Human verification, browsing & conflict adjudication | `annotation_ui/app.py` | Ground-truth `ANNOTATION` table, gold consensus |
 
 ---
 
@@ -62,7 +54,7 @@ flowchart TD
 
 ```
 meme_propaganda_dataset/
-├── readme.md                      ← Start here
+├── readme.md                      ← Documentation
 ├── .env                           ← Secrets: APIFY_TOKEN, DATASET_ID (never commit)
 ├── .env.example                   ← Template — copy to .env and fill in values
 ├── .gitignore
@@ -70,46 +62,25 @@ meme_propaganda_dataset/
 │
 ├── docker/                        ← All Docker-related files
 │   ├── Dockerfile                 ← CUDA 12.4 + Python 3.11 + GPU PyTorch
-│   ├── docker-compose.yml         ← App + Ollama services (GPU passthrough)
-│   ├── docker-compose.cpu.yml     ← CPU-only override
+│   ├── docker-compose.yml         ← Pipeline container with GPU passthrough
 │   ├── .dockerignore
-│   └── Makefile                   ← Shortcuts: make up, make ocr, make annotate, etc.
+│   └── Makefile                   ← Shortcuts: make up, make ocr, etc.
 │
 ├── ── Pipeline Scripts ──────────── (run in order)
 ├── download_and_hash.py           ← Step 2: Download images & compute hashes
-├── ocr_and_store.py               ← Step 3: EasyOCR extraction (Bangla + English)
-├── reconstruct_text.py            ← Step 4: Reading-order text & character offsets
-├── verify_ocr.py                  ← Step 5: Visual QA bounding box check
-├── migrate_db.py                  ← Step 6: Create annotation tables in DB
-├── annotate_ollama.py             ← Step 7: LLM pre-annotation via Ollama
-├── view_results.py                ← Step 8: Review annotation results & audit queue
-│
-├── annotation_ui/                 ← Human-in-the-Loop (HITL) Web Platform
-│   ├── app.py                     ← Flask backend & REST routing
-│   ├── templates/                 ← HTML templates (Brutalist UI)
-│   │   ├── base.html              ← Base layout & navigation sub-bar
-│   │   ├── annotate.html          ← 40/60 asymmetric annotation workspace
-│   │   ├── dataset.html           ← Full database browser with search & filter
-│   │   ├── adjudicate.html        ← Multi-annotator conflict resolution
-│   │   ├── history.html           ← Annotator personal decision history
-│   │   ├── admin.html             ← Dataset statistics & technique distributions
-│   │   └── login.html             ← Annotator identity selection
-│   └── static/                    ← CSS design tokens & client logic
-│       ├── style.css              ← Dark brutalist styling (#FF3D00, 0px radius)
-│       └── annotate.js            ← Keyboard shortcuts & drawer interaction
+├── migrate_db.py                  ← Step 3: Verify core schema in DB
+├── ocr_and_store.py               ← Step 4: EasyOCR extraction (Bangla + English)
+├── reconstruct_text.py            ← Step 5: Reading-order text & character offsets
+├── verify_ocr.py                  ← Step 6: Visual QA bounding box check
 │
 ├── utils/                         ← Helper/utility scripts
 │   └── propaganda_dataset_inspect.py  ← Print DB tables, schemas, row counts
 │
-├── docs/                          ← Documentation & research guides
-│   ├── bangla_meme_propaganda_codebook.md       ← 8-technique annotation codebook
-│   ├── human_verification_plan.md               ← Human verification UI workflow plan
-│   ├── hitl_llm_human_annotation_workflow.md    ← HITL annotation workflow design
-│   ├── gpt_prompt_design_guide.md               ← Prompt engineering guide
-│   └── multimodal_bangla_propaganda_dataset_plan.md ← Full dataset plan
+├── docs/                          ← Documentation & research plans
+│   └── multimodal_bangla_propaganda_dataset_plan.md ← Dataset architecture plan
 │
 └── ── Generated Data (Gitignored) ──
-    ├── propaganda_dataset.db      ← SQLite DB (metadata, OCR, annotations)
+    ├── propaganda_dataset.db      ← SQLite DB (metadata & OCR)
     ├── raw_images/                ← Downloaded meme images (.jpg)
     └── ocr_check/                 ← QA bounding-box annotated images (.png)
 ```
@@ -118,13 +89,13 @@ meme_propaganda_dataset/
 
 ## 3. Environment Setup
 
-Choose **Option A** (Docker) or **Option B** (Bare-Metal). Configure your environment once, then proceed directly to [Step-by-Step Pipeline](#4-step-by-step-pipeline-from-scratch-to-end).
+Choose **Option A** (Docker) or **Option B** (Bare-Metal).
 
 ---
 
 ### Option A: Docker Setup (Recommended)
 
-Docker provides an isolated container with CUDA 12.4, PyTorch GPU, and Ollama pre-configured.
+Docker provides an isolated container with CUDA 12.4 and GPU PyTorch pre-configured for EasyOCR.
 
 #### 1. Clone & Configure Environment
 ```bash
@@ -140,30 +111,14 @@ DATASET_ID=your_apify_dataset_id_here
 ```
 
 #### 2. Start Containers
-
-- **With NVIDIA GPU:**
-  ```bash
-  docker compose -f docker/docker-compose.yml up -d --build
-  ```
-
-- **Without GPU (CPU-Only):**
-  ```bash
-  docker compose -f docker/docker-compose.yml -f docker/docker-compose.cpu.yml up -d --build
-  ```
+```bash
+docker compose -f docker/docker-compose.yml up -d --build
+```
 
 #### 3. Verify Container GPU Access
 ```bash
 docker compose -f docker/docker-compose.yml exec app python -c "import torch; print('CUDA:', torch.cuda.is_available()); print('Device:', torch.cuda.get_device_name(0) if torch.cuda.is_available() else 'CPU')"
 ```
-
-#### 4. Pull an Ollama Model (Inside Ollama Container)
-```bash
-docker compose -f docker/docker-compose.yml exec ollama ollama pull qwen2.5:3b
-```
-
-> **Note on Docker commands:** In Docker, you run any pipeline script using:  
-> `docker compose -f docker/docker-compose.yml exec app python <script_name>.py`  
-> (or use `make -C docker <target>` shortcuts if `make` is installed).
 
 ---
 
@@ -193,7 +148,6 @@ python -m venv .venv
   ```powershell
   .venv\Scripts\Activate.ps1
   ```
-  *(If restricted, run once: `Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser`)*
 - **Windows (CMD):**
   ```cmd
   .venv\Scripts\activate.bat
@@ -210,14 +164,6 @@ Check your CUDA driver version using `nvidia-smi`, then install the matching whe
   ```bash
   pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu124
   ```
-- **CUDA 12.1:**
-  ```bash
-  pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
-  ```
-- **CUDA 11.8:**
-  ```bash
-  pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
-  ```
 - **CPU-Only (No NVIDIA GPU):**
   ```bash
   pip install torch torchvision torchaudio
@@ -233,17 +179,9 @@ pip install -r requirements.txt
 python -c "import torch; print('CUDA available:', torch.cuda.is_available()); print('Device:', torch.cuda.get_device_name(0) if torch.cuda.is_available() else 'CPU')"
 ```
 
-#### 6. Install & Start Ollama
-1. Download from [ollama.com/download](https://ollama.com/download) and install.
-2. Ensure Ollama is running (`ollama serve` or system tray app).
-3. Pull the required model:
-   ```bash
-   ollama pull qwen2.5:3b
-   ```
-
 ---
 
-## 4. Step-by-Step Pipeline (From Scratch to End)
+## 4. Step-by-Step Pipeline
 
 Execute these steps in order to build and process the dataset from scratch.
 
@@ -255,16 +193,7 @@ Execute these steps in order to build and process the dataset from scratch.
 
 1. Log in to [Apify Console](https://console.apify.com/).
 2. Go to **Store** → Select **Facebook Posts Scraper** (`apify/facebook-posts-scraper`).
-3. Enter the target Facebook page URLs and post limit:
-   ```json
-   {
-     "startUrls": [
-       { "url": "https://www.facebook.com/<target_page_1>" },
-       { "url": "https://www.facebook.com/<target_page_2>" }
-     ],
-     "resultsLimit": 50
-   }
-   ```
+3. Enter target Facebook page URLs and post limit.
 4. Click **Start**. Once completed, copy the **Dataset ID** from the dataset URL:
    `https://api.apify.com/v2/datasets/<DATASET_ID>`
 5. Add your token and dataset ID to `.env`:
@@ -277,7 +206,7 @@ Execute these steps in order to build and process the dataset from scratch.
 
 ### Step 2: Download Images & Compute Hashes (Layer 2)
 
-Fetches post metadata and downloads images locally. Computes SHA-256 (exact duplicate check) and pHash (perceptual near-duplicate check under resize/compression).
+Fetches post metadata and downloads images locally. Computes SHA-256 (exact duplicate check) and pHash (perceptual near-duplicate check).
 
 | Environment | Command |
 |---|---|
@@ -288,7 +217,21 @@ Fetches post metadata and downloads images locally. Computes SHA-256 (exact dupl
 
 ---
 
-### Step 3: Extract Text with EasyOCR (Layer 3)
+### Step 3: Database Schema Migration & Verification
+
+Ensures all core tables (`PAGE`, `POST`, `IMAGE`, `OCR_WORD`, `WORD_OFFSET`) exist in `propaganda_dataset.db`.
+
+| Environment | Command |
+|---|---|
+| **Docker** | `docker compose -f docker/docker-compose.yml exec app python migrate_db.py` |
+| **Bare-Metal** | `python migrate_db.py` |
+
+Optional flag:
+- `--drop-annotation-tables`: drops legacy `ANNOTATION` and `LLM_PREANNOTATION` tables if present.
+
+---
+
+### Step 4: Extract Text with EasyOCR (Layer 3)
 
 Runs EasyOCR for Bangla (`bn`) and English (`en`) with contrast enhancement (CLAHE), bilateral denoising, and Unicode grapheme cluster splitting (`\X`) to prevent bounding box drift on conjuncts (যুক্তাক্ষর).
 
@@ -301,7 +244,7 @@ Runs EasyOCR for Bangla (`bn`) and English (`en`) with contrast enhancement (CLA
 
 ---
 
-### Step 4: Reconstruct Reading-Order Text (Layer 3+)
+### Step 5: Reconstruct Reading-Order Text (Layer 3+)
 
 Sorts detected words into natural reading order (top-to-bottom, left-to-right), builds a readable string per image, and maps character offsets.
 
@@ -314,7 +257,7 @@ Sorts detected words into natural reading order (top-to-bottom, left-to-right), 
 
 ---
 
-### Step 5: Visual OCR Quality Assurance (QA)
+### Step 6: Visual OCR Quality Assurance (QA)
 
 Draws line bounding boxes (🔴 Red), exact word boxes (🟢 Green), and estimated word boxes (🟠 Orange) onto images for quality spot-checks.
 
@@ -327,155 +270,9 @@ Draws line bounding boxes (🔴 Red), exact word boxes (🟢 Green), and estimat
 
 ---
 
-### Step 6: Database Migration for Annotations (Layer 4)
-
-Initializes the schema for LLM pre-annotations and human verification records. Safe to run multiple times.
-
-| Environment | Command |
-|---|---|
-| **Docker** | `docker compose -f docker/docker-compose.yml exec app python migrate_db.py` |
-| **Bare-Metal** | `python migrate_db.py` |
-
-- **Output:** Creates tables `LLM_PREANNOTATION` and `ANNOTATION` in `propaganda_dataset.db`.
-
----
-
-### Step 7: LLM Pre-Annotation with Ollama (Layer 4)
-
-Feeds reconstructed OCR text, captions, and metadata to an Ollama LLM using a strict 8-technique propaganda taxonomy and constrained JSON output.
-
-| Environment | Command |
-|---|---|
-| **Docker** | `docker compose -f docker/docker-compose.yml exec app python annotate_ollama.py --auto` |
-| **Bare-Metal** | `python annotate_ollama.py --auto` |
-
-#### Propaganda Taxonomy (8 Techniques)
-| Code | Technique | Description |
-|---|---|---|
-| **T01** | Loaded Language | Strongly emotional words/phrases designed to influence opinion |
-| **T02** | Name Calling / Labeling | Attaching derogatory labels directly to a target |
-| **T03** | Smears | Discrediting a target with damaging accusations/unsubstantiated claims |
-| **T04** | Appeal to Fear / Prejudice | Exploiting anxiety, existential danger, or collective bias |
-| **T05** | Exaggeration / Minimisation | Grossly overstating or minimizing reality |
-| **T06** | Slogans | Catchy rallying phrases used as a substitute for logical reasoning |
-| **T07** | Appeal to Strong Emotions | Provoking non-fear emotions (pride, anger, grief, pity) |
-| **T08** | No Propaganda Technique | Factual, neutral, or non-persuasive content |
-
-#### Recommended Hardware Models
-| Model | Min VRAM | Min System RAM | Recommended For |
-|---|---|---|---|
-| `qwen2.5:14b` | 10 GB | 16 GB | High accuracy (RTX 3080/4080/4090) |
-| `qwen2.5:7b` | 5 GB | 8 GB | Standard GPU workflow (RTX 3060/4060) |
-| `llava-phi3` | 3.5 GB | 8 GB | Multimodal vision analysis (RTX 3050+) |
-| `qwen2.5:3b` | 0 GB (CPU) | 4 GB | Fast CPU-only or low-VRAM machines |
-
----
-
-### Step 8: Review & Audit Annotations
-
-Inspect model predictions, overall label distribution, and filter posts flagged for human verification.
-
-| Environment | Action | Command |
-|---|---|---|
-| **Docker** | Summary Stats | `docker compose -f docker/docker-compose.yml exec app python view_results.py --summary` |
-| **Docker** | Review Queue | `docker compose -f docker/docker-compose.yml exec app python view_results.py --review-queue` |
-| **Bare-Metal** | Summary Stats | `python view_results.py --summary` |
-| **Bare-Metal** | Review Queue | `python view_results.py --review-queue` |
-
-**Audit criteria for Human Review Queue:**
-- Model explicitly set `needs_review=1`.
-- Confidence score is below threshold (`--conf-threshold 0.65`).
-- Labeled as T08 (No Propaganda) despite lengthy emotional text present.
-- Contradictory technique combinations.
-
----
-
-### Step 9: Run Human Verification Web UI (HITL Platform)
-
-A full-featured Human-in-the-Loop (HITL) editorial web platform for annotators and researchers to review, edit, ground-truth, browse, and adjudicate LLM pre-annotations.
-
-#### 1. How to Launch the Web UI
-
-##### Option A: Using Docker (Recommended)
-1. Ensure the containers are running:
-   ```bash
-   docker compose -f docker/docker-compose.yml up -d
-   ```
-2. Start the web UI server inside the `app` container:
-   * **Background / Daemon Mode** (leaves terminal free):
-     ```bash
-     docker compose -f docker/docker-compose.yml exec -d app python annotation_ui/app.py
-     ```
-   * **Interactive / Live Console Logs Mode**:
-     ```bash
-     docker compose -f docker/docker-compose.yml exec app python annotation_ui/app.py
-     ```
-   * **Makefile Shortcut** *(Linux / macOS / WSL)*:
-     ```bash
-     make -C docker ui
-     ```
-
-> **Tip (Windows / Docker Desktop):** If you ever see `python: can't open file '/app/annotation_ui/app.py': No such file or directory`, your container's host bind-mount is stale after Docker Desktop restarted. Recreate it with:
-> ```bash
-> docker compose -f docker/docker-compose.yml up -d --force-recreate
-> ```
-
-##### Option B: Bare-Metal (Local Python)
-Inside your activated virtual environment (`.venv`):
-```bash
-python annotation_ui/app.py
-```
-
-#### 2. Accessing & Managing the Server
-
-| Attribute | Value / Instruction |
-|---|---|
-| **Access URL** | [http://localhost:5000](http://localhost:5000) |
-| **Bound Host & Port** | `0.0.0.0:5000` (Docker host port mapped to `5000`) |
-| **Stream Live Logs** | `docker compose -f docker/docker-compose.yml logs -f app` |
-| **Restart Server** | `docker compose -f docker/docker-compose.yml restart app` |
-| **Stop Bare-Metal** | Press `Ctrl + C` in the running terminal |
-
-#### 3. Core Modules & Multi-Annotator Workflow
-
-Open **`http://localhost:5000`** in your browser:
-* **Login & Identity**: Enter your annotator handle (e.g. `omor`, `mehedi`). Each annotator's decisions are tracked separately. Multiple team members can evaluate posts concurrently in separate browser windows.
-
-Explore the five integrated platform modules:
-
-##### 1. Annotation Workspace (`/annotate`)
-* **Asymmetric 40/60 Layout**: High-resolution meme inspection frame alongside reconstructed Bangla OCR text, post captions, model predictions, rationale spans, and explanations.
-* **Confidence Meter & Review Flags**: Visual color-coded confidence bar (`HIGH`, `MED`, `LOW`) and automated review reason indicators.
-* **Rapid Action Controls & Shortcuts**:
-  - **`A` / `✓ ACCEPT`**: Confirm model prediction into `ANNOTATION` table with `VERIFIED` status.
-  - **`E` / `✎ EDIT`**: Slide out inline drawer to correct technique (`T01`–`T08`), modality (`M1`, `M2`, `M3`), or evidence span (`CORRECTED` status).
-  - **`R` / `✕ REJECT`**: Relabel incorrect predictions (defaults to `T08 No Propaganda`).
-  - **`S` / `⊘ SKIP`**: Defer prediction for subsequent team review.
-  - **`←` / `→`**: Instant keyboard pagination between records.
-
-##### 2. Dataset Browser (`/dataset`)
-* **Full Repository Directory**: Paginated directory (50 records/page) showing all 340 pre-annotations, confidence scores, human annotator tags, and review flags.
-* **Filter Tabs**: Instant filtering by `ALL (340)`, `ANNOTATED`, `UNANNOTATED`, and `NEEDS REVIEW`.
-* **Search & Sort**: Full-text search across IDs, Bangla captions, labels, and annotators, with multi-option sorting (Oldest, Newest, Confidence High→Low, Low→High).
-
-##### 3. Adjudication Workspace (`/adjudicate`)
-* **Multi-Annotator Consensus**: Automatically queues predictions where two or more annotators have submitted conflicting labels on the same post.
-* **Side-by-Side Comparison**: Lead adjudicators inspect divergent annotations, annotator IDs, and rationale evidence side-by-side.
-* **Gold-Standard Resolution**: Authoritative ground-truth label selection with rationale notes and resolution archive.
-
-##### 4. Annotator History (`/history`)
-* **Personal Decision Log**: Filterable log of every decision submitted by the active annotator (`VERIFIED`, `CORRECTED`, `REJECTED`, `SKIPPED`).
-* **Direct Navigation**: Click any historical row to re-open and review the post in the annotation workspace.
-
-##### 5. Dataset Analytics & Stats (`/admin`)
-* **Real-Time Progress**: Dynamic completion rate tracking across total, verified, and skipped items.
-* **Distribution Comparison**: Comparative visual distribution bars contrasting human-verified techniques against raw AI predictions.
-
----
-
 ## 5. Database Schema Reference
 
-The database `propaganda_dataset.db` contains 7 relational tables:
+The database `propaganda_dataset.db` contains 5 core relational tables:
 
 ```mermaid
 erDiagram
@@ -484,9 +281,6 @@ erDiagram
     IMAGE ||--o{ OCR_WORD : "has text"
     IMAGE ||--o{ WORD_OFFSET : "maps"
     OCR_WORD ||--|| WORD_OFFSET : "character bounds"
-    POST ||--o{ LLM_PREANNOTATION : "pre-annotated by"
-    POST ||--o{ ANNOTATION : "annotated"
-    LLM_PREANNOTATION ||--o| ANNOTATION : "verified into"
 ```
 
 ### Table: `PAGE`
@@ -542,65 +336,19 @@ erDiagram
 | `start_char` | INTEGER | Start index in `IMAGE.reconstructed_text` |
 | `end_char` | INTEGER | End index (exclusive) in `IMAGE.reconstructed_text` |
 
-### Table: `LLM_PREANNOTATION`
-| Column | Type | Description |
-|---|---|---|
-| `llm_annotation_id` | INTEGER (PK) | Auto-incrementing identifier |
-| `post_id` | TEXT (FK) | Reference to `POST(post_id)` |
-| `image_id` | TEXT | Associated image ID |
-| `model_name` | TEXT | Model used (e.g. `qwen2.5:3b`) |
-| `prompt_version` | TEXT | Version tag (e.g. `v1.0-ollama`) |
-| `run_id` | INTEGER | Iteration run number |
-| `predicted_label` | TEXT | Technique code (`T01`–`T08`) |
-| `modality` | TEXT | `M1` (Text), `M2` (Image), `M3` (Multimodal) |
-| `confidence_score` | REAL | Technique confidence (0.0 to 1.0) |
-| `rationale_span` | TEXT | Extracted text span triggering the technique |
-| `reasoning` | TEXT | Model explanation |
-| `raw_response` | TEXT | Full JSON response |
-| `needs_review` | INTEGER | `1` if flagged for human review |
-| `review_reason` | TEXT | Reason flag was set |
-| `overall_confidence` | REAL | Post-level confidence score |
-| `created_at` | TEXT | Annotation timestamp |
-
-### Table: `ANNOTATION`
-| Column | Type | Description |
-|---|---|---|
-| `annotation_id` | INTEGER (PK) | Final validated annotation identifier |
-| `post_id` | TEXT (FK) | Reference to `POST(post_id)` |
-| `technique_label` | TEXT | Validated technique label |
-| `modality` | TEXT | `M1` / `M2` / `M3` |
-| `start_char` / `end_char` | INTEGER | Character bounds in `reconstructed_text` |
-| `evidence_span` | TEXT | Ground-truth text span |
-| `annotation_source` | TEXT | `human_verified`, `human_corrected`, or `gold_adjudicated` |
-| `verification_status` | TEXT | `VERIFIED`, `CORRECTED`, `REJECTED`, `SKIPPED` |
-| `human_annotator_id` | TEXT | ID of reviewer / annotator |
-| `adjudication_status` | TEXT | Consensus state (`NONE`, `PENDING`, `AGREED`, `ADJUDICATED`) |
-| `llm_preannotation_id` | INTEGER (FK) | Reference to `LLM_PREANNOTATION` |
-| `created_at` | TEXT | Annotation timestamp |
-
 ---
 
-## 6. Script Reference & CLI Flags
+## 6. Script Reference
 
-| Script | Common Flags | Description |
+| Script | Command / Flags | Description |
 |---|---|---|
-| `download_and_hash.py` | *(none)* | Downloads images and generates database entries from `DATASET_ID` |
-| `ocr_and_store.py` | *(none)* | Performs EasyOCR on all unprocessed images in `IMAGE` |
-| `reconstruct_text.py` | *(none)* | Assembles words into natural reading order and populates `WORD_OFFSET` |
-| `verify_ocr.py` | *(none)* | Generates sample visual bounding boxes in `ocr_check/` |
-| `migrate_db.py` | *(none)* | Applies schema updates for `LLM_PREANNOTATION` and `ANNOTATION` |
-| `annotate_ollama.py` | `--auto` | Automatically detects RAM/VRAM and picks optimal model |
-| | `--model <name>` | Manually specify model (e.g. `qwen2.5:7b`) |
-| | `--limit <n>` | Only process `n` posts |
-| | `--runs <n>` | Number of runs per post for consistency estimation |
-| | `--dry-run` | Prints prompts and payloads without calling Ollama |
-| | `--info` | Inspects system hardware and supported model tier |
-| `view_results.py` | `--summary` | Displays aggregated label distribution and counts |
-| | `--review-queue` | Filters posts that need human inspection |
-| | `--conf-threshold <f>` | Sets confidence cutoff for review queue (default: 0.65) |
-| | `--model <name>` | Filter results by specific model |
-| `annotation_ui/app.py` | *(none)* | Launches Flask HITL web server on port 5000 (`http://localhost:5000`) |
-| `utils/propaganda_dataset_inspect.py` | *(none)* | Quick summary of table schemas and row counts |
+| `download_and_hash.py` | `python download_and_hash.py` | Downloads images and generates database entries from `DATASET_ID` |
+| `migrate_db.py` | `python migrate_db.py` | Ensures all core tables exist in `propaganda_dataset.db` |
+| | `--drop-annotation-tables` | Cleans legacy annotation tables |
+| `ocr_and_store.py` | `python ocr_and_store.py` | Performs EasyOCR on all unprocessed images in `IMAGE` |
+| `reconstruct_text.py` | `python reconstruct_text.py` | Assembles words into natural reading order and populates `WORD_OFFSET` |
+| `verify_ocr.py` | `python verify_ocr.py` | Generates sample visual bounding boxes in `ocr_check/` |
+| `utils/propaganda_dataset_inspect.py` | `python utils/propaganda_dataset_inspect.py` | Summary of table schemas and row counts |
 
 ---
 
@@ -618,7 +366,7 @@ python utils/propaganda_dataset_inspect.py
 
 ### Useful SQL Queries
 ```sql
--- 1. Check counts across all layers
+-- 1. Check counts across all tables
 SELECT
   (SELECT COUNT(*) FROM PAGE) AS pages,
   (SELECT COUNT(*) FROM POST) AS posts,
@@ -633,14 +381,6 @@ JOIN WORD_OFFSET o ON i.image_id = o.image_id
 JOIN OCR_WORD w ON o.ocr_id = w.ocr_id
 WHERE i.reconstructed_text IS NOT NULL
 LIMIT 10;
-
--- 3. Label distribution & average confidence
-SELECT predicted_label, COUNT(*) AS count,
-       ROUND(AVG(confidence_score), 3) AS avg_conf,
-       SUM(needs_review) AS flagged_for_review
-FROM LLM_PREANNOTATION
-GROUP BY predicted_label
-ORDER BY count DESC;
 ```
 
 ---
@@ -655,14 +395,7 @@ ORDER BY count DESC;
   pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu124
   ```
 
-### 2. Docker fails with NVIDIA GPU error
-- **Cause:** NVIDIA Container Toolkit is missing or outdated.
-- **Fix:** Install [NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html) or run CPU-only:
-  ```bash
-  docker compose -f docker/docker-compose.yml -f docker/docker-compose.cpu.yml up -d --build
-  ```
-
-### 3. Missing `APIFY_TOKEN` or `DATASET_ID` Error
+### 2. Missing `APIFY_TOKEN` or `DATASET_ID` Error
 - **Cause:** `.env` file is missing or variables are unset.
 - **Fix:** Make sure `.env` contains:
   ```env
@@ -670,11 +403,7 @@ ORDER BY count DESC;
   DATASET_ID=your_dataset_id
   ```
 
-### 4. Ollama connection refused
-- **Docker:** Check container status with `docker compose -f docker/docker-compose.yml logs ollama`. Restart with `docker compose -f docker/docker-compose.yml restart ollama`.
-- **Bare-Metal:** Ensure Ollama desktop application is running or execute `ollama serve`. Verify at `http://localhost:11434`.
-
-### 5. `sqlite3.OperationalError: no such column`
+### 3. `sqlite3.OperationalError: no such column`
 - **Cause:** Schema migration is missing.
 - **Fix:** Run:
   ```bash
@@ -682,22 +411,6 @@ ORDER BY count DESC;
   python reconstruct_text.py
   ```
 
-### 6. `python: can't open file '/app/annotation_ui/app.py': No such file or directory`
-- **Cause:** When Docker Desktop restarts, existing containers can retain a stale Windows host bind-mount handle, leaving `/app` temporarily empty inside the container.
-- **Fix:** Recreate the container to refresh the bind-mount:
-  ```bash
-  docker compose -f docker/docker-compose.yml up -d --force-recreate
-  docker compose -f docker/docker-compose.yml exec -d app python annotation_ui/app.py
-  ```
-
-### 7. `'make' is not recognized as an internal or external command`
+### 4. `'make' is not recognized as an internal or external command`
 - **Cause:** Standard Windows PowerShell does not ship with GNU `make`.
-- **Fix:** Run the direct `docker compose` command instead of `make`:
-  ```powershell
-  docker compose -f docker/docker-compose.yml exec -d app python annotation_ui/app.py
-  ```
-
-### 8. `failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine`
-- **Cause:** Docker Desktop is closed, stopped, or still initializing.
-- **Fix:** Open Docker Desktop from the Start menu, wait until the whale icon in the Windows taskbar system tray is steady (running), then run your `docker compose` command.
-
+- **Fix:** Run direct `docker compose` or Python commands instead of `make`.
