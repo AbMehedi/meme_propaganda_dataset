@@ -2,6 +2,7 @@
 __pycache__/
 *.py[cod]
 .venv/
+*.db
 propaganda_dataset.db
 raw_images/*
 !raw_images/.gitkeep
