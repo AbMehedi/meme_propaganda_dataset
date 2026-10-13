@@ -1,14 +1,24 @@
-.env
+# Python environments and caches
+.venv/
+.ocr-venv/
 __pycache__/
 *.py[cod]
-.venv/
-*.db
-propaganda_dataset.db
-raw_images/*
-!raw_images/.gitkeep
-raw_images_new/*
-!raw_images_new/.gitkeep
-ocr_check/*
-!ocr_check/.gitkeep
-ocr_check_new/*
-!ocr_check_new/.gitkeep
+*$py.class
+
+# Local tooling and generated runtime state
+.env
+.env.*
+*.log
+data/*.db-shm
+data/*.db-wal
+
+# Generated OCR review output that can be recreated locally
+ocr_corrected_20.csv
+ocr_author_review_changes.csv
+
+# OS and editor files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
