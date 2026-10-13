@@ -154,19 +154,19 @@
           <View className="copy muted">
             <Header value="Start with 1. Use the same technique and number for text and picture areas supporting the same claim. Use 2 for a separate claim of that technique." size="5" style="font-size:inherit; font-weight:inherit; line-height:inherit; color:inherit; margin:0;" />
           </View>
-          <TextArea name="visual_instance" toName="image" rows="1" placeholder="Example: 1" editable="true" maxSubmissions="1" perRegion="true" required="true" requiredMessage="Picture box: enter a claim number, such as 1." />
+          <TextArea name="visual_instance" toName="image" rows="1" placeholder="Example: 1" editable="true" maxSubmissions="1" showSubmitButton="true" perRegion="true" required="true" requiredMessage="Picture box: enter a claim number, such as 1." />
         </View>
         <View className="field">
           <View className="copy field-title">
             <Header value="Why does this evidence match the technique? *" size="5" style="font-size:inherit; font-weight:inherit; line-height:inherit; color:inherit; margin:0;" />
           </View>
-          <TextArea name="visual_reason" toName="image" rows="2" placeholder="This supports [technique] because... The words and picture work together by..." editable="true" maxSubmissions="1" perRegion="true" required="true" requiredMessage="Picture box: explain why this evidence matches the technique." />
+          <TextArea name="visual_reason" toName="image" rows="2" placeholder="This supports [technique] because... The words and picture work together by..." editable="true" maxSubmissions="1" showSubmitButton="true" perRegion="true" required="true" requiredMessage="Picture box: explain why this evidence matches the technique." />
         </View>
         <View className="field">
           <View className="copy field-title">
             <Header value="Who or what is being discussed? (optional)" size="5" style="font-size:inherit; font-weight:inherit; line-height:inherit; color:inherit; margin:0;" />
           </View>
-          <TextArea name="visual_target" toName="image" rows="1" placeholder="Person or group named or depicted. Leave blank if unknown." editable="true" maxSubmissions="1" perRegion="true" />
+          <TextArea name="visual_target" toName="image" rows="1" placeholder="Person or group named or depicted. Leave blank if unknown." editable="true" maxSubmissions="1" showSubmitButton="true" perRegion="true" />
         </View>
         <View className="field">
           <View className="copy field-title">
@@ -229,7 +229,7 @@
           <Header value="A picture box is evidence that the picture contributes. Do not choose Not used for a box. If the words are sufficient and the picture adds nothing, remove the box and keep the text evidence." size="5" style="font-size:inherit; font-weight:inherit; line-height:inherit; color:inherit; margin:0;" />
         </View>
         <View className="copy muted">
-          <Header value="Press Enter to save a one-line answer. For an explanation, click Add or press Shift + Enter. Save your answers before selecting another mark." size="5" style="font-size:inherit; font-weight:inherit; line-height:inherit; color:inherit; margin:0;" />
+          <Header value="After each answer, click Add to save it. Check that the saved answer appears before selecting another mark." size="5" style="font-size:inherit; font-weight:inherit; line-height:inherit; color:inherit; margin:0;" />
         </View>
       </View>
     </View>
@@ -265,19 +265,19 @@
           <View className="copy muted">
             <Header value="Start with 1. Use the same technique and number for text and picture areas supporting the same claim. Use 2 for a separate claim of that technique." size="5" style="font-size:inherit; font-weight:inherit; line-height:inherit; color:inherit; margin:0;" />
           </View>
-          <TextArea name="caption_instance" toName="caption" rows="1" placeholder="Example: 1" editable="true" maxSubmissions="1" perRegion="true" required="true" requiredMessage="Caption highlight: enter a claim number, such as 1." />
+          <TextArea name="caption_instance" toName="caption" rows="1" placeholder="Example: 1" editable="true" maxSubmissions="1" showSubmitButton="true" perRegion="true" required="true" requiredMessage="Caption highlight: enter a claim number, such as 1." />
         </View>
         <View className="field">
           <View className="copy field-title">
             <Header value="Why does this evidence match the technique? *" size="5" style="font-size:inherit; font-weight:inherit; line-height:inherit; color:inherit; margin:0;" />
           </View>
-          <TextArea name="caption_reason" toName="caption" rows="2" placeholder="This supports [technique] because... The words and picture work together by..." editable="true" maxSubmissions="1" perRegion="true" required="true" requiredMessage="Caption highlight: explain why this evidence matches the technique." />
+          <TextArea name="caption_reason" toName="caption" rows="2" placeholder="This supports [technique] because... The words and picture work together by..." editable="true" maxSubmissions="1" showSubmitButton="true" perRegion="true" required="true" requiredMessage="Caption highlight: explain why this evidence matches the technique." />
         </View>
         <View className="field">
           <View className="copy field-title">
             <Header value="Who or what is being discussed? (optional)" size="5" style="font-size:inherit; font-weight:inherit; line-height:inherit; color:inherit; margin:0;" />
           </View>
-          <TextArea name="caption_target" toName="caption" rows="1" placeholder="Person or group named or depicted. Leave blank if unknown." editable="true" maxSubmissions="1" perRegion="true" />
+          <TextArea name="caption_target" toName="caption" rows="1" placeholder="Person or group named or depicted. Leave blank if unknown." editable="true" maxSubmissions="1" showSubmitButton="true" perRegion="true" />
         </View>
         <View className="field">
           <View className="copy field-title">
@@ -316,7 +316,7 @@
           </View>
         </View>
         <View className="copy muted">
-          <Header value="Press Enter to save a one-line answer. For an explanation, click Add or press Shift + Enter. Save your answers before selecting another mark." size="5" style="font-size:inherit; font-weight:inherit; line-height:inherit; color:inherit; margin:0;" />
+          <Header value="After each answer, click Add to save it. Check that the saved answer appears before selecting another mark." size="5" style="font-size:inherit; font-weight:inherit; line-height:inherit; color:inherit; margin:0;" />
         </View>
       </View>
     </View>
@@ -352,19 +352,19 @@
           <View className="copy muted">
             <Header value="Start with 1. Use the same technique and number for text and picture areas supporting the same claim. Use 2 for a separate claim of that technique." size="5" style="font-size:inherit; font-weight:inherit; line-height:inherit; color:inherit; margin:0;" />
           </View>
-          <TextArea name="ocr_instance" toName="ocr" rows="1" placeholder="Example: 1" editable="true" maxSubmissions="1" perRegion="true" required="true" requiredMessage="Image-text highlight: enter a claim number, such as 1." />
+          <TextArea name="ocr_instance" toName="ocr" rows="1" placeholder="Example: 1" editable="true" maxSubmissions="1" showSubmitButton="true" perRegion="true" required="true" requiredMessage="Image-text highlight: enter a claim number, such as 1." />
         </View>
         <View className="field">
           <View className="copy field-title">
             <Header value="Why does this evidence match the technique? *" size="5" style="font-size:inherit; font-weight:inherit; line-height:inherit; color:inherit; margin:0;" />
           </View>
-          <TextArea name="ocr_reason" toName="ocr" rows="2" placeholder="This supports [technique] because... The words and picture work together by..." editable="true" maxSubmissions="1" perRegion="true" required="true" requiredMessage="Image-text highlight: explain why this evidence matches the technique." />
+          <TextArea name="ocr_reason" toName="ocr" rows="2" placeholder="This supports [technique] because... The words and picture work together by..." editable="true" maxSubmissions="1" showSubmitButton="true" perRegion="true" required="true" requiredMessage="Image-text highlight: explain why this evidence matches the technique." />
         </View>
         <View className="field">
           <View className="copy field-title">
             <Header value="Who or what is being discussed? (optional)" size="5" style="font-size:inherit; font-weight:inherit; line-height:inherit; color:inherit; margin:0;" />
           </View>
-          <TextArea name="ocr_target" toName="ocr" rows="1" placeholder="Person or group named or depicted. Leave blank if unknown." editable="true" maxSubmissions="1" perRegion="true" />
+          <TextArea name="ocr_target" toName="ocr" rows="1" placeholder="Person or group named or depicted. Leave blank if unknown." editable="true" maxSubmissions="1" showSubmitButton="true" perRegion="true" />
         </View>
         <View className="field">
           <View className="copy field-title">
@@ -403,7 +403,7 @@
           </View>
         </View>
         <View className="copy muted">
-          <Header value="Press Enter to save a one-line answer. For an explanation, click Add or press Shift + Enter. Save your answers before selecting another mark." size="5" style="font-size:inherit; font-weight:inherit; line-height:inherit; color:inherit; margin:0;" />
+          <Header value="After each answer, click Add to save it. Check that the saved answer appears before selecting another mark." size="5" style="font-size:inherit; font-weight:inherit; line-height:inherit; color:inherit; margin:0;" />
         </View>
       </View>
     </View>
@@ -507,7 +507,7 @@
         <View className="copy muted">
           <Header value="Write in Bangla or English. If no technique applies, explain why. For a problem, name the text section or picture area and say what needs checking. Include any uncertainty, quotation, satire, or optional candidate that matters." size="5" style="font-size:inherit; font-weight:inherit; line-height:inherit; color:inherit; margin:0;" />
         </View>
-        <TextArea name="post_note" toName="caption" rows="3" placeholder="My decision is... because... / The problem is in... The words are... A reviewer should check..." editable="true" maxSubmissions="1" required="true" requiredMessage="Step 4: add a short final note explaining your decision or problem." />
+        <TextArea name="post_note" toName="caption" rows="3" placeholder="My decision is... because... / The problem is in... The words are... A reviewer should check..." editable="true" maxSubmissions="1" showSubmitButton="true" required="true" requiredMessage="Step 4: add a short final note explaining your decision or problem." />
         <View className="copy muted">
           <Header value="Click Add or press Shift + Enter to save this note." size="5" style="font-size:inherit; font-weight:inherit; line-height:inherit; color:inherit; margin:0;" />
         </View>
