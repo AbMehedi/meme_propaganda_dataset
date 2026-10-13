@@ -22,3 +22,6 @@ Thumbs.db
 .idea/
 .vscode/
 
+# Isolated Label Studio databases, credentials and browser/test state
+.pilot-runtime/
+

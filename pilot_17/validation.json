@@ -1,0 +1,63 @@
+{
+  "schema_version": "campnet-pilot-1",
+  "errors": [],
+  "warnings": [],
+  "excluded": [
+    {
+      "image_id": "c57c924614915ae39b9b392e6b82f45e",
+      "reason": "Explicit #excluded in corrected OCR"
+    },
+    {
+      "image_id": "31046aeb76a14839f55066846dc38304",
+      "reason": "Explicit #excluded in corrected OCR"
+    },
+    {
+      "image_id": "824ecd9bc2e288b5e4278dfe0911e673",
+      "reason": "Explicit #excluded in corrected OCR"
+    }
+  ],
+  "empty_ocr": [
+    {
+      "image_id": "d48b60995b080dd77a582b99ab9871c2",
+      "status": "AUTHOR_VERIFIED_EMPTY",
+      "basis": "Review CSV permits empty only after image inspection; not machine OCR failure"
+    }
+  ],
+  "selected_count": 17,
+  "database_tables": [
+    "source",
+    "post",
+    "image",
+    "job",
+    "ocr_run",
+    "annotation",
+    "adjudication",
+    "ingest_run"
+  ],
+  "database_counts": {
+    "source": 161,
+    "post": 1077,
+    "image": 406,
+    "job": 406,
+    "ocr_run": 0,
+    "annotation": 0,
+    "adjudication": 0,
+    "ingest_run": 1
+  },
+  "database_records_matched": 17,
+  "input_hashes": {
+    "data\\manifest.csv": "e9610910b8dd84d255023eb5e71ff6ac137784445eab7b54a34fb02dbd9ecbd3",
+    "pilot_20_audit.csv": "5c23f6bf3b0dad832e9caa52aa9b6fe2b3dc0e05cedc3bbd73f152e18bc309eb",
+    "ocr_corrected_20.csv": "26181b3325d8f5a3a1ed491768a938d65074d36f2ae6ebf6bba73b73b310dcdc",
+    "ocr_draft_20.csv": "c47ac15e544bbdaa8bc3f24ee72380456d8a9a88904130718ed3d30ed0f4c7e2",
+    "data\\camp_rg.db": "a496394fc4523006375d083669110475ca839d142d7a0659132d615d304942a6",
+    "docs\\CampNet_Annotation_Guideline_v1.md": "340a0c0fb8ec2afc7c553a2db5481cf2eb4e56547e02d995d47858d3ee3fc126"
+  },
+  "input_fingerprint": "a69b750c52035fe7788df0fdafcb09f937072c0364b92083d7b3f6955e9a4db0",
+  "ocr_version": "author-corrected-sha256:26181b3325d8f5a3a1ed491768a938d65074d36f2ae6ebf6bba73b73b310dcdc",
+  "valid_images": 17,
+  "duplicate_ids": [],
+  "missing_images": [],
+  "unmatched_ocr": [],
+  "frozen_database_written": false
+}

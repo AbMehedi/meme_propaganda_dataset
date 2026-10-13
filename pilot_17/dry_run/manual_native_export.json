@@ -1,0 +1,1580 @@
+[
+  {
+    "id": 18,
+    "annotations": [
+      {
+        "id": 1,
+        "completed_by": 1,
+        "result": [
+          {
+            "id": "techniques",
+            "from_name": "techniques",
+            "to_name": "caption",
+            "type": "choices",
+            "value": {
+              "choices": [
+                "T01"
+              ]
+            }
+          },
+          {
+            "id": "status",
+            "from_name": "status",
+            "to_name": "caption",
+            "type": "choices",
+            "value": {
+              "choices": [
+                "COMPLETE"
+              ]
+            }
+          },
+          {
+            "id": "post_note",
+            "from_name": "post_note",
+            "to_name": "caption",
+            "type": "textarea",
+            "value": {
+              "text": [
+                "SYNTHETIC SOFTWARE CHECK ONLY: made-up evidence, not a human research annotation."
+              ]
+            }
+          },
+          {
+            "id": "T01-1-ocr",
+            "from_name": "ocr_spans",
+            "to_name": "ocr",
+            "type": "labels",
+            "value": {
+              "start": 6,
+              "end": 11,
+              "text": "ঘৃণ্য",
+              "labels": [
+                "T01"
+              ]
+            }
+          },
+          {
+            "id": "T01-1-ocr",
+            "from_name": "ocr_instance",
+            "to_name": "ocr",
+            "type": "textarea",
+            "value": {
+              "text": [
+                "1"
+              ]
+            }
+          },
+          {
+            "id": "T01-1-ocr",
+            "from_name": "ocr_reason",
+            "to_name": "ocr",
+            "type": "textarea",
+            "value": {
+              "text": [
+                "SYNTHETIC CHECK: observable evidence supports this fictional technique instance."
+              ]
+            }
+          },
+          {
+            "id": "T01-1-ocr",
+            "from_name": "ocr_confidence",
+            "to_name": "ocr",
+            "type": "choices",
+            "value": {
+              "choices": [
+                "3"
+              ]
+            }
+          },
+          {
+            "id": "T01-1-ocr",
+            "from_name": "ocr_role",
+            "to_name": "ocr",
+            "type": "choices",
+            "value": {
+              "choices": [
+                "NOT_USED"
+              ]
+            }
+          },
+          {
+            "id": "T01-1-ocr",
+            "from_name": "ocr_sufficient",
+            "to_name": "ocr",
+            "type": "choices",
+            "value": {
+              "choices": [
+                "true"
+              ]
+            }
+          }
+        ],
+        "was_cancelled": false,
+        "ground_truth": false,
+        "created_at": "2026-10-13T21:36:22.320703Z",
+        "updated_at": "2026-10-13T21:36:22.320703Z",
+        "draft_created_at": null,
+        "lead_time": null,
+        "prediction": {},
+        "result_count": 4,
+        "unique_id": "c193c176-e2bb-4a11-8f6a-9a04adc8cab5",
+        "import_id": null,
+        "last_action": null,
+        "bulk_created": false,
+        "task": 18,
+        "project": 2,
+        "updated_by": 1,
+        "parent_prediction": null,
+        "parent_annotation": null,
+        "last_created_by": null
+      }
+    ],
+    "drafts": [],
+    "predictions": [],
+    "data": {
+      "task_id": "SYNTHETIC-text_only",
+      "image_id": "SYNTHETIC-text_only",
+      "post_id": "SYNTHETIC-text_only",
+      "ocr": "😀 এই ঘৃণ্য সিদ্ধান্ত। জাতির শত্রু। অন্যায় রুখে দাঁড়াও!",
+      "ocr_original": "2^\n'ড্পথ",
+      "caption": "Fictional software check only.",
+      "ocr_sha256": "593687f653a5bcd18ece54569e9643659aeca0a9cd9fdd845e16c9e17797a338",
+      "caption_sha256": "6915d589ab74a9691ba7d4abf0e830374791a7057e21db28d637328b23d43248",
+      "ocr_version": "synthetic-v1",
+      "ocr_status": "AUTHOR_VERIFIED",
+      "flags": [],
+      "ocr_provenance": {
+        "corrected_file": "ocr_corrected_20.csv",
+        "original_file": "ocr_draft_20.csv",
+        "reviewer_identity": null,
+        "review_timestamp": null
+      },
+      "image_sha256": "478187f7b3213b729c9b7911b015be985e4dbf7cc50b2a5ef84bb8a743c7cfd6",
+      "width": 718,
+      "height": 540,
+      "item_id": "138766cdb6d5541fa0f13e958c9146ed",
+      "caption_notice": "",
+      "ocr_notice": "",
+      "image": "/data/local-files/?d=pilot_17/images/138766cdb6d5541fa0f13e958c9146ed.jpg",
+      "stage": "B",
+      "annotation_mode": "manual",
+      "synthetic": true
+    },
+    "meta": {},
+    "created_at": "2026-10-13T21:36:22.271395Z",
+    "updated_at": "2026-10-13T21:36:22.365867Z",
+    "allow_skip": true,
+    "inner_id": 1,
+    "total_annotations": 1,
+    "cancelled_annotations": 0,
+    "total_predictions": 0,
+    "comment_count": 0,
+    "unresolved_comment_count": 0,
+    "last_comment_updated_at": null,
+    "project": 2,
+    "updated_by": 1,
+    "comment_authors": []
+  },
+  {
+    "id": 19,
+    "annotations": [
+      {
+        "id": 2,
+        "completed_by": 1,
+        "result": [
+          {
+            "id": "techniques",
+            "from_name": "techniques",
+            "to_name": "caption",
+            "type": "choices",
+            "value": {
+              "choices": [
+                "T03"
+              ]
+            }
+          },
+          {
+            "id": "status",
+            "from_name": "status",
+            "to_name": "caption",
+            "type": "choices",
+            "value": {
+              "choices": [
+                "COMPLETE"
+              ]
+            }
+          },
+          {
+            "id": "post_note",
+            "from_name": "post_note",
+            "to_name": "caption",
+            "type": "textarea",
+            "value": {
+              "text": [
+                "SYNTHETIC SOFTWARE CHECK ONLY: made-up evidence, not a human research annotation."
+              ]
+            }
+          },
+          {
+            "id": "T03-1-visual",
+            "from_name": "visual_evidence",
+            "to_name": "image",
+            "type": "rectanglelabels",
+            "original_width": 718,
+            "original_height": 540,
+            "image_rotation": 0,
+            "value": {
+              "x": 10,
+              "y": 10,
+              "width": 30,
+              "height": 40,
+              "rotation": 0,
+              "rectanglelabels": [
+                "T03"
+              ]
+            }
+          },
+          {
+            "id": "T03-1-visual",
+            "from_name": "visual_instance",
+            "to_name": "image",
+            "type": "textarea",
+            "value": {
+              "text": [
+                "1"
+              ]
+            }
+          },
+          {
+            "id": "T03-1-visual",
+            "from_name": "visual_reason",
+            "to_name": "image",
+            "type": "textarea",
+            "value": {
+              "text": [
+                "SYNTHETIC CHECK: observable evidence supports this fictional technique instance."
+              ]
+            }
+          },
+          {
+            "id": "T03-1-visual",
+            "from_name": "visual_confidence",
+            "to_name": "image",
+            "type": "choices",
+            "value": {
+              "choices": [
+                "3"
+              ]
+            }
+          },
+          {
+            "id": "T03-1-visual",
+            "from_name": "visual_role",
+            "to_name": "image",
+            "type": "choices",
+            "value": {
+              "choices": [
+                "REQUIRED"
+              ]
+            }
+          },
+          {
+            "id": "T03-1-visual",
+            "from_name": "visual_sufficient",
+            "to_name": "image",
+            "type": "choices",
+            "value": {
+              "choices": [
+                "false"
+              ]
+            }
+          },
+          {
+            "id": "T03-1-visual",
+            "from_name": "visual_kind",
+            "to_name": "image",
+            "type": "choices",
+            "value": {
+              "choices": [
+                "NON_TEXT_VISUAL"
+              ]
+            }
+          },
+          {
+            "id": "T03-1-visual",
+            "from_name": "visual_scope",
+            "to_name": "image",
+            "type": "choices",
+            "value": {
+              "choices": [
+                "LOCAL"
+              ]
+            }
+          }
+        ],
+        "was_cancelled": false,
+        "ground_truth": false,
+        "created_at": "2026-10-13T21:36:22.406028Z",
+        "updated_at": "2026-10-13T21:36:22.406028Z",
+        "draft_created_at": null,
+        "lead_time": null,
+        "prediction": {},
+        "result_count": 4,
+        "unique_id": "34681207-7d0e-4550-a65e-aedb8908d4cf",
+        "import_id": null,
+        "last_action": null,
+        "bulk_created": false,
+        "task": 19,
+        "project": 2,
+        "updated_by": 1,
+        "parent_prediction": null,
+        "parent_annotation": null,
+        "last_created_by": null
+      }
+    ],
+    "drafts": [],
+    "predictions": [],
+    "data": {
+      "task_id": "SYNTHETIC-visual",
+      "image_id": "SYNTHETIC-visual",
+      "post_id": "SYNTHETIC-visual",
+      "ocr": "😀 এই ঘৃণ্য সিদ্ধান্ত। জাতির শত্রু। অন্যায় রুখে দাঁড়াও!",
+      "ocr_original": "2^\n'ড্পথ",
+      "caption": "Fictional software check only.",
+      "ocr_sha256": "593687f653a5bcd18ece54569e9643659aeca0a9cd9fdd845e16c9e17797a338",
+      "caption_sha256": "6915d589ab74a9691ba7d4abf0e830374791a7057e21db28d637328b23d43248",
+      "ocr_version": "synthetic-v1",
+      "ocr_status": "AUTHOR_VERIFIED",
+      "flags": [],
+      "ocr_provenance": {
+        "corrected_file": "ocr_corrected_20.csv",
+        "original_file": "ocr_draft_20.csv",
+        "reviewer_identity": null,
+        "review_timestamp": null
+      },
+      "image_sha256": "478187f7b3213b729c9b7911b015be985e4dbf7cc50b2a5ef84bb8a743c7cfd6",
+      "width": 718,
+      "height": 540,
+      "item_id": "138766cdb6d5541fa0f13e958c9146ed",
+      "caption_notice": "",
+      "ocr_notice": "",
+      "image": "/data/local-files/?d=pilot_17/images/138766cdb6d5541fa0f13e958c9146ed.jpg",
+      "stage": "B",
+      "annotation_mode": "manual",
+      "synthetic": true
+    },
+    "meta": {},
+    "created_at": "2026-10-13T21:36:22.271395Z",
+    "updated_at": "2026-10-13T21:36:22.467141Z",
+    "allow_skip": true,
+    "inner_id": 2,
+    "total_annotations": 1,
+    "cancelled_annotations": 0,
+    "total_predictions": 0,
+    "comment_count": 0,
+    "unresolved_comment_count": 0,
+    "last_comment_updated_at": null,
+    "project": 2,
+    "updated_by": 1,
+    "comment_authors": []
+  },
+  {
+    "id": 20,
+    "annotations": [
+      {
+        "id": 3,
+        "completed_by": 1,
+        "result": [
+          {
+            "id": "techniques",
+            "from_name": "techniques",
+            "to_name": "caption",
+            "type": "choices",
+            "value": {
+              "choices": [
+                "T07"
+              ]
+            }
+          },
+          {
+            "id": "status",
+            "from_name": "status",
+            "to_name": "caption",
+            "type": "choices",
+            "value": {
+              "choices": [
+                "COMPLETE"
+              ]
+            }
+          },
+          {
+            "id": "post_note",
+            "from_name": "post_note",
+            "to_name": "caption",
+            "type": "textarea",
+            "value": {
+              "text": [
+                "SYNTHETIC SOFTWARE CHECK ONLY: made-up evidence, not a human research annotation."
+              ]
+            }
+          },
+          {
+            "id": "T07-1-ocr",
+            "from_name": "ocr_spans",
+            "to_name": "ocr",
+            "type": "labels",
+            "value": {
+              "start": 6,
+              "end": 11,
+              "text": "ঘৃণ্য",
+              "labels": [
+                "T07"
+              ]
+            }
+          },
+          {
+            "id": "T07-1-ocr",
+            "from_name": "ocr_instance",
+            "to_name": "ocr",
+            "type": "textarea",
+            "value": {
+              "text": [
+                "1"
+              ]
+            }
+          },
+          {
+            "id": "T07-1-ocr",
+            "from_name": "ocr_reason",
+            "to_name": "ocr",
+            "type": "textarea",
+            "value": {
+              "text": [
+                "SYNTHETIC CHECK: observable evidence supports this fictional technique instance."
+              ]
+            }
+          },
+          {
+            "id": "T07-1-ocr",
+            "from_name": "ocr_confidence",
+            "to_name": "ocr",
+            "type": "choices",
+            "value": {
+              "choices": [
+                "3"
+              ]
+            }
+          },
+          {
+            "id": "T07-1-ocr",
+            "from_name": "ocr_role",
+            "to_name": "ocr",
+            "type": "choices",
+            "value": {
+              "choices": [
+                "REQUIRED"
+              ]
+            }
+          },
+          {
+            "id": "T07-1-ocr",
+            "from_name": "ocr_sufficient",
+            "to_name": "ocr",
+            "type": "choices",
+            "value": {
+              "choices": [
+                "false"
+              ]
+            }
+          },
+          {
+            "id": "T07-1-visual",
+            "from_name": "visual_evidence",
+            "to_name": "image",
+            "type": "rectanglelabels",
+            "original_width": 718,
+            "original_height": 540,
+            "image_rotation": 0,
+            "value": {
+              "x": 10,
+              "y": 10,
+              "width": 30,
+              "height": 40,
+              "rotation": 0,
+              "rectanglelabels": [
+                "T07"
+              ]
+            }
+          },
+          {
+            "id": "T07-1-visual",
+            "from_name": "visual_instance",
+            "to_name": "image",
+            "type": "textarea",
+            "value": {
+              "text": [
+                "1"
+              ]
+            }
+          },
+          {
+            "id": "T07-1-visual",
+            "from_name": "visual_reason",
+            "to_name": "image",
+            "type": "textarea",
+            "value": {
+              "text": [
+                "SYNTHETIC CHECK: observable evidence supports this fictional technique instance."
+              ]
+            }
+          },
+          {
+            "id": "T07-1-visual",
+            "from_name": "visual_confidence",
+            "to_name": "image",
+            "type": "choices",
+            "value": {
+              "choices": [
+                "3"
+              ]
+            }
+          },
+          {
+            "id": "T07-1-visual",
+            "from_name": "visual_role",
+            "to_name": "image",
+            "type": "choices",
+            "value": {
+              "choices": [
+                "REQUIRED"
+              ]
+            }
+          },
+          {
+            "id": "T07-1-visual",
+            "from_name": "visual_sufficient",
+            "to_name": "image",
+            "type": "choices",
+            "value": {
+              "choices": [
+                "false"
+              ]
+            }
+          },
+          {
+            "id": "T07-1-visual",
+            "from_name": "visual_kind",
+            "to_name": "image",
+            "type": "choices",
+            "value": {
+              "choices": [
+                "NON_TEXT_VISUAL"
+              ]
+            }
+          },
+          {
+            "id": "T07-1-visual",
+            "from_name": "visual_scope",
+            "to_name": "image",
+            "type": "choices",
+            "value": {
+              "choices": [
+                "LOCAL"
+              ]
+            }
+          }
+        ],
+        "was_cancelled": false,
+        "ground_truth": false,
+        "created_at": "2026-10-13T21:36:22.517584Z",
+        "updated_at": "2026-10-13T21:36:22.517584Z",
+        "draft_created_at": null,
+        "lead_time": null,
+        "prediction": {},
+        "result_count": 5,
+        "unique_id": "6cf0277c-829f-46d3-a103-790359db269e",
+        "import_id": null,
+        "last_action": null,
+        "bulk_created": false,
+        "task": 20,
+        "project": 2,
+        "updated_by": 1,
+        "parent_prediction": null,
+        "parent_annotation": null,
+        "last_created_by": null
+      }
+    ],
+    "drafts": [],
+    "predictions": [],
+    "data": {
+      "task_id": "SYNTHETIC-combined",
+      "image_id": "SYNTHETIC-combined",
+      "post_id": "SYNTHETIC-combined",
+      "ocr": "😀 এই ঘৃণ্য সিদ্ধান্ত। জাতির শত্রু। অন্যায় রুখে দাঁড়াও!",
+      "ocr_original": "2^\n'ড্পথ",
+      "caption": "Fictional software check only.",
+      "ocr_sha256": "593687f653a5bcd18ece54569e9643659aeca0a9cd9fdd845e16c9e17797a338",
+      "caption_sha256": "6915d589ab74a9691ba7d4abf0e830374791a7057e21db28d637328b23d43248",
+      "ocr_version": "synthetic-v1",
+      "ocr_status": "AUTHOR_VERIFIED",
+      "flags": [],
+      "ocr_provenance": {
+        "corrected_file": "ocr_corrected_20.csv",
+        "original_file": "ocr_draft_20.csv",
+        "reviewer_identity": null,
+        "review_timestamp": null
+      },
+      "image_sha256": "478187f7b3213b729c9b7911b015be985e4dbf7cc50b2a5ef84bb8a743c7cfd6",
+      "width": 718,
+      "height": 540,
+      "item_id": "138766cdb6d5541fa0f13e958c9146ed",
+      "caption_notice": "",
+      "ocr_notice": "",
+      "image": "/data/local-files/?d=pilot_17/images/138766cdb6d5541fa0f13e958c9146ed.jpg",
+      "stage": "B",
+      "annotation_mode": "manual",
+      "synthetic": true
+    },
+    "meta": {},
+    "created_at": "2026-10-13T21:36:22.271395Z",
+    "updated_at": "2026-10-13T21:36:22.581724Z",
+    "allow_skip": true,
+    "inner_id": 3,
+    "total_annotations": 1,
+    "cancelled_annotations": 0,
+    "total_predictions": 0,
+    "comment_count": 0,
+    "unresolved_comment_count": 0,
+    "last_comment_updated_at": null,
+    "project": 2,
+    "updated_by": 1,
+    "comment_authors": []
+  },
+  {
+    "id": 21,
+    "annotations": [
+      {
+        "id": 4,
+        "completed_by": 1,
+        "result": [
+          {
+            "id": "techniques",
+            "from_name": "techniques",
+            "to_name": "caption",
+            "type": "choices",
+            "value": {
+              "choices": [
+                "T01",
+                "T02"
+              ]
+            }
+          },
+          {
+            "id": "status",
+            "from_name": "status",
+            "to_name": "caption",
+            "type": "choices",
+            "value": {
+              "choices": [
+                "COMPLETE"
+              ]
+            }
+          },
+          {
+            "id": "post_note",
+            "from_name": "post_note",
+            "to_name": "caption",
+            "type": "textarea",
+            "value": {
+              "text": [
+                "SYNTHETIC SOFTWARE CHECK ONLY: made-up evidence, not a human research annotation."
+              ]
+            }
+          },
+          {
+            "id": "T01-1-ocr",
+            "from_name": "ocr_spans",
+            "to_name": "ocr",
+            "type": "labels",
+            "value": {
+              "start": 6,
+              "end": 11,
+              "text": "ঘৃণ্য",
+              "labels": [
+                "T01"
+              ]
+            }
+          },
+          {
+            "id": "T01-1-ocr",
+            "from_name": "ocr_instance",
+            "to_name": "ocr",
+            "type": "textarea",
+            "value": {
+              "text": [
+                "1"
+              ]
+            }
+          },
+          {
+            "id": "T01-1-ocr",
+            "from_name": "ocr_reason",
+            "to_name": "ocr",
+            "type": "textarea",
+            "value": {
+              "text": [
+                "SYNTHETIC CHECK: observable evidence supports this fictional technique instance."
+              ]
+            }
+          },
+          {
+            "id": "T01-1-ocr",
+            "from_name": "ocr_confidence",
+            "to_name": "ocr",
+            "type": "choices",
+            "value": {
+              "choices": [
+                "3"
+              ]
+            }
+          },
+          {
+            "id": "T01-1-ocr",
+            "from_name": "ocr_role",
+            "to_name": "ocr",
+            "type": "choices",
+            "value": {
+              "choices": [
+                "NOT_USED"
+              ]
+            }
+          },
+          {
+            "id": "T01-1-ocr",
+            "from_name": "ocr_sufficient",
+            "to_name": "ocr",
+            "type": "choices",
+            "value": {
+              "choices": [
+                "true"
+              ]
+            }
+          },
+          {
+            "id": "T02-1-ocr",
+            "from_name": "ocr_spans",
+            "to_name": "ocr",
+            "type": "labels",
+            "value": {
+              "start": 23,
+              "end": 34,
+              "text": "জাতির শত্রু",
+              "labels": [
+                "T02"
+              ]
+            }
+          },
+          {
+            "id": "T02-1-ocr",
+            "from_name": "ocr_instance",
+            "to_name": "ocr",
+            "type": "textarea",
+            "value": {
+              "text": [
+                "1"
+              ]
+            }
+          },
+          {
+            "id": "T02-1-ocr",
+            "from_name": "ocr_reason",
+            "to_name": "ocr",
+            "type": "textarea",
+            "value": {
+              "text": [
+                "SYNTHETIC CHECK: observable evidence supports this fictional technique instance."
+              ]
+            }
+          },
+          {
+            "id": "T02-1-ocr",
+            "from_name": "ocr_confidence",
+            "to_name": "ocr",
+            "type": "choices",
+            "value": {
+              "choices": [
+                "3"
+              ]
+            }
+          },
+          {
+            "id": "T02-1-ocr",
+            "from_name": "ocr_role",
+            "to_name": "ocr",
+            "type": "choices",
+            "value": {
+              "choices": [
+                "NOT_USED"
+              ]
+            }
+          },
+          {
+            "id": "T02-1-ocr",
+            "from_name": "ocr_sufficient",
+            "to_name": "ocr",
+            "type": "choices",
+            "value": {
+              "choices": [
+                "true"
+              ]
+            }
+          }
+        ],
+        "was_cancelled": false,
+        "ground_truth": false,
+        "created_at": "2026-10-13T21:36:22.642686Z",
+        "updated_at": "2026-10-13T21:36:22.642686Z",
+        "draft_created_at": null,
+        "lead_time": null,
+        "prediction": {},
+        "result_count": 5,
+        "unique_id": "3316cd73-4a72-4323-bf7d-1de219829ae8",
+        "import_id": null,
+        "last_action": null,
+        "bulk_created": false,
+        "task": 21,
+        "project": 2,
+        "updated_by": 1,
+        "parent_prediction": null,
+        "parent_annotation": null,
+        "last_created_by": null
+      }
+    ],
+    "drafts": [],
+    "predictions": [],
+    "data": {
+      "task_id": "SYNTHETIC-multiple",
+      "image_id": "SYNTHETIC-multiple",
+      "post_id": "SYNTHETIC-multiple",
+      "ocr": "😀 এই ঘৃণ্য সিদ্ধান্ত। জাতির শত্রু। অন্যায় রুখে দাঁড়াও!",
+      "ocr_original": "2^\n'ড্পথ",
+      "caption": "Fictional software check only.",
+      "ocr_sha256": "593687f653a5bcd18ece54569e9643659aeca0a9cd9fdd845e16c9e17797a338",
+      "caption_sha256": "6915d589ab74a9691ba7d4abf0e830374791a7057e21db28d637328b23d43248",
+      "ocr_version": "synthetic-v1",
+      "ocr_status": "AUTHOR_VERIFIED",
+      "flags": [],
+      "ocr_provenance": {
+        "corrected_file": "ocr_corrected_20.csv",
+        "original_file": "ocr_draft_20.csv",
+        "reviewer_identity": null,
+        "review_timestamp": null
+      },
+      "image_sha256": "478187f7b3213b729c9b7911b015be985e4dbf7cc50b2a5ef84bb8a743c7cfd6",
+      "width": 718,
+      "height": 540,
+      "item_id": "138766cdb6d5541fa0f13e958c9146ed",
+      "caption_notice": "",
+      "ocr_notice": "",
+      "image": "/data/local-files/?d=pilot_17/images/138766cdb6d5541fa0f13e958c9146ed.jpg",
+      "stage": "B",
+      "annotation_mode": "manual",
+      "synthetic": true
+    },
+    "meta": {},
+    "created_at": "2026-10-13T21:36:22.271395Z",
+    "updated_at": "2026-10-13T21:36:22.700062Z",
+    "allow_skip": true,
+    "inner_id": 4,
+    "total_annotations": 1,
+    "cancelled_annotations": 0,
+    "total_predictions": 0,
+    "comment_count": 0,
+    "unresolved_comment_count": 0,
+    "last_comment_updated_at": null,
+    "project": 2,
+    "updated_by": 1,
+    "comment_authors": []
+  },
+  {
+    "id": 22,
+    "annotations": [
+      {
+        "id": 5,
+        "completed_by": 1,
+        "result": [
+          {
+            "id": "techniques",
+            "from_name": "techniques",
+            "to_name": "caption",
+            "type": "choices",
+            "value": {
+              "choices": []
+            }
+          },
+          {
+            "id": "status",
+            "from_name": "status",
+            "to_name": "caption",
+            "type": "choices",
+            "value": {
+              "choices": [
+                "COMPLETE"
+              ]
+            }
+          },
+          {
+            "id": "post_note",
+            "from_name": "post_note",
+            "to_name": "caption",
+            "type": "textarea",
+            "value": {
+              "text": [
+                "SYNTHETIC SOFTWARE CHECK ONLY: made-up evidence, not a human research annotation."
+              ]
+            }
+          },
+          {
+            "id": "no_technique",
+            "from_name": "no_technique",
+            "to_name": "caption",
+            "type": "choices",
+            "value": {
+              "choices": [
+                "No Propaganda Technique"
+              ]
+            }
+          }
+        ],
+        "was_cancelled": false,
+        "ground_truth": false,
+        "created_at": "2026-10-13T21:36:22.761574Z",
+        "updated_at": "2026-10-13T21:36:22.761574Z",
+        "draft_created_at": null,
+        "lead_time": null,
+        "prediction": {},
+        "result_count": 4,
+        "unique_id": "67daa28d-42ab-4d93-9ea0-733c7e0362d5",
+        "import_id": null,
+        "last_action": null,
+        "bulk_created": false,
+        "task": 22,
+        "project": 2,
+        "updated_by": 1,
+        "parent_prediction": null,
+        "parent_annotation": null,
+        "last_created_by": null
+      }
+    ],
+    "drafts": [],
+    "predictions": [],
+    "data": {
+      "task_id": "SYNTHETIC-none",
+      "image_id": "SYNTHETIC-none",
+      "post_id": "SYNTHETIC-none",
+      "ocr": "😀 এই ঘৃণ্য সিদ্ধান্ত। জাতির শত্রু। অন্যায় রুখে দাঁড়াও!",
+      "ocr_original": "2^\n'ড্পথ",
+      "caption": "Fictional software check only.",
+      "ocr_sha256": "593687f653a5bcd18ece54569e9643659aeca0a9cd9fdd845e16c9e17797a338",
+      "caption_sha256": "6915d589ab74a9691ba7d4abf0e830374791a7057e21db28d637328b23d43248",
+      "ocr_version": "synthetic-v1",
+      "ocr_status": "AUTHOR_VERIFIED",
+      "flags": [],
+      "ocr_provenance": {
+        "corrected_file": "ocr_corrected_20.csv",
+        "original_file": "ocr_draft_20.csv",
+        "reviewer_identity": null,
+        "review_timestamp": null
+      },
+      "image_sha256": "478187f7b3213b729c9b7911b015be985e4dbf7cc50b2a5ef84bb8a743c7cfd6",
+      "width": 718,
+      "height": 540,
+      "item_id": "138766cdb6d5541fa0f13e958c9146ed",
+      "caption_notice": "",
+      "ocr_notice": "",
+      "image": "/data/local-files/?d=pilot_17/images/138766cdb6d5541fa0f13e958c9146ed.jpg",
+      "stage": "B",
+      "annotation_mode": "manual",
+      "synthetic": true
+    },
+    "meta": {},
+    "created_at": "2026-10-13T21:36:22.271395Z",
+    "updated_at": "2026-10-13T21:36:22.830990Z",
+    "allow_skip": true,
+    "inner_id": 5,
+    "total_annotations": 1,
+    "cancelled_annotations": 0,
+    "total_predictions": 0,
+    "comment_count": 0,
+    "unresolved_comment_count": 0,
+    "last_comment_updated_at": null,
+    "project": 2,
+    "updated_by": 1,
+    "comment_authors": []
+  },
+  {
+    "id": 23,
+    "annotations": [
+      {
+        "id": 6,
+        "completed_by": 1,
+        "result": [
+          {
+            "id": "techniques",
+            "from_name": "techniques",
+            "to_name": "caption",
+            "type": "choices",
+            "value": {
+              "choices": []
+            }
+          },
+          {
+            "id": "status",
+            "from_name": "status",
+            "to_name": "caption",
+            "type": "choices",
+            "value": {
+              "choices": [
+                "UNRESOLVED"
+              ]
+            }
+          },
+          {
+            "id": "post_note",
+            "from_name": "post_note",
+            "to_name": "caption",
+            "type": "textarea",
+            "value": {
+              "text": [
+                "SYNTHETIC SOFTWARE CHECK ONLY: made-up evidence, not a human research annotation."
+              ]
+            }
+          },
+          {
+            "id": "review_flags",
+            "from_name": "review_flags",
+            "to_name": "caption",
+            "type": "choices",
+            "value": {
+              "choices": [
+                "UNREADABLE_TEXT",
+                "ADJUDICATION"
+              ]
+            }
+          }
+        ],
+        "was_cancelled": false,
+        "ground_truth": false,
+        "created_at": "2026-10-13T21:36:22.902346Z",
+        "updated_at": "2026-10-13T21:36:22.902346Z",
+        "draft_created_at": null,
+        "lead_time": null,
+        "prediction": {},
+        "result_count": 4,
+        "unique_id": "540b606b-fd67-4305-91dd-13b508ee5685",
+        "import_id": null,
+        "last_action": null,
+        "bulk_created": false,
+        "task": 23,
+        "project": 2,
+        "updated_by": 1,
+        "parent_prediction": null,
+        "parent_annotation": null,
+        "last_created_by": null
+      }
+    ],
+    "drafts": [],
+    "predictions": [],
+    "data": {
+      "task_id": "SYNTHETIC-unreadable",
+      "image_id": "SYNTHETIC-unreadable",
+      "post_id": "SYNTHETIC-unreadable",
+      "ocr": "😀 এই ঘৃণ্য সিদ্ধান্ত। জাতির শত্রু। অন্যায় রুখে দাঁড়াও!",
+      "ocr_original": "2^\n'ড্পথ",
+      "caption": "Fictional software check only.",
+      "ocr_sha256": "593687f653a5bcd18ece54569e9643659aeca0a9cd9fdd845e16c9e17797a338",
+      "caption_sha256": "6915d589ab74a9691ba7d4abf0e830374791a7057e21db28d637328b23d43248",
+      "ocr_version": "synthetic-v1",
+      "ocr_status": "AUTHOR_VERIFIED",
+      "flags": [],
+      "ocr_provenance": {
+        "corrected_file": "ocr_corrected_20.csv",
+        "original_file": "ocr_draft_20.csv",
+        "reviewer_identity": null,
+        "review_timestamp": null
+      },
+      "image_sha256": "478187f7b3213b729c9b7911b015be985e4dbf7cc50b2a5ef84bb8a743c7cfd6",
+      "width": 718,
+      "height": 540,
+      "item_id": "138766cdb6d5541fa0f13e958c9146ed",
+      "caption_notice": "",
+      "ocr_notice": "",
+      "image": "/data/local-files/?d=pilot_17/images/138766cdb6d5541fa0f13e958c9146ed.jpg",
+      "stage": "B",
+      "annotation_mode": "manual",
+      "synthetic": true
+    },
+    "meta": {},
+    "created_at": "2026-10-13T21:36:22.271395Z",
+    "updated_at": "2026-10-13T21:36:22.974161Z",
+    "allow_skip": true,
+    "inner_id": 6,
+    "total_annotations": 1,
+    "cancelled_annotations": 0,
+    "total_predictions": 0,
+    "comment_count": 0,
+    "unresolved_comment_count": 0,
+    "last_comment_updated_at": null,
+    "project": 2,
+    "updated_by": 1,
+    "comment_authors": []
+  },
+  {
+    "id": 24,
+    "annotations": [
+      {
+        "id": 7,
+        "completed_by": 1,
+        "result": [
+          {
+            "id": "techniques",
+            "from_name": "techniques",
+            "to_name": "caption",
+            "type": "choices",
+            "value": {
+              "choices": [
+                "T03"
+              ]
+            }
+          },
+          {
+            "id": "status",
+            "from_name": "status",
+            "to_name": "caption",
+            "type": "choices",
+            "value": {
+              "choices": [
+                "COMPLETE"
+              ]
+            }
+          },
+          {
+            "id": "post_note",
+            "from_name": "post_note",
+            "to_name": "caption",
+            "type": "textarea",
+            "value": {
+              "text": [
+                "SYNTHETIC SOFTWARE CHECK ONLY: made-up evidence, not a human research annotation."
+              ]
+            }
+          },
+          {
+            "id": "T03-1-visual",
+            "from_name": "visual_evidence",
+            "to_name": "image",
+            "type": "rectanglelabels",
+            "original_width": 718,
+            "original_height": 540,
+            "image_rotation": 0,
+            "value": {
+              "x": 0,
+              "y": 0,
+              "width": 100,
+              "height": 100,
+              "rotation": 0,
+              "rectanglelabels": [
+                "T03"
+              ]
+            }
+          },
+          {
+            "id": "T03-1-visual",
+            "from_name": "visual_instance",
+            "to_name": "image",
+            "type": "textarea",
+            "value": {
+              "text": [
+                "1"
+              ]
+            }
+          },
+          {
+            "id": "T03-1-visual",
+            "from_name": "visual_reason",
+            "to_name": "image",
+            "type": "textarea",
+            "value": {
+              "text": [
+                "SYNTHETIC CHECK: observable evidence supports this fictional technique instance."
+              ]
+            }
+          },
+          {
+            "id": "T03-1-visual",
+            "from_name": "visual_confidence",
+            "to_name": "image",
+            "type": "choices",
+            "value": {
+              "choices": [
+                "3"
+              ]
+            }
+          },
+          {
+            "id": "T03-1-visual",
+            "from_name": "visual_role",
+            "to_name": "image",
+            "type": "choices",
+            "value": {
+              "choices": [
+                "REQUIRED"
+              ]
+            }
+          },
+          {
+            "id": "T03-1-visual",
+            "from_name": "visual_sufficient",
+            "to_name": "image",
+            "type": "choices",
+            "value": {
+              "choices": [
+                "false"
+              ]
+            }
+          },
+          {
+            "id": "T03-1-visual",
+            "from_name": "visual_kind",
+            "to_name": "image",
+            "type": "choices",
+            "value": {
+              "choices": [
+                "NON_TEXT_VISUAL"
+              ]
+            }
+          },
+          {
+            "id": "T03-1-visual",
+            "from_name": "visual_scope",
+            "to_name": "image",
+            "type": "choices",
+            "value": {
+              "choices": [
+                "GLOBAL"
+              ]
+            }
+          }
+        ],
+        "was_cancelled": false,
+        "ground_truth": false,
+        "created_at": "2026-10-13T21:36:23.061745Z",
+        "updated_at": "2026-10-13T21:36:23.061745Z",
+        "draft_created_at": null,
+        "lead_time": null,
+        "prediction": {},
+        "result_count": 4,
+        "unique_id": "164e163f-a60a-4b95-8f9f-d7e40f3a9ea4",
+        "import_id": null,
+        "last_action": null,
+        "bulk_created": false,
+        "task": 24,
+        "project": 2,
+        "updated_by": 1,
+        "parent_prediction": null,
+        "parent_annotation": null,
+        "last_created_by": null
+      }
+    ],
+    "drafts": [],
+    "predictions": [],
+    "data": {
+      "task_id": "SYNTHETIC-whole_image",
+      "image_id": "SYNTHETIC-whole_image",
+      "post_id": "SYNTHETIC-whole_image",
+      "ocr": "😀 এই ঘৃণ্য সিদ্ধান্ত। জাতির শত্রু। অন্যায় রুখে দাঁড়াও!",
+      "ocr_original": "2^\n'ড্পথ",
+      "caption": "Fictional software check only.",
+      "ocr_sha256": "593687f653a5bcd18ece54569e9643659aeca0a9cd9fdd845e16c9e17797a338",
+      "caption_sha256": "6915d589ab74a9691ba7d4abf0e830374791a7057e21db28d637328b23d43248",
+      "ocr_version": "synthetic-v1",
+      "ocr_status": "AUTHOR_VERIFIED",
+      "flags": [],
+      "ocr_provenance": {
+        "corrected_file": "ocr_corrected_20.csv",
+        "original_file": "ocr_draft_20.csv",
+        "reviewer_identity": null,
+        "review_timestamp": null
+      },
+      "image_sha256": "478187f7b3213b729c9b7911b015be985e4dbf7cc50b2a5ef84bb8a743c7cfd6",
+      "width": 718,
+      "height": 540,
+      "item_id": "138766cdb6d5541fa0f13e958c9146ed",
+      "caption_notice": "",
+      "ocr_notice": "",
+      "image": "/data/local-files/?d=pilot_17/images/138766cdb6d5541fa0f13e958c9146ed.jpg",
+      "stage": "B",
+      "annotation_mode": "manual",
+      "synthetic": true
+    },
+    "meta": {},
+    "created_at": "2026-10-13T21:36:22.271395Z",
+    "updated_at": "2026-10-13T21:36:23.159876Z",
+    "allow_skip": true,
+    "inner_id": 7,
+    "total_annotations": 1,
+    "cancelled_annotations": 0,
+    "total_predictions": 0,
+    "comment_count": 0,
+    "unresolved_comment_count": 0,
+    "last_comment_updated_at": null,
+    "project": 2,
+    "updated_by": 1,
+    "comment_authors": []
+  },
+  {
+    "id": 25,
+    "annotations": [
+      {
+        "id": 8,
+        "completed_by": 1,
+        "result": [
+          {
+            "id": "techniques",
+            "from_name": "techniques",
+            "to_name": "caption",
+            "type": "choices",
+            "value": {
+              "choices": [
+                "T01"
+              ]
+            }
+          },
+          {
+            "id": "status",
+            "from_name": "status",
+            "to_name": "caption",
+            "type": "choices",
+            "value": {
+              "choices": [
+                "COMPLETE"
+              ]
+            }
+          },
+          {
+            "id": "post_note",
+            "from_name": "post_note",
+            "to_name": "caption",
+            "type": "textarea",
+            "value": {
+              "text": [
+                "SYNTHETIC SOFTWARE CHECK ONLY: made-up evidence, not a human research annotation."
+              ]
+            }
+          },
+          {
+            "id": "T01-1-ocr",
+            "from_name": "ocr_spans",
+            "to_name": "ocr",
+            "type": "labels",
+            "value": {
+              "start": 6,
+              "end": 11,
+              "text": "ঘৃণ্য",
+              "labels": [
+                "T01"
+              ]
+            }
+          },
+          {
+            "id": "T01-1-ocr",
+            "from_name": "ocr_instance",
+            "to_name": "ocr",
+            "type": "textarea",
+            "value": {
+              "text": [
+                "1"
+              ]
+            }
+          },
+          {
+            "id": "T01-1-ocr",
+            "from_name": "ocr_reason",
+            "to_name": "ocr",
+            "type": "textarea",
+            "value": {
+              "text": [
+                "SYNTHETIC CHECK: observable evidence supports this fictional technique instance."
+              ]
+            }
+          },
+          {
+            "id": "T01-1-ocr",
+            "from_name": "ocr_confidence",
+            "to_name": "ocr",
+            "type": "choices",
+            "value": {
+              "choices": [
+                "3"
+              ]
+            }
+          },
+          {
+            "id": "T01-1-ocr",
+            "from_name": "ocr_role",
+            "to_name": "ocr",
+            "type": "choices",
+            "value": {
+              "choices": [
+                "NOT_USED"
+              ]
+            }
+          },
+          {
+            "id": "T01-1-ocr",
+            "from_name": "ocr_sufficient",
+            "to_name": "ocr",
+            "type": "choices",
+            "value": {
+              "choices": [
+                "true"
+              ]
+            }
+          },
+          {
+            "id": "T01-2-ocr",
+            "from_name": "ocr_spans",
+            "to_name": "ocr",
+            "type": "labels",
+            "value": {
+              "start": 12,
+              "end": 21,
+              "text": "সিদ্ধান্ত",
+              "labels": [
+                "T01"
+              ]
+            }
+          },
+          {
+            "id": "T01-2-ocr",
+            "from_name": "ocr_instance",
+            "to_name": "ocr",
+            "type": "textarea",
+            "value": {
+              "text": [
+                "2"
+              ]
+            }
+          },
+          {
+            "id": "T01-2-ocr",
+            "from_name": "ocr_reason",
+            "to_name": "ocr",
+            "type": "textarea",
+            "value": {
+              "text": [
+                "SYNTHETIC CHECK: observable evidence supports this fictional technique instance."
+              ]
+            }
+          },
+          {
+            "id": "T01-2-ocr",
+            "from_name": "ocr_confidence",
+            "to_name": "ocr",
+            "type": "choices",
+            "value": {
+              "choices": [
+                "3"
+              ]
+            }
+          },
+          {
+            "id": "T01-2-ocr",
+            "from_name": "ocr_role",
+            "to_name": "ocr",
+            "type": "choices",
+            "value": {
+              "choices": [
+                "NOT_USED"
+              ]
+            }
+          },
+          {
+            "id": "T01-2-ocr",
+            "from_name": "ocr_sufficient",
+            "to_name": "ocr",
+            "type": "choices",
+            "value": {
+              "choices": [
+                "true"
+              ]
+            }
+          }
+        ],
+        "was_cancelled": false,
+        "ground_truth": false,
+        "created_at": "2026-10-13T21:36:23.231701Z",
+        "updated_at": "2026-10-13T21:36:23.231701Z",
+        "draft_created_at": null,
+        "lead_time": null,
+        "prediction": {},
+        "result_count": 5,
+        "unique_id": "e3eb0b9b-bcc4-420a-8201-a0c44155b86d",
+        "import_id": null,
+        "last_action": null,
+        "bulk_created": false,
+        "task": 25,
+        "project": 2,
+        "updated_by": 1,
+        "parent_prediction": null,
+        "parent_annotation": null,
+        "last_created_by": null
+      }
+    ],
+    "drafts": [],
+    "predictions": [],
+    "data": {
+      "task_id": "SYNTHETIC-repeated_instance",
+      "image_id": "SYNTHETIC-repeated_instance",
+      "post_id": "SYNTHETIC-repeated_instance",
+      "ocr": "😀 এই ঘৃণ্য সিদ্ধান্ত। জাতির শত্রু। অন্যায় রুখে দাঁড়াও!",
+      "ocr_original": "2^\n'ড্পথ",
+      "caption": "Fictional software check only.",
+      "ocr_sha256": "593687f653a5bcd18ece54569e9643659aeca0a9cd9fdd845e16c9e17797a338",
+      "caption_sha256": "6915d589ab74a9691ba7d4abf0e830374791a7057e21db28d637328b23d43248",
+      "ocr_version": "synthetic-v1",
+      "ocr_status": "AUTHOR_VERIFIED",
+      "flags": [],
+      "ocr_provenance": {
+        "corrected_file": "ocr_corrected_20.csv",
+        "original_file": "ocr_draft_20.csv",
+        "reviewer_identity": null,
+        "review_timestamp": null
+      },
+      "image_sha256": "478187f7b3213b729c9b7911b015be985e4dbf7cc50b2a5ef84bb8a743c7cfd6",
+      "width": 718,
+      "height": 540,
+      "item_id": "138766cdb6d5541fa0f13e958c9146ed",
+      "caption_notice": "",
+      "ocr_notice": "",
+      "image": "/data/local-files/?d=pilot_17/images/138766cdb6d5541fa0f13e958c9146ed.jpg",
+      "stage": "B",
+      "annotation_mode": "manual",
+      "synthetic": true
+    },
+    "meta": {},
+    "created_at": "2026-10-13T21:36:22.271395Z",
+    "updated_at": "2026-10-13T21:36:23.304789Z",
+    "allow_skip": true,
+    "inner_id": 8,
+    "total_annotations": 1,
+    "cancelled_annotations": 0,
+    "total_predictions": 0,
+    "comment_count": 0,
+    "unresolved_comment_count": 0,
+    "last_comment_updated_at": null,
+    "project": 2,
+    "updated_by": 1,
+    "comment_authors": []
+  }
+]

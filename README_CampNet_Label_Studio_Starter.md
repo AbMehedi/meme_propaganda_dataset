@@ -1,5 +1,18 @@
 # CampNet: start annotating the frozen 406-image dataset
 
+## Current 17-image pilot (14 October 2026)
+
+The author-corrected OCR is now available. The current pilot uses the original
+selection minus three explicit `#excluded` records: exactly 17 images. Use
+`python build_label_studio_tasks.py pilot17` and follow
+[the 17-image workflow](docs/PILOT_17_WORKFLOW.md), including the real Label Studio
+configs, validated exports, independent manual annotation and separate experimental
+model assistance. Results and remaining limitations are in
+[the experimental report](pilot_17/EXPERIMENTAL_REPORT.md).
+
+The instructions below describe the earlier 20-image draft workflow and are kept
+for provenance. They are superseded for the current pilot.
+
 This starter uses the **provided** `manifest.csv` and `camp_rg.db` as a read-only freeze. It does not update the database. The freeze has 406 readable image rows, 393 distinct posts, 16 sources, zero annotation rows and zero OCR rows. Four posts have multiple images (17 image rows total) and are kept out of this single-image pilot. The 20-item provisional audit list samples 16 sources and includes six posts with no caption. Recheck inclusion and format by looking at the actual images before giving the tasks to annotators.
 
 **OCR verification is scheduled for later:** this local copy has `data/manifest.csv`, `data/images/...`, and an EasyOCR draft for the selected 20 images. The database's `ocr_run` still has zero rows. The Facebook `alt_text` field is generated description, sometimes paraphrased text, **not** verified OCR. The task builder can now use `ocr_draft_20.csv` to start annotation. It marks every task `AUTHOR_VERIFICATION_PENDING`; the author must compare the draft with each image later, then recheck annotations affected by OCR changes.

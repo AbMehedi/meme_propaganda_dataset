@@ -68,7 +68,7 @@ def build(manifest, pilot, images_root, ocr_csv, output_dir, preview=False, ocr_
         key = row["image_id"]
         if key in ocr_values:
             raise ValueError(f"Duplicate OCR row for image_id {key}")
-        ocr_values[key] = row[ocr_column].strip()
+        ocr_values[key] = row[ocr_column]
     if not pilot_rows:
         raise ValueError("Pilot selection is empty")
     if len({r["image_id"] for r in pilot_rows}) != len(pilot_rows):
@@ -77,6 +77,8 @@ def build(manifest, pilot, images_root, ocr_csv, output_dir, preview=False, ocr_
     base = Path(images_root).resolve()
     for selection in pilot_rows:
         image_id = selection["image_id"]
+        if not draft and ocr_values.get(image_id, '').strip() == '#excluded':
+            continue
         row = manifest_rows.get(image_id)
         if not row:
             errors.append(f"{image_id}: absent from manifest"); continue
@@ -148,6 +150,8 @@ def audit_ocr(pilot, draft_csv, reviewed_csv, output):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest="command", required=True)
+    pilot17 = sub.add_parser("pilot17", help="Build the fixed 17-image pilot from latest corrected OCR and explicit exclusions")
+    pilot17.add_argument('--output-dir', type=Path, default=Path(__file__).resolve().parent / 'pilot_17')
     select = sub.add_parser("select", help="Create a provisional 20-image pilot audit list")
     select.add_argument("--manifest", type=Path, required=True)
     select.add_argument("--output", type=Path, required=True)
@@ -166,7 +170,10 @@ def main():
     for key in ("pilot", "ocr-draft-csv", "ocr-csv", "output"):
         audit_cmd.add_argument("--" + key, type=Path, required=True)
     args = parser.parse_args()
-    if args.command == "select":
+    if args.command == 'pilot17':
+        from campnet_pilot.build import build_pilot
+        build_pilot(output=args.output_dir)
+    elif args.command == "select":
         select_pilot(args.manifest, args.output, args.count)
     elif args.command == "build":
         draft = args.ocr_draft_csv is not None

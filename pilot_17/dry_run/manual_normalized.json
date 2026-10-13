@@ -1,0 +1,1483 @@
+[
+  {
+    "schema_version": "campnet-evidence-1",
+    "task_id": "SYNTHETIC-text_only",
+    "image_id": "SYNTHETIC-text_only",
+    "post_id": "SYNTHETIC-text_only",
+    "stage": "B",
+    "origin": "human",
+    "annotation_id": 1,
+    "reviewer": 1,
+    "model_version": null,
+    "parent_prediction": null,
+    "model_review_action": null,
+    "ocr_version": "synthetic-v1",
+    "ocr_sha256": "593687f653a5bcd18ece54569e9643659aeca0a9cd9fdd845e16c9e17797a338",
+    "caption_sha256": "6915d589ab74a9691ba7d4abf0e830374791a7057e21db28d637328b23d43248",
+    "image_sha256": "478187f7b3213b729c9b7911b015be985e4dbf7cc50b2a5ef84bb8a743c7cfd6",
+    "status": "COMPLETE",
+    "has_core_technique": true,
+    "techniques": [
+      "T01"
+    ],
+    "instances": [
+      {
+        "instance_id": "T01-1",
+        "technique_id": "T01",
+        "technique_name": "Loaded Language",
+        "visual_contribution": "NOT_USED",
+        "text_sufficient": true,
+        "evidence": [
+          {
+            "region_id": "T01-1-ocr",
+            "type": "TEXT",
+            "channel": "EMBEDDED_TEXT",
+            "start": 5,
+            "end": 10,
+            "quote": "ঘৃণ্য",
+            "text_sha256": "593687f653a5bcd18ece54569e9643659aeca0a9cd9fdd845e16c9e17797a338",
+            "text_version": "synthetic-v1",
+            "offset_unit": "unicode_code_point",
+            "reason": "SYNTHETIC CHECK: observable evidence supports this fictional technique instance."
+          }
+        ],
+        "evidence_channels": [
+          "EMBEDDED_TEXT"
+        ],
+        "target": null,
+        "confidence": 3
+      }
+    ],
+    "watchlist": [],
+    "out_of_taxonomy": false,
+    "review_flags": [],
+    "post_note": "SYNTHETIC SOFTWARE CHECK ONLY: made-up evidence, not a human research annotation.",
+    "valid": true,
+    "validation_errors": [],
+    "is_gold": false,
+    "raw_result": [
+      {
+        "id": "techniques",
+        "from_name": "techniques",
+        "to_name": "caption",
+        "type": "choices",
+        "value": {
+          "choices": [
+            "T01"
+          ]
+        }
+      },
+      {
+        "id": "status",
+        "from_name": "status",
+        "to_name": "caption",
+        "type": "choices",
+        "value": {
+          "choices": [
+            "COMPLETE"
+          ]
+        }
+      },
+      {
+        "id": "post_note",
+        "from_name": "post_note",
+        "to_name": "caption",
+        "type": "textarea",
+        "value": {
+          "text": [
+            "SYNTHETIC SOFTWARE CHECK ONLY: made-up evidence, not a human research annotation."
+          ]
+        }
+      },
+      {
+        "id": "T01-1-ocr",
+        "from_name": "ocr_spans",
+        "to_name": "ocr",
+        "type": "labels",
+        "value": {
+          "start": 6,
+          "end": 11,
+          "text": "ঘৃণ্য",
+          "labels": [
+            "T01"
+          ]
+        }
+      },
+      {
+        "id": "T01-1-ocr",
+        "from_name": "ocr_instance",
+        "to_name": "ocr",
+        "type": "textarea",
+        "value": {
+          "text": [
+            "1"
+          ]
+        }
+      },
+      {
+        "id": "T01-1-ocr",
+        "from_name": "ocr_reason",
+        "to_name": "ocr",
+        "type": "textarea",
+        "value": {
+          "text": [
+            "SYNTHETIC CHECK: observable evidence supports this fictional technique instance."
+          ]
+        }
+      },
+      {
+        "id": "T01-1-ocr",
+        "from_name": "ocr_confidence",
+        "to_name": "ocr",
+        "type": "choices",
+        "value": {
+          "choices": [
+            "3"
+          ]
+        }
+      },
+      {
+        "id": "T01-1-ocr",
+        "from_name": "ocr_role",
+        "to_name": "ocr",
+        "type": "choices",
+        "value": {
+          "choices": [
+            "NOT_USED"
+          ]
+        }
+      },
+      {
+        "id": "T01-1-ocr",
+        "from_name": "ocr_sufficient",
+        "to_name": "ocr",
+        "type": "choices",
+        "value": {
+          "choices": [
+            "true"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "schema_version": "campnet-evidence-1",
+    "task_id": "SYNTHETIC-visual",
+    "image_id": "SYNTHETIC-visual",
+    "post_id": "SYNTHETIC-visual",
+    "stage": "B",
+    "origin": "human",
+    "annotation_id": 2,
+    "reviewer": 1,
+    "model_version": null,
+    "parent_prediction": null,
+    "model_review_action": null,
+    "ocr_version": "synthetic-v1",
+    "ocr_sha256": "593687f653a5bcd18ece54569e9643659aeca0a9cd9fdd845e16c9e17797a338",
+    "caption_sha256": "6915d589ab74a9691ba7d4abf0e830374791a7057e21db28d637328b23d43248",
+    "image_sha256": "478187f7b3213b729c9b7911b015be985e4dbf7cc50b2a5ef84bb8a743c7cfd6",
+    "status": "COMPLETE",
+    "has_core_technique": true,
+    "techniques": [
+      "T03"
+    ],
+    "instances": [
+      {
+        "instance_id": "T03-1",
+        "technique_id": "T03",
+        "technique_name": "Smears",
+        "visual_contribution": "REQUIRED",
+        "text_sufficient": false,
+        "evidence": [
+          {
+            "region_id": "T03-1-visual",
+            "type": "VISUAL",
+            "channel": "NON_TEXT_VISUAL",
+            "kind": "NON_TEXT_VISUAL",
+            "scope": "LOCAL",
+            "box": [
+              0.1,
+              0.1,
+              0.4,
+              0.5
+            ],
+            "reason": "SYNTHETIC CHECK: observable evidence supports this fictional technique instance.",
+            "grounding_verified": true,
+            "supervision_available": true
+          }
+        ],
+        "evidence_channels": [
+          "NON_TEXT_VISUAL"
+        ],
+        "target": null,
+        "confidence": 3
+      }
+    ],
+    "watchlist": [],
+    "out_of_taxonomy": false,
+    "review_flags": [],
+    "post_note": "SYNTHETIC SOFTWARE CHECK ONLY: made-up evidence, not a human research annotation.",
+    "valid": true,
+    "validation_errors": [],
+    "is_gold": false,
+    "raw_result": [
+      {
+        "id": "techniques",
+        "from_name": "techniques",
+        "to_name": "caption",
+        "type": "choices",
+        "value": {
+          "choices": [
+            "T03"
+          ]
+        }
+      },
+      {
+        "id": "status",
+        "from_name": "status",
+        "to_name": "caption",
+        "type": "choices",
+        "value": {
+          "choices": [
+            "COMPLETE"
+          ]
+        }
+      },
+      {
+        "id": "post_note",
+        "from_name": "post_note",
+        "to_name": "caption",
+        "type": "textarea",
+        "value": {
+          "text": [
+            "SYNTHETIC SOFTWARE CHECK ONLY: made-up evidence, not a human research annotation."
+          ]
+        }
+      },
+      {
+        "id": "T03-1-visual",
+        "from_name": "visual_evidence",
+        "to_name": "image",
+        "type": "rectanglelabels",
+        "original_width": 718,
+        "original_height": 540,
+        "image_rotation": 0,
+        "value": {
+          "x": 10,
+          "y": 10,
+          "width": 30,
+          "height": 40,
+          "rotation": 0,
+          "rectanglelabels": [
+            "T03"
+          ]
+        }
+      },
+      {
+        "id": "T03-1-visual",
+        "from_name": "visual_instance",
+        "to_name": "image",
+        "type": "textarea",
+        "value": {
+          "text": [
+            "1"
+          ]
+        }
+      },
+      {
+        "id": "T03-1-visual",
+        "from_name": "visual_reason",
+        "to_name": "image",
+        "type": "textarea",
+        "value": {
+          "text": [
+            "SYNTHETIC CHECK: observable evidence supports this fictional technique instance."
+          ]
+        }
+      },
+      {
+        "id": "T03-1-visual",
+        "from_name": "visual_confidence",
+        "to_name": "image",
+        "type": "choices",
+        "value": {
+          "choices": [
+            "3"
+          ]
+        }
+      },
+      {
+        "id": "T03-1-visual",
+        "from_name": "visual_role",
+        "to_name": "image",
+        "type": "choices",
+        "value": {
+          "choices": [
+            "REQUIRED"
+          ]
+        }
+      },
+      {
+        "id": "T03-1-visual",
+        "from_name": "visual_sufficient",
+        "to_name": "image",
+        "type": "choices",
+        "value": {
+          "choices": [
+            "false"
+          ]
+        }
+      },
+      {
+        "id": "T03-1-visual",
+        "from_name": "visual_kind",
+        "to_name": "image",
+        "type": "choices",
+        "value": {
+          "choices": [
+            "NON_TEXT_VISUAL"
+          ]
+        }
+      },
+      {
+        "id": "T03-1-visual",
+        "from_name": "visual_scope",
+        "to_name": "image",
+        "type": "choices",
+        "value": {
+          "choices": [
+            "LOCAL"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "schema_version": "campnet-evidence-1",
+    "task_id": "SYNTHETIC-combined",
+    "image_id": "SYNTHETIC-combined",
+    "post_id": "SYNTHETIC-combined",
+    "stage": "B",
+    "origin": "human",
+    "annotation_id": 3,
+    "reviewer": 1,
+    "model_version": null,
+    "parent_prediction": null,
+    "model_review_action": null,
+    "ocr_version": "synthetic-v1",
+    "ocr_sha256": "593687f653a5bcd18ece54569e9643659aeca0a9cd9fdd845e16c9e17797a338",
+    "caption_sha256": "6915d589ab74a9691ba7d4abf0e830374791a7057e21db28d637328b23d43248",
+    "image_sha256": "478187f7b3213b729c9b7911b015be985e4dbf7cc50b2a5ef84bb8a743c7cfd6",
+    "status": "COMPLETE",
+    "has_core_technique": true,
+    "techniques": [
+      "T07"
+    ],
+    "instances": [
+      {
+        "instance_id": "T07-1",
+        "technique_id": "T07",
+        "technique_name": "Appeal to Strong Emotions",
+        "visual_contribution": "REQUIRED",
+        "text_sufficient": false,
+        "evidence": [
+          {
+            "region_id": "T07-1-ocr",
+            "type": "TEXT",
+            "channel": "EMBEDDED_TEXT",
+            "start": 5,
+            "end": 10,
+            "quote": "ঘৃণ্য",
+            "text_sha256": "593687f653a5bcd18ece54569e9643659aeca0a9cd9fdd845e16c9e17797a338",
+            "text_version": "synthetic-v1",
+            "offset_unit": "unicode_code_point",
+            "reason": "SYNTHETIC CHECK: observable evidence supports this fictional technique instance."
+          },
+          {
+            "region_id": "T07-1-visual",
+            "type": "VISUAL",
+            "channel": "NON_TEXT_VISUAL",
+            "kind": "NON_TEXT_VISUAL",
+            "scope": "LOCAL",
+            "box": [
+              0.1,
+              0.1,
+              0.4,
+              0.5
+            ],
+            "reason": "SYNTHETIC CHECK: observable evidence supports this fictional technique instance.",
+            "grounding_verified": true,
+            "supervision_available": true
+          }
+        ],
+        "evidence_channels": [
+          "EMBEDDED_TEXT",
+          "NON_TEXT_VISUAL"
+        ],
+        "target": null,
+        "confidence": 3
+      }
+    ],
+    "watchlist": [],
+    "out_of_taxonomy": false,
+    "review_flags": [],
+    "post_note": "SYNTHETIC SOFTWARE CHECK ONLY: made-up evidence, not a human research annotation.",
+    "valid": true,
+    "validation_errors": [],
+    "is_gold": false,
+    "raw_result": [
+      {
+        "id": "techniques",
+        "from_name": "techniques",
+        "to_name": "caption",
+        "type": "choices",
+        "value": {
+          "choices": [
+            "T07"
+          ]
+        }
+      },
+      {
+        "id": "status",
+        "from_name": "status",
+        "to_name": "caption",
+        "type": "choices",
+        "value": {
+          "choices": [
+            "COMPLETE"
+          ]
+        }
+      },
+      {
+        "id": "post_note",
+        "from_name": "post_note",
+        "to_name": "caption",
+        "type": "textarea",
+        "value": {
+          "text": [
+            "SYNTHETIC SOFTWARE CHECK ONLY: made-up evidence, not a human research annotation."
+          ]
+        }
+      },
+      {
+        "id": "T07-1-ocr",
+        "from_name": "ocr_spans",
+        "to_name": "ocr",
+        "type": "labels",
+        "value": {
+          "start": 6,
+          "end": 11,
+          "text": "ঘৃণ্য",
+          "labels": [
+            "T07"
+          ]
+        }
+      },
+      {
+        "id": "T07-1-ocr",
+        "from_name": "ocr_instance",
+        "to_name": "ocr",
+        "type": "textarea",
+        "value": {
+          "text": [
+            "1"
+          ]
+        }
+      },
+      {
+        "id": "T07-1-ocr",
+        "from_name": "ocr_reason",
+        "to_name": "ocr",
+        "type": "textarea",
+        "value": {
+          "text": [
+            "SYNTHETIC CHECK: observable evidence supports this fictional technique instance."
+          ]
+        }
+      },
+      {
+        "id": "T07-1-ocr",
+        "from_name": "ocr_confidence",
+        "to_name": "ocr",
+        "type": "choices",
+        "value": {
+          "choices": [
+            "3"
+          ]
+        }
+      },
+      {
+        "id": "T07-1-ocr",
+        "from_name": "ocr_role",
+        "to_name": "ocr",
+        "type": "choices",
+        "value": {
+          "choices": [
+            "REQUIRED"
+          ]
+        }
+      },
+      {
+        "id": "T07-1-ocr",
+        "from_name": "ocr_sufficient",
+        "to_name": "ocr",
+        "type": "choices",
+        "value": {
+          "choices": [
+            "false"
+          ]
+        }
+      },
+      {
+        "id": "T07-1-visual",
+        "from_name": "visual_evidence",
+        "to_name": "image",
+        "type": "rectanglelabels",
+        "original_width": 718,
+        "original_height": 540,
+        "image_rotation": 0,
+        "value": {
+          "x": 10,
+          "y": 10,
+          "width": 30,
+          "height": 40,
+          "rotation": 0,
+          "rectanglelabels": [
+            "T07"
+          ]
+        }
+      },
+      {
+        "id": "T07-1-visual",
+        "from_name": "visual_instance",
+        "to_name": "image",
+        "type": "textarea",
+        "value": {
+          "text": [
+            "1"
+          ]
+        }
+      },
+      {
+        "id": "T07-1-visual",
+        "from_name": "visual_reason",
+        "to_name": "image",
+        "type": "textarea",
+        "value": {
+          "text": [
+            "SYNTHETIC CHECK: observable evidence supports this fictional technique instance."
+          ]
+        }
+      },
+      {
+        "id": "T07-1-visual",
+        "from_name": "visual_confidence",
+        "to_name": "image",
+        "type": "choices",
+        "value": {
+          "choices": [
+            "3"
+          ]
+        }
+      },
+      {
+        "id": "T07-1-visual",
+        "from_name": "visual_role",
+        "to_name": "image",
+        "type": "choices",
+        "value": {
+          "choices": [
+            "REQUIRED"
+          ]
+        }
+      },
+      {
+        "id": "T07-1-visual",
+        "from_name": "visual_sufficient",
+        "to_name": "image",
+        "type": "choices",
+        "value": {
+          "choices": [
+            "false"
+          ]
+        }
+      },
+      {
+        "id": "T07-1-visual",
+        "from_name": "visual_kind",
+        "to_name": "image",
+        "type": "choices",
+        "value": {
+          "choices": [
+            "NON_TEXT_VISUAL"
+          ]
+        }
+      },
+      {
+        "id": "T07-1-visual",
+        "from_name": "visual_scope",
+        "to_name": "image",
+        "type": "choices",
+        "value": {
+          "choices": [
+            "LOCAL"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "schema_version": "campnet-evidence-1",
+    "task_id": "SYNTHETIC-multiple",
+    "image_id": "SYNTHETIC-multiple",
+    "post_id": "SYNTHETIC-multiple",
+    "stage": "B",
+    "origin": "human",
+    "annotation_id": 4,
+    "reviewer": 1,
+    "model_version": null,
+    "parent_prediction": null,
+    "model_review_action": null,
+    "ocr_version": "synthetic-v1",
+    "ocr_sha256": "593687f653a5bcd18ece54569e9643659aeca0a9cd9fdd845e16c9e17797a338",
+    "caption_sha256": "6915d589ab74a9691ba7d4abf0e830374791a7057e21db28d637328b23d43248",
+    "image_sha256": "478187f7b3213b729c9b7911b015be985e4dbf7cc50b2a5ef84bb8a743c7cfd6",
+    "status": "COMPLETE",
+    "has_core_technique": true,
+    "techniques": [
+      "T01",
+      "T02"
+    ],
+    "instances": [
+      {
+        "instance_id": "T01-1",
+        "technique_id": "T01",
+        "technique_name": "Loaded Language",
+        "visual_contribution": "NOT_USED",
+        "text_sufficient": true,
+        "evidence": [
+          {
+            "region_id": "T01-1-ocr",
+            "type": "TEXT",
+            "channel": "EMBEDDED_TEXT",
+            "start": 5,
+            "end": 10,
+            "quote": "ঘৃণ্য",
+            "text_sha256": "593687f653a5bcd18ece54569e9643659aeca0a9cd9fdd845e16c9e17797a338",
+            "text_version": "synthetic-v1",
+            "offset_unit": "unicode_code_point",
+            "reason": "SYNTHETIC CHECK: observable evidence supports this fictional technique instance."
+          }
+        ],
+        "evidence_channels": [
+          "EMBEDDED_TEXT"
+        ],
+        "target": null,
+        "confidence": 3
+      },
+      {
+        "instance_id": "T02-1",
+        "technique_id": "T02",
+        "technique_name": "Name Calling / Labeling",
+        "visual_contribution": "NOT_USED",
+        "text_sufficient": true,
+        "evidence": [
+          {
+            "region_id": "T02-1-ocr",
+            "type": "TEXT",
+            "channel": "EMBEDDED_TEXT",
+            "start": 22,
+            "end": 33,
+            "quote": "জাতির শত্রু",
+            "text_sha256": "593687f653a5bcd18ece54569e9643659aeca0a9cd9fdd845e16c9e17797a338",
+            "text_version": "synthetic-v1",
+            "offset_unit": "unicode_code_point",
+            "reason": "SYNTHETIC CHECK: observable evidence supports this fictional technique instance."
+          }
+        ],
+        "evidence_channels": [
+          "EMBEDDED_TEXT"
+        ],
+        "target": null,
+        "confidence": 3
+      }
+    ],
+    "watchlist": [],
+    "out_of_taxonomy": false,
+    "review_flags": [],
+    "post_note": "SYNTHETIC SOFTWARE CHECK ONLY: made-up evidence, not a human research annotation.",
+    "valid": true,
+    "validation_errors": [],
+    "is_gold": false,
+    "raw_result": [
+      {
+        "id": "techniques",
+        "from_name": "techniques",
+        "to_name": "caption",
+        "type": "choices",
+        "value": {
+          "choices": [
+            "T01",
+            "T02"
+          ]
+        }
+      },
+      {
+        "id": "status",
+        "from_name": "status",
+        "to_name": "caption",
+        "type": "choices",
+        "value": {
+          "choices": [
+            "COMPLETE"
+          ]
+        }
+      },
+      {
+        "id": "post_note",
+        "from_name": "post_note",
+        "to_name": "caption",
+        "type": "textarea",
+        "value": {
+          "text": [
+            "SYNTHETIC SOFTWARE CHECK ONLY: made-up evidence, not a human research annotation."
+          ]
+        }
+      },
+      {
+        "id": "T01-1-ocr",
+        "from_name": "ocr_spans",
+        "to_name": "ocr",
+        "type": "labels",
+        "value": {
+          "start": 6,
+          "end": 11,
+          "text": "ঘৃণ্য",
+          "labels": [
+            "T01"
+          ]
+        }
+      },
+      {
+        "id": "T01-1-ocr",
+        "from_name": "ocr_instance",
+        "to_name": "ocr",
+        "type": "textarea",
+        "value": {
+          "text": [
+            "1"
+          ]
+        }
+      },
+      {
+        "id": "T01-1-ocr",
+        "from_name": "ocr_reason",
+        "to_name": "ocr",
+        "type": "textarea",
+        "value": {
+          "text": [
+            "SYNTHETIC CHECK: observable evidence supports this fictional technique instance."
+          ]
+        }
+      },
+      {
+        "id": "T01-1-ocr",
+        "from_name": "ocr_confidence",
+        "to_name": "ocr",
+        "type": "choices",
+        "value": {
+          "choices": [
+            "3"
+          ]
+        }
+      },
+      {
+        "id": "T01-1-ocr",
+        "from_name": "ocr_role",
+        "to_name": "ocr",
+        "type": "choices",
+        "value": {
+          "choices": [
+            "NOT_USED"
+          ]
+        }
+      },
+      {
+        "id": "T01-1-ocr",
+        "from_name": "ocr_sufficient",
+        "to_name": "ocr",
+        "type": "choices",
+        "value": {
+          "choices": [
+            "true"
+          ]
+        }
+      },
+      {
+        "id": "T02-1-ocr",
+        "from_name": "ocr_spans",
+        "to_name": "ocr",
+        "type": "labels",
+        "value": {
+          "start": 23,
+          "end": 34,
+          "text": "জাতির শত্রু",
+          "labels": [
+            "T02"
+          ]
+        }
+      },
+      {
+        "id": "T02-1-ocr",
+        "from_name": "ocr_instance",
+        "to_name": "ocr",
+        "type": "textarea",
+        "value": {
+          "text": [
+            "1"
+          ]
+        }
+      },
+      {
+        "id": "T02-1-ocr",
+        "from_name": "ocr_reason",
+        "to_name": "ocr",
+        "type": "textarea",
+        "value": {
+          "text": [
+            "SYNTHETIC CHECK: observable evidence supports this fictional technique instance."
+          ]
+        }
+      },
+      {
+        "id": "T02-1-ocr",
+        "from_name": "ocr_confidence",
+        "to_name": "ocr",
+        "type": "choices",
+        "value": {
+          "choices": [
+            "3"
+          ]
+        }
+      },
+      {
+        "id": "T02-1-ocr",
+        "from_name": "ocr_role",
+        "to_name": "ocr",
+        "type": "choices",
+        "value": {
+          "choices": [
+            "NOT_USED"
+          ]
+        }
+      },
+      {
+        "id": "T02-1-ocr",
+        "from_name": "ocr_sufficient",
+        "to_name": "ocr",
+        "type": "choices",
+        "value": {
+          "choices": [
+            "true"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "schema_version": "campnet-evidence-1",
+    "task_id": "SYNTHETIC-none",
+    "image_id": "SYNTHETIC-none",
+    "post_id": "SYNTHETIC-none",
+    "stage": "B",
+    "origin": "human",
+    "annotation_id": 5,
+    "reviewer": 1,
+    "model_version": null,
+    "parent_prediction": null,
+    "model_review_action": null,
+    "ocr_version": "synthetic-v1",
+    "ocr_sha256": "593687f653a5bcd18ece54569e9643659aeca0a9cd9fdd845e16c9e17797a338",
+    "caption_sha256": "6915d589ab74a9691ba7d4abf0e830374791a7057e21db28d637328b23d43248",
+    "image_sha256": "478187f7b3213b729c9b7911b015be985e4dbf7cc50b2a5ef84bb8a743c7cfd6",
+    "status": "COMPLETE",
+    "has_core_technique": false,
+    "techniques": [],
+    "instances": [],
+    "watchlist": [],
+    "out_of_taxonomy": false,
+    "review_flags": [],
+    "post_note": "SYNTHETIC SOFTWARE CHECK ONLY: made-up evidence, not a human research annotation.",
+    "valid": true,
+    "validation_errors": [],
+    "is_gold": false,
+    "raw_result": [
+      {
+        "id": "techniques",
+        "from_name": "techniques",
+        "to_name": "caption",
+        "type": "choices",
+        "value": {
+          "choices": []
+        }
+      },
+      {
+        "id": "status",
+        "from_name": "status",
+        "to_name": "caption",
+        "type": "choices",
+        "value": {
+          "choices": [
+            "COMPLETE"
+          ]
+        }
+      },
+      {
+        "id": "post_note",
+        "from_name": "post_note",
+        "to_name": "caption",
+        "type": "textarea",
+        "value": {
+          "text": [
+            "SYNTHETIC SOFTWARE CHECK ONLY: made-up evidence, not a human research annotation."
+          ]
+        }
+      },
+      {
+        "id": "no_technique",
+        "from_name": "no_technique",
+        "to_name": "caption",
+        "type": "choices",
+        "value": {
+          "choices": [
+            "No Propaganda Technique"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "schema_version": "campnet-evidence-1",
+    "task_id": "SYNTHETIC-unreadable",
+    "image_id": "SYNTHETIC-unreadable",
+    "post_id": "SYNTHETIC-unreadable",
+    "stage": "B",
+    "origin": "human",
+    "annotation_id": 6,
+    "reviewer": 1,
+    "model_version": null,
+    "parent_prediction": null,
+    "model_review_action": null,
+    "ocr_version": "synthetic-v1",
+    "ocr_sha256": "593687f653a5bcd18ece54569e9643659aeca0a9cd9fdd845e16c9e17797a338",
+    "caption_sha256": "6915d589ab74a9691ba7d4abf0e830374791a7057e21db28d637328b23d43248",
+    "image_sha256": "478187f7b3213b729c9b7911b015be985e4dbf7cc50b2a5ef84bb8a743c7cfd6",
+    "status": "UNRESOLVED",
+    "has_core_technique": null,
+    "techniques": [],
+    "instances": [],
+    "watchlist": [],
+    "out_of_taxonomy": false,
+    "review_flags": [
+      "UNREADABLE_TEXT",
+      "ADJUDICATION"
+    ],
+    "post_note": "SYNTHETIC SOFTWARE CHECK ONLY: made-up evidence, not a human research annotation.",
+    "valid": true,
+    "validation_errors": [],
+    "is_gold": false,
+    "raw_result": [
+      {
+        "id": "techniques",
+        "from_name": "techniques",
+        "to_name": "caption",
+        "type": "choices",
+        "value": {
+          "choices": []
+        }
+      },
+      {
+        "id": "status",
+        "from_name": "status",
+        "to_name": "caption",
+        "type": "choices",
+        "value": {
+          "choices": [
+            "UNRESOLVED"
+          ]
+        }
+      },
+      {
+        "id": "post_note",
+        "from_name": "post_note",
+        "to_name": "caption",
+        "type": "textarea",
+        "value": {
+          "text": [
+            "SYNTHETIC SOFTWARE CHECK ONLY: made-up evidence, not a human research annotation."
+          ]
+        }
+      },
+      {
+        "id": "review_flags",
+        "from_name": "review_flags",
+        "to_name": "caption",
+        "type": "choices",
+        "value": {
+          "choices": [
+            "UNREADABLE_TEXT",
+            "ADJUDICATION"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "schema_version": "campnet-evidence-1",
+    "task_id": "SYNTHETIC-whole_image",
+    "image_id": "SYNTHETIC-whole_image",
+    "post_id": "SYNTHETIC-whole_image",
+    "stage": "B",
+    "origin": "human",
+    "annotation_id": 7,
+    "reviewer": 1,
+    "model_version": null,
+    "parent_prediction": null,
+    "model_review_action": null,
+    "ocr_version": "synthetic-v1",
+    "ocr_sha256": "593687f653a5bcd18ece54569e9643659aeca0a9cd9fdd845e16c9e17797a338",
+    "caption_sha256": "6915d589ab74a9691ba7d4abf0e830374791a7057e21db28d637328b23d43248",
+    "image_sha256": "478187f7b3213b729c9b7911b015be985e4dbf7cc50b2a5ef84bb8a743c7cfd6",
+    "status": "COMPLETE",
+    "has_core_technique": true,
+    "techniques": [
+      "T03"
+    ],
+    "instances": [
+      {
+        "instance_id": "T03-1",
+        "technique_id": "T03",
+        "technique_name": "Smears",
+        "visual_contribution": "REQUIRED",
+        "text_sufficient": false,
+        "evidence": [
+          {
+            "region_id": "T03-1-visual",
+            "type": "VISUAL",
+            "channel": "NON_TEXT_VISUAL",
+            "kind": "NON_TEXT_VISUAL",
+            "scope": "GLOBAL",
+            "box": [
+              0.0,
+              0.0,
+              1,
+              1
+            ],
+            "reason": "SYNTHETIC CHECK: observable evidence supports this fictional technique instance.",
+            "grounding_verified": true,
+            "supervision_available": true
+          }
+        ],
+        "evidence_channels": [
+          "NON_TEXT_VISUAL"
+        ],
+        "target": null,
+        "confidence": 3
+      }
+    ],
+    "watchlist": [],
+    "out_of_taxonomy": false,
+    "review_flags": [],
+    "post_note": "SYNTHETIC SOFTWARE CHECK ONLY: made-up evidence, not a human research annotation.",
+    "valid": true,
+    "validation_errors": [],
+    "is_gold": false,
+    "raw_result": [
+      {
+        "id": "techniques",
+        "from_name": "techniques",
+        "to_name": "caption",
+        "type": "choices",
+        "value": {
+          "choices": [
+            "T03"
+          ]
+        }
+      },
+      {
+        "id": "status",
+        "from_name": "status",
+        "to_name": "caption",
+        "type": "choices",
+        "value": {
+          "choices": [
+            "COMPLETE"
+          ]
+        }
+      },
+      {
+        "id": "post_note",
+        "from_name": "post_note",
+        "to_name": "caption",
+        "type": "textarea",
+        "value": {
+          "text": [
+            "SYNTHETIC SOFTWARE CHECK ONLY: made-up evidence, not a human research annotation."
+          ]
+        }
+      },
+      {
+        "id": "T03-1-visual",
+        "from_name": "visual_evidence",
+        "to_name": "image",
+        "type": "rectanglelabels",
+        "original_width": 718,
+        "original_height": 540,
+        "image_rotation": 0,
+        "value": {
+          "x": 0,
+          "y": 0,
+          "width": 100,
+          "height": 100,
+          "rotation": 0,
+          "rectanglelabels": [
+            "T03"
+          ]
+        }
+      },
+      {
+        "id": "T03-1-visual",
+        "from_name": "visual_instance",
+        "to_name": "image",
+        "type": "textarea",
+        "value": {
+          "text": [
+            "1"
+          ]
+        }
+      },
+      {
+        "id": "T03-1-visual",
+        "from_name": "visual_reason",
+        "to_name": "image",
+        "type": "textarea",
+        "value": {
+          "text": [
+            "SYNTHETIC CHECK: observable evidence supports this fictional technique instance."
+          ]
+        }
+      },
+      {
+        "id": "T03-1-visual",
+        "from_name": "visual_confidence",
+        "to_name": "image",
+        "type": "choices",
+        "value": {
+          "choices": [
+            "3"
+          ]
+        }
+      },
+      {
+        "id": "T03-1-visual",
+        "from_name": "visual_role",
+        "to_name": "image",
+        "type": "choices",
+        "value": {
+          "choices": [
+            "REQUIRED"
+          ]
+        }
+      },
+      {
+        "id": "T03-1-visual",
+        "from_name": "visual_sufficient",
+        "to_name": "image",
+        "type": "choices",
+        "value": {
+          "choices": [
+            "false"
+          ]
+        }
+      },
+      {
+        "id": "T03-1-visual",
+        "from_name": "visual_kind",
+        "to_name": "image",
+        "type": "choices",
+        "value": {
+          "choices": [
+            "NON_TEXT_VISUAL"
+          ]
+        }
+      },
+      {
+        "id": "T03-1-visual",
+        "from_name": "visual_scope",
+        "to_name": "image",
+        "type": "choices",
+        "value": {
+          "choices": [
+            "GLOBAL"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "schema_version": "campnet-evidence-1",
+    "task_id": "SYNTHETIC-repeated_instance",
+    "image_id": "SYNTHETIC-repeated_instance",
+    "post_id": "SYNTHETIC-repeated_instance",
+    "stage": "B",
+    "origin": "human",
+    "annotation_id": 8,
+    "reviewer": 1,
+    "model_version": null,
+    "parent_prediction": null,
+    "model_review_action": null,
+    "ocr_version": "synthetic-v1",
+    "ocr_sha256": "593687f653a5bcd18ece54569e9643659aeca0a9cd9fdd845e16c9e17797a338",
+    "caption_sha256": "6915d589ab74a9691ba7d4abf0e830374791a7057e21db28d637328b23d43248",
+    "image_sha256": "478187f7b3213b729c9b7911b015be985e4dbf7cc50b2a5ef84bb8a743c7cfd6",
+    "status": "COMPLETE",
+    "has_core_technique": true,
+    "techniques": [
+      "T01"
+    ],
+    "instances": [
+      {
+        "instance_id": "T01-1",
+        "technique_id": "T01",
+        "technique_name": "Loaded Language",
+        "visual_contribution": "NOT_USED",
+        "text_sufficient": true,
+        "evidence": [
+          {
+            "region_id": "T01-1-ocr",
+            "type": "TEXT",
+            "channel": "EMBEDDED_TEXT",
+            "start": 5,
+            "end": 10,
+            "quote": "ঘৃণ্য",
+            "text_sha256": "593687f653a5bcd18ece54569e9643659aeca0a9cd9fdd845e16c9e17797a338",
+            "text_version": "synthetic-v1",
+            "offset_unit": "unicode_code_point",
+            "reason": "SYNTHETIC CHECK: observable evidence supports this fictional technique instance."
+          }
+        ],
+        "evidence_channels": [
+          "EMBEDDED_TEXT"
+        ],
+        "target": null,
+        "confidence": 3
+      },
+      {
+        "instance_id": "T01-2",
+        "technique_id": "T01",
+        "technique_name": "Loaded Language",
+        "visual_contribution": "NOT_USED",
+        "text_sufficient": true,
+        "evidence": [
+          {
+            "region_id": "T01-2-ocr",
+            "type": "TEXT",
+            "channel": "EMBEDDED_TEXT",
+            "start": 11,
+            "end": 20,
+            "quote": "সিদ্ধান্ত",
+            "text_sha256": "593687f653a5bcd18ece54569e9643659aeca0a9cd9fdd845e16c9e17797a338",
+            "text_version": "synthetic-v1",
+            "offset_unit": "unicode_code_point",
+            "reason": "SYNTHETIC CHECK: observable evidence supports this fictional technique instance."
+          }
+        ],
+        "evidence_channels": [
+          "EMBEDDED_TEXT"
+        ],
+        "target": null,
+        "confidence": 3
+      }
+    ],
+    "watchlist": [],
+    "out_of_taxonomy": false,
+    "review_flags": [],
+    "post_note": "SYNTHETIC SOFTWARE CHECK ONLY: made-up evidence, not a human research annotation.",
+    "valid": true,
+    "validation_errors": [],
+    "is_gold": false,
+    "raw_result": [
+      {
+        "id": "techniques",
+        "from_name": "techniques",
+        "to_name": "caption",
+        "type": "choices",
+        "value": {
+          "choices": [
+            "T01"
+          ]
+        }
+      },
+      {
+        "id": "status",
+        "from_name": "status",
+        "to_name": "caption",
+        "type": "choices",
+        "value": {
+          "choices": [
+            "COMPLETE"
+          ]
+        }
+      },
+      {
+        "id": "post_note",
+        "from_name": "post_note",
+        "to_name": "caption",
+        "type": "textarea",
+        "value": {
+          "text": [
+            "SYNTHETIC SOFTWARE CHECK ONLY: made-up evidence, not a human research annotation."
+          ]
+        }
+      },
+      {
+        "id": "T01-1-ocr",
+        "from_name": "ocr_spans",
+        "to_name": "ocr",
+        "type": "labels",
+        "value": {
+          "start": 6,
+          "end": 11,
+          "text": "ঘৃণ্য",
+          "labels": [
+            "T01"
+          ]
+        }
+      },
+      {
+        "id": "T01-1-ocr",
+        "from_name": "ocr_instance",
+        "to_name": "ocr",
+        "type": "textarea",
+        "value": {
+          "text": [
+            "1"
+          ]
+        }
+      },
+      {
+        "id": "T01-1-ocr",
+        "from_name": "ocr_reason",
+        "to_name": "ocr",
+        "type": "textarea",
+        "value": {
+          "text": [
+            "SYNTHETIC CHECK: observable evidence supports this fictional technique instance."
+          ]
+        }
+      },
+      {
+        "id": "T01-1-ocr",
+        "from_name": "ocr_confidence",
+        "to_name": "ocr",
+        "type": "choices",
+        "value": {
+          "choices": [
+            "3"
+          ]
+        }
+      },
+      {
+        "id": "T01-1-ocr",
+        "from_name": "ocr_role",
+        "to_name": "ocr",
+        "type": "choices",
+        "value": {
+          "choices": [
+            "NOT_USED"
+          ]
+        }
+      },
+      {
+        "id": "T01-1-ocr",
+        "from_name": "ocr_sufficient",
+        "to_name": "ocr",
+        "type": "choices",
+        "value": {
+          "choices": [
+            "true"
+          ]
+        }
+      },
+      {
+        "id": "T01-2-ocr",
+        "from_name": "ocr_spans",
+        "to_name": "ocr",
+        "type": "labels",
+        "value": {
+          "start": 12,
+          "end": 21,
+          "text": "সিদ্ধান্ত",
+          "labels": [
+            "T01"
+          ]
+        }
+      },
+      {
+        "id": "T01-2-ocr",
+        "from_name": "ocr_instance",
+        "to_name": "ocr",
+        "type": "textarea",
+        "value": {
+          "text": [
+            "2"
+          ]
+        }
+      },
+      {
+        "id": "T01-2-ocr",
+        "from_name": "ocr_reason",
+        "to_name": "ocr",
+        "type": "textarea",
+        "value": {
+          "text": [
+            "SYNTHETIC CHECK: observable evidence supports this fictional technique instance."
+          ]
+        }
+      },
+      {
+        "id": "T01-2-ocr",
+        "from_name": "ocr_confidence",
+        "to_name": "ocr",
+        "type": "choices",
+        "value": {
+          "choices": [
+            "3"
+          ]
+        }
+      },
+      {
+        "id": "T01-2-ocr",
+        "from_name": "ocr_role",
+        "to_name": "ocr",
+        "type": "choices",
+        "value": {
+          "choices": [
+            "NOT_USED"
+          ]
+        }
+      },
+      {
+        "id": "T01-2-ocr",
+        "from_name": "ocr_sufficient",
+        "to_name": "ocr",
+        "type": "choices",
+        "value": {
+          "choices": [
+            "true"
+          ]
+        }
+      }
+    ]
+  }
+]

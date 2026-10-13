@@ -1,0 +1,172 @@
+[
+  {
+    "image_id": "138766cdb6d5541fa0f13e958c9146ed",
+    "ocr_version": "author-corrected-sha256:26181b3325d8f5a3a1ed491768a938d65074d36f2ae6ebf6bba73b73b310dcdc",
+    "image_sha256": "478187f7b3213b729c9b7911b015be985e4dbf7cc50b2a5ef84bb8a743c7cfd6",
+    "status": "BLOCKED",
+    "blocker": "CAMPNET_VLM_MODEL is unset; no vision-language model is configured. No inference requests sent.",
+    "attempts": [],
+    "parsed": null,
+    "validation_errors": []
+  },
+  {
+    "image_id": "a3da98879a3d23f6645b4e349fe76b26",
+    "ocr_version": "author-corrected-sha256:26181b3325d8f5a3a1ed491768a938d65074d36f2ae6ebf6bba73b73b310dcdc",
+    "image_sha256": "53f9f4a871b036612af8eb621df1ad663cb2387f59e06940e89eec43b010d347",
+    "status": "BLOCKED",
+    "blocker": "CAMPNET_VLM_MODEL is unset; no vision-language model is configured. No inference requests sent.",
+    "attempts": [],
+    "parsed": null,
+    "validation_errors": []
+  },
+  {
+    "image_id": "5620b386af75f3487349c5487a6a5500",
+    "ocr_version": "author-corrected-sha256:26181b3325d8f5a3a1ed491768a938d65074d36f2ae6ebf6bba73b73b310dcdc",
+    "image_sha256": "8f880e9d800a389d07cb71a189c25eadab76932f0d90754509c9d508b6cfccf6",
+    "status": "BLOCKED",
+    "blocker": "CAMPNET_VLM_MODEL is unset; no vision-language model is configured. No inference requests sent.",
+    "attempts": [],
+    "parsed": null,
+    "validation_errors": []
+  },
+  {
+    "image_id": "868b5679de36fb9df85c7898ece298d5",
+    "ocr_version": "author-corrected-sha256:26181b3325d8f5a3a1ed491768a938d65074d36f2ae6ebf6bba73b73b310dcdc",
+    "image_sha256": "a351f971980cd69374667a1eeba987e74ddfefa9059e7c9e83adb701aeef4a66",
+    "status": "BLOCKED",
+    "blocker": "CAMPNET_VLM_MODEL is unset; no vision-language model is configured. No inference requests sent.",
+    "attempts": [],
+    "parsed": null,
+    "validation_errors": []
+  },
+  {
+    "image_id": "da1790a39c713c2f45f6141d1a6d4a7a",
+    "ocr_version": "author-corrected-sha256:26181b3325d8f5a3a1ed491768a938d65074d36f2ae6ebf6bba73b73b310dcdc",
+    "image_sha256": "8bf0bdf3a39fe748b0f93029ef6f607b36460ef65c3d27c07da2f2cb4b173c33",
+    "status": "BLOCKED",
+    "blocker": "CAMPNET_VLM_MODEL is unset; no vision-language model is configured. No inference requests sent.",
+    "attempts": [],
+    "parsed": null,
+    "validation_errors": []
+  },
+  {
+    "image_id": "4ca43d0fe5ff9b12941105ae3378e26e",
+    "ocr_version": "author-corrected-sha256:26181b3325d8f5a3a1ed491768a938d65074d36f2ae6ebf6bba73b73b310dcdc",
+    "image_sha256": "4fa4d7c479a540d8529c83435cd5501779698843a65e3c60d20f7c3b4c290267",
+    "status": "BLOCKED",
+    "blocker": "CAMPNET_VLM_MODEL is unset; no vision-language model is configured. No inference requests sent.",
+    "attempts": [],
+    "parsed": null,
+    "validation_errors": []
+  },
+  {
+    "image_id": "5c5cf50f8585bcc06f0ec419b798bd7a",
+    "ocr_version": "author-corrected-sha256:26181b3325d8f5a3a1ed491768a938d65074d36f2ae6ebf6bba73b73b310dcdc",
+    "image_sha256": "aed0a2a6cfaef396f1322f1cb780d77e02741b08ee3a0ff9235cd717e64b9c73",
+    "status": "BLOCKED",
+    "blocker": "CAMPNET_VLM_MODEL is unset; no vision-language model is configured. No inference requests sent.",
+    "attempts": [],
+    "parsed": null,
+    "validation_errors": []
+  },
+  {
+    "image_id": "05e4d38af26351203819b6c79a2d6b7d",
+    "ocr_version": "author-corrected-sha256:26181b3325d8f5a3a1ed491768a938d65074d36f2ae6ebf6bba73b73b310dcdc",
+    "image_sha256": "994bff9814082a653b1167672571d9e7e7ac6772da84184f8c9092921eb55bbc",
+    "status": "BLOCKED",
+    "blocker": "CAMPNET_VLM_MODEL is unset; no vision-language model is configured. No inference requests sent.",
+    "attempts": [],
+    "parsed": null,
+    "validation_errors": []
+  },
+  {
+    "image_id": "d48b60995b080dd77a582b99ab9871c2",
+    "ocr_version": "author-corrected-sha256:26181b3325d8f5a3a1ed491768a938d65074d36f2ae6ebf6bba73b73b310dcdc",
+    "image_sha256": "12340b59fd832539c88bd749eba09620acdd66c0f10a867e262b7f0e09879283",
+    "status": "BLOCKED",
+    "blocker": "CAMPNET_VLM_MODEL is unset; no vision-language model is configured. No inference requests sent.",
+    "attempts": [],
+    "parsed": null,
+    "validation_errors": []
+  },
+  {
+    "image_id": "dfc319a63f4acaaa13939840ae35a115",
+    "ocr_version": "author-corrected-sha256:26181b3325d8f5a3a1ed491768a938d65074d36f2ae6ebf6bba73b73b310dcdc",
+    "image_sha256": "43e61596856fb3cb3f4997a7b6680485c9f5f181b002c65abf6da1e23fb9cb5c",
+    "status": "BLOCKED",
+    "blocker": "CAMPNET_VLM_MODEL is unset; no vision-language model is configured. No inference requests sent.",
+    "attempts": [],
+    "parsed": null,
+    "validation_errors": []
+  },
+  {
+    "image_id": "755e9548155cd8048eefb249a2fca47f",
+    "ocr_version": "author-corrected-sha256:26181b3325d8f5a3a1ed491768a938d65074d36f2ae6ebf6bba73b73b310dcdc",
+    "image_sha256": "e1ee07dc2599a0fb66be5870a71374f68ec24d3e9067c99ddc0e632b96a7d67e",
+    "status": "BLOCKED",
+    "blocker": "CAMPNET_VLM_MODEL is unset; no vision-language model is configured. No inference requests sent.",
+    "attempts": [],
+    "parsed": null,
+    "validation_errors": []
+  },
+  {
+    "image_id": "a298de2014f664a4e2993ccb3d5be470",
+    "ocr_version": "author-corrected-sha256:26181b3325d8f5a3a1ed491768a938d65074d36f2ae6ebf6bba73b73b310dcdc",
+    "image_sha256": "905db753cbdaefc03bac2f3a8e172f926f8e25d0ca3f8416a271f208d1f08781",
+    "status": "BLOCKED",
+    "blocker": "CAMPNET_VLM_MODEL is unset; no vision-language model is configured. No inference requests sent.",
+    "attempts": [],
+    "parsed": null,
+    "validation_errors": []
+  },
+  {
+    "image_id": "68705bbde7681de67744e5aaf04a24b3",
+    "ocr_version": "author-corrected-sha256:26181b3325d8f5a3a1ed491768a938d65074d36f2ae6ebf6bba73b73b310dcdc",
+    "image_sha256": "f8cbfa70e3b74ee2e550ba9a6619c0dcb4c52d2b43e5f0409209c111fa91a120",
+    "status": "BLOCKED",
+    "blocker": "CAMPNET_VLM_MODEL is unset; no vision-language model is configured. No inference requests sent.",
+    "attempts": [],
+    "parsed": null,
+    "validation_errors": []
+  },
+  {
+    "image_id": "595c546ce64096fb7b02a6a638eda3ea",
+    "ocr_version": "author-corrected-sha256:26181b3325d8f5a3a1ed491768a938d65074d36f2ae6ebf6bba73b73b310dcdc",
+    "image_sha256": "6c456439a4c80d72312177a68751801da1121c9e18da97595aadbbf0939a2c61",
+    "status": "BLOCKED",
+    "blocker": "CAMPNET_VLM_MODEL is unset; no vision-language model is configured. No inference requests sent.",
+    "attempts": [],
+    "parsed": null,
+    "validation_errors": []
+  },
+  {
+    "image_id": "35ef2aad041f1482330758e0a16aa9e2",
+    "ocr_version": "author-corrected-sha256:26181b3325d8f5a3a1ed491768a938d65074d36f2ae6ebf6bba73b73b310dcdc",
+    "image_sha256": "5938e1d3e29ff6853e918447644a154e5a67ee1e4d822d5dcefe18028bc592fb",
+    "status": "BLOCKED",
+    "blocker": "CAMPNET_VLM_MODEL is unset; no vision-language model is configured. No inference requests sent.",
+    "attempts": [],
+    "parsed": null,
+    "validation_errors": []
+  },
+  {
+    "image_id": "4382b143978c36408cdfb966b4be9a50",
+    "ocr_version": "author-corrected-sha256:26181b3325d8f5a3a1ed491768a938d65074d36f2ae6ebf6bba73b73b310dcdc",
+    "image_sha256": "ea2af7d53278ab7cca2560e9166520d414881d286070784aa0ab5751327639b4",
+    "status": "BLOCKED",
+    "blocker": "CAMPNET_VLM_MODEL is unset; no vision-language model is configured. No inference requests sent.",
+    "attempts": [],
+    "parsed": null,
+    "validation_errors": []
+  },
+  {
+    "image_id": "ba069534340281fe3ea3c7677c6ed715",
+    "ocr_version": "author-corrected-sha256:26181b3325d8f5a3a1ed491768a938d65074d36f2ae6ebf6bba73b73b310dcdc",
+    "image_sha256": "151d368e999a0e1e6df506ad18c02ccc8ec1d175a2f02faca009a166f2346aa6",
+    "status": "BLOCKED",
+    "blocker": "CAMPNET_VLM_MODEL is unset; no vision-language model is configured. No inference requests sent.",
+    "attempts": [],
+    "parsed": null,
+    "validation_errors": []
+  }
+]

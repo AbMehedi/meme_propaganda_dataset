@@ -1,0 +1,40 @@
+{
+  "label_studio_version": "1.23.2",
+  "checks_passed": [
+    "stage_a_manual: installed Label Studio XML validation passed",
+    "manual: installed Label Studio XML validation passed",
+    "assisted: installed Label Studio XML validation passed",
+    "17 actual manual imports; zero predictions",
+    "Repeated import kept exactly 17 tasks",
+    "Authenticated local image serving returned original checksum",
+    "8 synthetic manual cases saved and exported with intact evidence/Unicode offsets",
+    "17 blind Stage A tasks imported with no image or predictions",
+    "Synthetic predictions imported, accepted/edited/rejected, patched and exported separately from human decisions; originals unchanged"
+  ],
+  "manual_synthetic_cases": [
+    "text_only",
+    "visual",
+    "combined",
+    "multiple",
+    "none",
+    "unreadable",
+    "whole_image",
+    "repeated_instance"
+  ],
+  "assisted_actions": [
+    "ACCEPTED",
+    "EDITED",
+    "REJECTED"
+  ],
+  "research_annotations_created": 0,
+  "browser_ui_tested": false,
+  "screenshots": [],
+  "ui_checks_pending": [
+    "visual layout and font rendering",
+    "mouse highlight/box creation",
+    "image zoom",
+    "prediction display/copy/edit/reject using browser controls",
+    "Submit button interaction"
+  ],
+  "runtime": ".pilot-runtime\\dry-run-56dd8caf"
+}

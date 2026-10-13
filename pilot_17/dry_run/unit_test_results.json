@@ -1,0 +1,9 @@
+{
+  "command": ".\\.venv\\Scripts\\python.exe -m unittest discover -s tests -v",
+  "tests_run": 19,
+  "failures": 0,
+  "errors": 0,
+  "result": "PASS",
+  "model_transport_test": "MOCKED: actual selected image bytes and OCR were checked in request payloads; no model inference occurred",
+  "research_annotations_created": 0
+}

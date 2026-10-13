@@ -1,0 +1,15 @@
+{
+  "run_id": "20261013T213905Z-4c040c",
+  "model": null,
+  "provider": "ollama",
+  "prompt_version": "campnet-preannotation-v1",
+  "prompt_sha256": "b51548baedb5b8604915b29e90d4c339387183d7ff88d4b9fe84a934fa07feae",
+  "guideline_sha256": "340a0c0fb8ec2afc7c553a2db5481cf2eb4e56547e02d995d47858d3ee3fc126",
+  "temperature": 0,
+  "seed": 17,
+  "max_output_tokens": 4096,
+  "retries": 2,
+  "timeout_seconds": 120,
+  "started_at": "2026-10-13T21:39:05.210692+00:00",
+  "blocker": "CAMPNET_VLM_MODEL is unset; no vision-language model is configured. No inference requests sent."
+}

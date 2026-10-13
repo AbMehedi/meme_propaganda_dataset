@@ -1,0 +1,183 @@
+<View>
+  <Style>
+      .campnet {font-family: "Nirmala UI", "Noto Sans Bengali", sans-serif; font-size:17px; line-height:1.7;}
+      .campnet .content {display:flex; flex-wrap:wrap; gap:24px; align-items:flex-start;}
+      .campnet .pane {flex:1; min-width:340px; padding:16px; background:#f7f9fc; border-radius:8px;}
+      .campnet .evidence {padding:16px; border:2px solid #aac4df; border-radius:8px; margin:16px 0;}
+    </Style>
+  <View className="campnet">
+    <Header value="CampNet — review the full post" size="2" />
+    <Header value="Choose a technique only when you can point to evidence in this post. Highlight the words or mark the image area that supports your choice. Explain why it matches the technique." size="5" />
+    <Header value="Make a fresh decision. A famous face, flag, or emotional photograph needs a clear persuasive use. Use image zoom to inspect small details." size="5" />
+    <View className="content">
+      <View className="pane">
+        <RectangleLabels name="visual_evidence" toName="image" choice="single">
+          <Label value="T01" hint="Loaded Language" />
+          <Label value="T02" hint="Name Calling / Labeling" />
+          <Label value="T03" hint="Smears" />
+          <Label value="T04" hint="Appeal to Fear / Prejudice" />
+          <Label value="T05" hint="Exaggeration / Minimisation" />
+          <Label value="T06" hint="Slogans" />
+          <Label value="T07" hint="Appeal to Strong Emotions" />
+        </RectangleLabels>
+        <Image name="image" value="$image" zoom="true" zoomControl="true" rotateControl="false" />
+        <View visibleWhen="region-selected" whenTagName="image" className="evidence">
+          <Header value="Explain the selected evidence" size="4" />
+          <Header value="Instance number: use the same number for words and picture areas that support the same claim." size="5" />
+          <TextArea name="visual_instance" toName="image" rows="1" placeholder="1 (use 2 for a separate claim of the same technique)" editable="true" maxSubmissions="1" perRegion="true" required="true" />
+          <Header value="Why does this evidence match the technique?" size="5" />
+          <TextArea name="visual_reason" toName="image" rows="2" placeholder="Describe the persuasive use. For combined evidence, explain how the words and picture work together." editable="true" maxSubmissions="1" perRegion="true" required="true" />
+          <Header value="Target named or depicted in this post (optional)" size="5" />
+          <TextArea name="visual_target" toName="image" rows="1" placeholder="Leave empty if the target is unknown." editable="true" maxSubmissions="1" perRegion="true" />
+          <Header value="Picture’s role for this technique instance" size="5" />
+          <Choices name="visual_role" toName="image" choice="single" showInline="true" perRegion="true" required="true">
+            <Choice value="REQUIRED" />
+            <Choice value="REINFORCING" />
+            <Choice value="NOT_USED" />
+            <Choice value="UNRESOLVED" />
+          </Choices>
+          <Header value="Can the words alone support this same instance?" size="5" />
+          <Choices name="visual_sufficient" toName="image" choice="single" showInline="true" perRegion="true" required="true">
+            <Choice value="true" />
+            <Choice value="false" />
+            <Choice value="unknown" />
+          </Choices>
+          <Header value="Confidence: 1 = uncertain; 2 = borderline; 3 = clear evidence" size="5" />
+          <Choices name="visual_confidence" toName="image" choice="single" showInline="true" perRegion="true" required="true">
+            <Choice value="1" />
+            <Choice value="2" />
+            <Choice value="3" />
+          </Choices>
+          <Header value="Kind of picture evidence" size="5" />
+          <Choices name="visual_kind" toName="image" choice="single" showInline="true" perRegion="true" required="true">
+            <Choice value="NON_TEXT_VISUAL" />
+            <Choice value="TYPOGRAPHY_LAYOUT" />
+          </Choices>
+          <Header value="Area: choose GLOBAL only for whole-image composition; draw the full-image box and explain why." size="5" />
+          <Choices name="visual_scope" toName="image" choice="single" showInline="true" perRegion="true" required="true">
+            <Choice value="LOCAL" />
+            <Choice value="GLOBAL" />
+          </Choices>
+        </View>
+      </View>
+      <View className="pane">
+        <Header value="Original post caption" size="4" />
+        <Text name="caption_notice" value="$caption_notice" />
+        <Labels name="caption_spans" toName="caption" choice="single">
+          <Label value="T01" hint="Loaded Language" />
+          <Label value="T02" hint="Name Calling / Labeling" />
+          <Label value="T03" hint="Smears" />
+          <Label value="T04" hint="Appeal to Fear / Prejudice" />
+          <Label value="T05" hint="Exaggeration / Minimisation" />
+          <Label value="T06" hint="Slogans" />
+          <Label value="T07" hint="Appeal to Strong Emotions" />
+        </Labels>
+        <Text name="caption" value="$caption" granularity="symbol" />
+        <View visibleWhen="region-selected" whenTagName="caption" className="evidence">
+          <Header value="Explain the selected evidence" size="4" />
+          <Header value="Instance number: use the same number for words and picture areas that support the same claim." size="5" />
+          <TextArea name="caption_instance" toName="caption" rows="1" placeholder="1 (use 2 for a separate claim of the same technique)" editable="true" maxSubmissions="1" perRegion="true" required="true" />
+          <Header value="Why does this evidence match the technique?" size="5" />
+          <TextArea name="caption_reason" toName="caption" rows="2" placeholder="Describe the persuasive use. For combined evidence, explain how the words and picture work together." editable="true" maxSubmissions="1" perRegion="true" required="true" />
+          <Header value="Target named or depicted in this post (optional)" size="5" />
+          <TextArea name="caption_target" toName="caption" rows="1" placeholder="Leave empty if the target is unknown." editable="true" maxSubmissions="1" perRegion="true" />
+          <Header value="Picture’s role for this technique instance" size="5" />
+          <Choices name="caption_role" toName="caption" choice="single" showInline="true" perRegion="true" required="true">
+            <Choice value="REQUIRED" />
+            <Choice value="REINFORCING" />
+            <Choice value="NOT_USED" />
+            <Choice value="UNRESOLVED" />
+          </Choices>
+          <Header value="Can the words alone support this same instance?" size="5" />
+          <Choices name="caption_sufficient" toName="caption" choice="single" showInline="true" perRegion="true" required="true">
+            <Choice value="true" />
+            <Choice value="false" />
+            <Choice value="unknown" />
+          </Choices>
+          <Header value="Confidence: 1 = uncertain; 2 = borderline; 3 = clear evidence" size="5" />
+          <Choices name="caption_confidence" toName="caption" choice="single" showInline="true" perRegion="true" required="true">
+            <Choice value="1" />
+            <Choice value="2" />
+            <Choice value="3" />
+          </Choices>
+        </View>
+        <Header value="Checked words inside the image" size="4" />
+        <Text name="ocr_notice" value="$ocr_notice" />
+        <Labels name="ocr_spans" toName="ocr" choice="single">
+          <Label value="T01" hint="Loaded Language" />
+          <Label value="T02" hint="Name Calling / Labeling" />
+          <Label value="T03" hint="Smears" />
+          <Label value="T04" hint="Appeal to Fear / Prejudice" />
+          <Label value="T05" hint="Exaggeration / Minimisation" />
+          <Label value="T06" hint="Slogans" />
+          <Label value="T07" hint="Appeal to Strong Emotions" />
+        </Labels>
+        <Text name="ocr" value="$ocr" granularity="symbol" />
+        <View visibleWhen="region-selected" whenTagName="ocr" className="evidence">
+          <Header value="Explain the selected evidence" size="4" />
+          <Header value="Instance number: use the same number for words and picture areas that support the same claim." size="5" />
+          <TextArea name="ocr_instance" toName="ocr" rows="1" placeholder="1 (use 2 for a separate claim of the same technique)" editable="true" maxSubmissions="1" perRegion="true" required="true" />
+          <Header value="Why does this evidence match the technique?" size="5" />
+          <TextArea name="ocr_reason" toName="ocr" rows="2" placeholder="Describe the persuasive use. For combined evidence, explain how the words and picture work together." editable="true" maxSubmissions="1" perRegion="true" required="true" />
+          <Header value="Target named or depicted in this post (optional)" size="5" />
+          <TextArea name="ocr_target" toName="ocr" rows="1" placeholder="Leave empty if the target is unknown." editable="true" maxSubmissions="1" perRegion="true" />
+          <Header value="Picture’s role for this technique instance" size="5" />
+          <Choices name="ocr_role" toName="ocr" choice="single" showInline="true" perRegion="true" required="true">
+            <Choice value="REQUIRED" />
+            <Choice value="REINFORCING" />
+            <Choice value="NOT_USED" />
+            <Choice value="UNRESOLVED" />
+          </Choices>
+          <Header value="Can the words alone support this same instance?" size="5" />
+          <Choices name="ocr_sufficient" toName="ocr" choice="single" showInline="true" perRegion="true" required="true">
+            <Choice value="true" />
+            <Choice value="false" />
+            <Choice value="unknown" />
+          </Choices>
+          <Header value="Confidence: 1 = uncertain; 2 = borderline; 3 = clear evidence" size="5" />
+          <Choices name="ocr_confidence" toName="ocr" choice="single" showInline="true" perRegion="true" required="true">
+            <Choice value="1" />
+            <Choice value="2" />
+            <Choice value="3" />
+          </Choices>
+        </View>
+      </View>
+    </View>
+    <Header value="Techniques supported by the evidence" size="4" />
+    <Choices name="techniques" toName="caption" choice="multiple" showInline="true">
+      <Choice value="T01" />
+      <Choice value="T02" />
+      <Choice value="T03" />
+      <Choice value="T04" />
+      <Choice value="T05" />
+      <Choice value="T06" />
+      <Choice value="T07" />
+    </Choices>
+    <Header value="T01 — Loaded Language | T02 — Name Calling / Labeling | T03 — Smears | T04 — Appeal to Fear / Prejudice | T05 — Exaggeration / Minimisation | T06 — Slogans | T07 — Appeal to Strong Emotions" size="5" />
+    <Header value="Is your decision complete?" size="4" />
+    <Choices name="status" toName="caption" choice="single" showInline="true" required="true">
+      <Choice value="COMPLETE" />
+      <Choice value="UNRESOLVED" />
+      <Choice value="EXCLUDE" />
+    </Choices>
+    <Choices name="no_technique" toName="caption" choice="multiple" showInline="true">
+      <Choice value="No Propaganda Technique" />
+    </Choices>
+    <Header value="Choose No Propaganda Technique only after complete review with no core technique selected. If you cannot decide, choose UNRESOLVED." size="5" />
+    <Choices name="review_flags" toName="caption" choice="multiple" showInline="true">
+      <Choice value="UNREADABLE_TEXT" />
+      <Choice value="MISSING_CONTEXT" />
+      <Choice value="OCR_REVIEW" />
+      <Choice value="ADJUDICATION" />
+      <Choice value="UNCERTAIN_VISUAL_CONTRIBUTION" />
+    </Choices>
+    <Choices name="watchlist" toName="caption" choice="multiple" showInline="true">
+      <Choice value="W01" />
+      <Choice value="W02" />
+      <Choice value="W03" />
+      <Choice value="other_candidate" />
+    </Choices>
+    <Header value="Post note: explain none, missing information, uncertainty, quotation, satire, or watchlist evidence." size="5" />
+    <TextArea name="post_note" toName="caption" rows="2" placeholder="For unresolved or excluded posts, say why. For no technique, explain your decision." editable="true" maxSubmissions="1" required="true" />
+  </View>
+</View>
