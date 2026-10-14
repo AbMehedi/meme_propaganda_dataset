@@ -1,0 +1,27 @@
+<View>
+  <Header value="CampNet: Stage A — text only. Select zero or more techniques; complete status and evidence note."/>
+  <Header value="OCR verification status"/>
+  <Text name="ocr_status" value="$ocr_status"/>
+  <Header value="Original caption"/>
+  <Text name="caption" value="$caption"/>
+  <Header value="Image text supplied for annotation"/>
+  <Text name="ocr" value="$ocr"/>
+  <Labels name="caption_spans" toName="caption" choice="single">
+    <Label value="T01"/><Label value="T02"/><Label value="T03"/>
+    <Label value="T04"/><Label value="T05"/><Label value="T06"/><Label value="T07"/>
+  </Labels>
+  <Labels name="ocr_spans" toName="ocr" choice="single">
+    <Label value="T01"/><Label value="T02"/><Label value="T03"/>
+    <Label value="T04"/><Label value="T05"/><Label value="T06"/><Label value="T07"/>
+  </Labels>
+  <Header value="Techniques supported by caption + supplied image text (leave unchecked for none)"/>
+  <Choices name="text_techniques" toName="caption" choice="multiple">
+    <Choice value="T01"/><Choice value="T02"/><Choice value="T03"/>
+    <Choice value="T04"/><Choice value="T05"/><Choice value="T06"/><Choice value="T07"/>
+  </Choices>
+  <Choices name="text_status" toName="caption" choice="single" required="true">
+    <Choice value="COMPLETE"/><Choice value="UNRESOLVED"/><Choice value="EXCLUDE"/>
+  </Choices>
+  <TextArea name="text_rationale" toName="caption" rows="3"
+            placeholder="For each Txx: quote or explain the mechanism. If none: write NONE and why. Note uncertainty/quotation/satire."/>
+</View>

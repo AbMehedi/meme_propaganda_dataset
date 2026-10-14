@@ -1,0 +1,2 @@
+# Optional: install in a separate .ocr-venv to regenerate machine OCR.
+easyocr==1.7.2

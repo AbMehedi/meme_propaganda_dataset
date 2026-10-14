@@ -1,14 +1,36 @@
+# Secrets and machine-local configuration
 .env
+.env.*
+!.env.example
+*.pem
+*.key
+# Environments and caches
+.venv/
+.ocr-venv/
+venv/
 __pycache__/
 *.py[cod]
-.venv/
+.pytest_cache/
+*.egg-info/
+# Frozen source data is supplied locally; the small curated pilot is versioned.
+/data/
+/raw_images*/
+/ocr_check*/
 *.db
-propaganda_dataset.db
-raw_images/*
-!raw_images/.gitkeep
-raw_images_new/*
-!raw_images_new/.gitkeep
-ocr_check/*
-!ocr_check/.gitkeep
-ocr_check_new/*
-!ocr_check_new/.gitkeep
+*.db-*
+*.sqlite*
+# Runtime credentials, annotations and generated experiments
+.pilot-runtime/
+/imports/
+/preview_imports/
+/exports/
+/pilot_17/dry_run/
+/pilot_17/preannotation/
+/pilot_17_revision*/
+/*_build_failure.json
+ocr_author_review_changes.csv
+*.log
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

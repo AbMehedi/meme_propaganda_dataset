@@ -1,0 +1,373 @@
+<View>
+  <!--Display text uses html; control names and saved values remain compatible with existing exports.-->
+  <Style>
+    .campnet-a {font-family:"Nirmala UI","Noto Sans Bengali",Arial,sans-serif; font-size:16px; line-height:1.65; color:#243247; max-width:1120px; margin:0 auto; padding:16px; background:#f3f6fa;}
+    .campnet-a * {box-sizing:border-box;}
+    .campnet-a h2,.campnet-a h3,.campnet-a h4 {line-height:1.35; margin:0 0 12px; color:#172b4d;}
+    .campnet-a .copy {margin:6px 0 12px;}
+    .campnet-a .intro {padding:24px; background:#eaf2ff; border:1px solid #b8cfee; border-radius:12px; margin-bottom:18px;}
+    .campnet-a .card {padding:24px; background:#fff; border:1px solid #d8e0eb; border-radius:12px; margin-bottom:18px; min-width:0;}
+    .campnet-a .muted {color:#526176; font-size:14px;}
+    .campnet-a .notice {padding:12px 16px; background:#f3f6fa; border-radius:6px; font-size:14px; margin:12px 0;}
+    .campnet-a .reading {padding:20px; border:1px solid #c4cfdd; border-radius:8px; background:#fcfdff; font-size:20px; line-height:1.95; overflow-wrap:anywhere; margin:14px 0;}
+    .campnet-a .evidence {padding:20px; border:2px solid #5685b8; border-radius:8px; background:#f3f8ff; margin-top:16px;}
+    .campnet-a .field {margin-top:16px;}
+    .campnet-a .field-title {font-weight:600; margin:0 0 6px;}
+    .campnet-a .warning {padding:14px 16px; border:1px solid #d5aa55; border-left:4px solid #a66600; border-radius:6px; background:#fff8e8; color:#674300; margin:14px 0;}
+    .campnet-a .error {padding:14px 16px; border:2px solid #bf4545; border-radius:6px; background:#fff1f1; color:#842727; margin:14px 0;}
+    .campnet-a .guide-row {padding:10px 0; border-bottom:1px solid #e2e8f0;}
+    .campnet-a .checklist {margin:8px 0;}
+    .campnet-a .check-item {margin:6px 0; padding-left:12px;}
+    .campnet-a label {line-height:1.6;}
+    .campnet-a textarea {font-family:inherit; font-size:16px; line-height:1.6;}
+    .campnet-a :focus-visible {outline:3px solid #245db0; outline-offset:3px;}
+    @media (max-width:640px) {
+      .campnet-a {padding:8px;}
+      .campnet-a .card,.campnet-a .intro {padding:16px;}
+      .campnet-a .reading,.campnet-a .evidence {padding:14px;}
+    }
+  </Style>
+  <View className="campnet-a">
+    <View className="intro">
+      <Header value="CampNet · Stage A: Read and label the text" size="2" />
+      <View className="copy">
+        <Header value="Read both text sections. Mark words that support a persuasion technique, then explain your decision." size="5" style="font-size:inherit; font-weight:inherit; line-height:inherit; color:inherit; margin:0;" />
+      </View>
+      <View className="copy">
+        <Header value="1. Mark evidence → 2. Choose techniques → 3. Report problems → 4. Check and submit." size="5" style="font-size:inherit; font-weight:inherit; line-height:inherit; color:inherit; margin:0;" />
+      </View>
+      <View className="warning">
+        <View className="copy">
+          <Header value="Text only: save this stage before viewing the picture. Do not change this decision after seeing the full post." size="5" style="font-size:inherit; font-weight:inherit; line-height:inherit; color:inherit; margin:0;" />
+        </View>
+      </View>
+      <View className="copy muted">
+        <Header value="A technique is a way of influencing what people think, feel, or do. Political content or criticism alone is not enough. You are not checking whether a claim is true." size="5" style="font-size:inherit; font-weight:inherit; line-height:inherit; color:inherit; margin:0;" />
+      </View>
+    </View>
+    <View className="card">
+      <Header value="1. Read the text and mark evidence" size="3" />
+      <View className="copy">
+        <Header value="For each text section: click a technique button, then drag across the exact words that support it. Fill in the explanation that appears below that section. Repeat for each piece of evidence." size="5" style="font-size:inherit; font-weight:inherit; line-height:inherit; color:inherit; margin:0;" />
+      </View>
+      <View className="copy muted">
+        <Header value="To review or fix a mark, click its highlighted words. If you marked the wrong words, select the mark and use Label Studio's delete control, then highlight again. If there is no supporting evidence, leave the text unmarked." size="5" style="font-size:inherit; font-weight:inherit; line-height:inherit; color:inherit; margin:0;" />
+      </View>
+      <Collapse>
+        <Panel value="Need help choosing? Open the technique guide">
+          <View>
+            <View className="guide-row">
+              <View className="copy field-title">
+                <Header value="T01 · Loaded language" size="5" style="font-size:inherit; font-weight:inherit; line-height:inherit; color:inherit; margin:0;" />
+              </View>
+              <View className="copy">
+                <Header value="Emotionally judgmental words shape the reader's opinion. Find the exact word adding praise or blame beyond a plain description." size="5" style="font-size:inherit; font-weight:inherit; line-height:inherit; color:inherit; margin:0;" />
+              </View>
+            </View>
+            <View className="guide-row">
+              <View className="copy field-title">
+                <Header value="T02 · Name calling / labeling" size="5" style="font-size:inherit; font-weight:inherit; line-height:inherit; color:inherit; margin:0;" />
+              </View>
+              <View className="copy">
+                <Header value="A judgmental name is given to a person or group. Identify the label and who receives it." size="5" style="font-size:inherit; font-weight:inherit; line-height:inherit; color:inherit; margin:0;" />
+              </View>
+            </View>
+            <View className="guide-row">
+              <View className="copy field-title">
+                <Header value="T03 · Smears" size="5" style="font-size:inherit; font-weight:inherit; line-height:inherit; color:inherit; margin:0;" />
+              </View>
+              <View className="copy">
+                <Header value="An accusation or degrading connection attacks someone's reputation. An ordinary request for accountability is not enough." size="5" style="font-size:inherit; font-weight:inherit; line-height:inherit; color:inherit; margin:0;" />
+              </View>
+            </View>
+            <View className="guide-row">
+              <View className="copy field-title">
+                <Header value="T04 · Appeal to fear / prejudice" size="5" style="font-size:inherit; font-weight:inherit; line-height:inherit; color:inherit; margin:0;" />
+              </View>
+              <View className="copy">
+                <Header value="A threat or negative belief about a group pushes the audience toward a choice. A reasonable safety warning is not automatically this technique." size="5" style="font-size:inherit; font-weight:inherit; line-height:inherit; color:inherit; margin:0;" />
+              </View>
+            </View>
+            <View className="guide-row">
+              <View className="copy field-title">
+                <Header value="T05 · Exaggeration / minimisation" size="5" style="font-size:inherit; font-weight:inherit; line-height:inherit; color:inherit; margin:0;" />
+              </View>
+              <View className="copy">
+                <Header value="The message inflates or plays down scale, importance, or consequences. An unchecked number alone is not enough." size="5" style="font-size:inherit; font-weight:inherit; line-height:inherit; color:inherit; margin:0;" />
+              </View>
+            </View>
+            <View className="guide-row">
+              <View className="copy field-title">
+                <Header value="T06 · Slogans" size="5" style="font-size:inherit; font-weight:inherit; line-height:inherit; color:inherit; margin:0;" />
+              </View>
+              <View className="copy">
+                <Header value="A short, memorable phrase rallies support or action. A short sentence or neutral quotation alone is not enough." size="5" style="font-size:inherit; font-weight:inherit; line-height:inherit; color:inherit; margin:0;" />
+              </View>
+            </View>
+            <View className="guide-row">
+              <View className="copy field-title">
+                <Header value="T07 · Strong emotions (Stage B: picture evidence required)" size="5" style="font-size:inherit; font-weight:inherit; line-height:inherit; color:inherit; margin:0;" />
+              </View>
+              <View className="copy">
+                <Header value="CampNet requires picture evidence for this technique. Assess it in Stage B. Emotional words alone may support T01, but do not support T07." size="5" style="font-size:inherit; font-weight:inherit; line-height:inherit; color:inherit; margin:0;" />
+              </View>
+            </View>
+            <View className="copy muted">
+              <Header value="Check whether the author supports, neutrally quotes, or rejects the message. More than one technique is allowed only when you can explain the evidence for each." size="5" style="font-size:inherit; font-weight:inherit; line-height:inherit; color:inherit; margin:0;" />
+            </View>
+          </View>
+        </Panel>
+      </Collapse>
+    </View>
+    <View className="card">
+      <Header value="1A. Original post caption" size="3" />
+      <View className="notice">
+        <Text name="caption_notice" value="$caption_notice" />
+      </View>
+      <View className="copy muted">
+        <Header value="Choose a technique below, then highlight its supporting words in the caption." size="5" style="font-size:inherit; font-weight:inherit; line-height:inherit; color:inherit; margin:0;" />
+      </View>
+      <Labels name="caption_spans" toName="caption" choice="single">
+        <Label value="T01" hint="Emotionally judgmental words shape the reader's opinion. Find the exact word adding praise or blame beyond a plain description." html="T01 · Loaded language" background="#dbeafe" />
+        <Label value="T02" hint="A judgmental name is given to a person or group. Identify the label and who receives it." html="T02 · Name calling / labeling" background="#ede9fe" />
+        <Label value="T03" hint="An accusation or degrading connection attacks someone's reputation. An ordinary request for accountability is not enough." html="T03 · Smears" background="#fce7f3" />
+        <Label value="T04" hint="A threat or negative belief about a group pushes the audience toward a choice. A reasonable safety warning is not automatically this technique." html="T04 · Appeal to fear / prejudice" background="#ffedd5" />
+        <Label value="T05" hint="The message inflates or plays down scale, importance, or consequences. An unchecked number alone is not enough." html="T05 · Exaggeration / minimisation" background="#fef3c7" />
+        <Label value="T06" hint="A short, memorable phrase rallies support or action. A short sentence or neutral quotation alone is not enough." html="T06 · Slogans" background="#ccfbf1" />
+        <Label value="T07" hint="CampNet requires picture evidence for this technique. Assess it in Stage B. Emotional words alone may support T01, but do not support T07." html="T07 · Strong emotions (Stage B: picture evidence required)" background="#e2e8f0" />
+      </Labels>
+      <View className="reading">
+        <Text name="caption" value="$caption" granularity="symbol" />
+      </View>
+      <View visibleWhen="region-selected" whenTagName="caption" className="evidence">
+        <Header value="Explain the selected caption highlight" size="4" />
+        <View className="copy muted">
+          <Header value="These answers belong to the selected highlight. Complete them for every highlight. Required fields are marked *." size="5" style="font-size:inherit; font-weight:inherit; line-height:inherit; color:inherit; margin:0;" />
+        </View>
+        <View className="field">
+          <View className="copy field-title">
+            <Header value="Claim number *" size="5" style="font-size:inherit; font-weight:inherit; line-height:inherit; color:inherit; margin:0;" />
+          </View>
+          <View className="copy muted">
+            <Header value="Start with 1. Use the same number when caption words and image text support the same claim and technique. Use 2 for a separate claim of that technique." size="5" style="font-size:inherit; font-weight:inherit; line-height:inherit; color:inherit; margin:0;" />
+          </View>
+          <TextArea name="caption_instance" toName="caption" rows="1" placeholder="Example: 1" editable="true" maxSubmissions="1" showSubmitButton="true" perRegion="true" required="true" requiredMessage="Caption highlight: enter a claim number, such as 1." />
+        </View>
+        <View className="field">
+          <View className="copy field-title">
+            <Header value="Why do these words match the technique? *" size="5" style="font-size:inherit; font-weight:inherit; line-height:inherit; color:inherit; margin:0;" />
+          </View>
+          <TextArea name="caption_reason" toName="caption" rows="2" placeholder="These words use [technique] because..." editable="true" maxSubmissions="1" showSubmitButton="true" perRegion="true" required="true" requiredMessage="Caption highlight: explain why the selected words match the technique." />
+        </View>
+        <View className="field">
+          <View className="copy field-title">
+            <Header value="Who or what is being discussed? (optional)" size="5" style="font-size:inherit; font-weight:inherit; line-height:inherit; color:inherit; margin:0;" />
+          </View>
+          <TextArea name="caption_target" toName="caption" rows="1" placeholder="Person or group named in the text. Leave blank if unknown." editable="true" maxSubmissions="1" showSubmitButton="true" perRegion="true" />
+        </View>
+        <View className="field">
+          <View className="copy field-title">
+            <Header value="How sure are you about this highlight? *" size="5" style="font-size:inherit; font-weight:inherit; line-height:inherit; color:inherit; margin:0;" />
+          </View>
+          <Choices name="caption_confidence" toName="caption" choice="single" showInline="false" perRegion="true" required="true" requiredMessage="Caption highlight: choose how sure you are.">
+            <Choice value="1" html="1 · Unsure" />
+            <Choice value="2" html="2 · Borderline, but there is supporting evidence" />
+            <Choice value="3" html="3 · Clear evidence" />
+          </Choices>
+        </View>
+        <View className="copy muted">
+          <Header value="After each answer, click Add to save it. Check that the saved answer appears before selecting another highlight." size="5" style="font-size:inherit; font-weight:inherit; line-height:inherit; color:inherit; margin:0;" />
+        </View>
+      </View>
+    </View>
+    <View className="card">
+      <Header value="1B. Checked words from inside the image" size="3" />
+      <View className="notice">
+        <Text name="ocr_notice" value="$ocr_notice" />
+      </View>
+      <View className="copy muted">
+        <Header value="These words have already been checked. Read them as text; do not open the picture during this stage. If the notice says there is no text, leave this section unmarked." size="5" style="font-size:inherit; font-weight:inherit; line-height:inherit; color:inherit; margin:0;" />
+      </View>
+      <Labels name="ocr_spans" toName="ocr" choice="single">
+        <Label value="T01" hint="Emotionally judgmental words shape the reader's opinion. Find the exact word adding praise or blame beyond a plain description." html="T01 · Loaded language" background="#dbeafe" />
+        <Label value="T02" hint="A judgmental name is given to a person or group. Identify the label and who receives it." html="T02 · Name calling / labeling" background="#ede9fe" />
+        <Label value="T03" hint="An accusation or degrading connection attacks someone's reputation. An ordinary request for accountability is not enough." html="T03 · Smears" background="#fce7f3" />
+        <Label value="T04" hint="A threat or negative belief about a group pushes the audience toward a choice. A reasonable safety warning is not automatically this technique." html="T04 · Appeal to fear / prejudice" background="#ffedd5" />
+        <Label value="T05" hint="The message inflates or plays down scale, importance, or consequences. An unchecked number alone is not enough." html="T05 · Exaggeration / minimisation" background="#fef3c7" />
+        <Label value="T06" hint="A short, memorable phrase rallies support or action. A short sentence or neutral quotation alone is not enough." html="T06 · Slogans" background="#ccfbf1" />
+        <Label value="T07" hint="CampNet requires picture evidence for this technique. Assess it in Stage B. Emotional words alone may support T01, but do not support T07." html="T07 · Strong emotions (Stage B: picture evidence required)" background="#e2e8f0" />
+      </Labels>
+      <View className="reading">
+        <Text name="ocr" value="$ocr" granularity="symbol" />
+      </View>
+      <View visibleWhen="region-selected" whenTagName="ocr" className="evidence">
+        <Header value="Explain the selected image-text highlight" size="4" />
+        <View className="copy muted">
+          <Header value="These answers belong to the selected highlight. Complete them for every highlight. Required fields are marked *." size="5" style="font-size:inherit; font-weight:inherit; line-height:inherit; color:inherit; margin:0;" />
+        </View>
+        <View className="field">
+          <View className="copy field-title">
+            <Header value="Claim number *" size="5" style="font-size:inherit; font-weight:inherit; line-height:inherit; color:inherit; margin:0;" />
+          </View>
+          <View className="copy muted">
+            <Header value="Start with 1. Use the same number when caption words and image text support the same claim and technique. Use 2 for a separate claim of that technique." size="5" style="font-size:inherit; font-weight:inherit; line-height:inherit; color:inherit; margin:0;" />
+          </View>
+          <TextArea name="ocr_instance" toName="ocr" rows="1" placeholder="Example: 1" editable="true" maxSubmissions="1" showSubmitButton="true" perRegion="true" required="true" requiredMessage="Image-text highlight: enter a claim number, such as 1." />
+        </View>
+        <View className="field">
+          <View className="copy field-title">
+            <Header value="Why do these words match the technique? *" size="5" style="font-size:inherit; font-weight:inherit; line-height:inherit; color:inherit; margin:0;" />
+          </View>
+          <TextArea name="ocr_reason" toName="ocr" rows="2" placeholder="These words use [technique] because..." editable="true" maxSubmissions="1" showSubmitButton="true" perRegion="true" required="true" requiredMessage="Image-text highlight: explain why the selected words match the technique." />
+        </View>
+        <View className="field">
+          <View className="copy field-title">
+            <Header value="Who or what is being discussed? (optional)" size="5" style="font-size:inherit; font-weight:inherit; line-height:inherit; color:inherit; margin:0;" />
+          </View>
+          <TextArea name="ocr_target" toName="ocr" rows="1" placeholder="Person or group named in the text. Leave blank if unknown." editable="true" maxSubmissions="1" showSubmitButton="true" perRegion="true" />
+        </View>
+        <View className="field">
+          <View className="copy field-title">
+            <Header value="How sure are you about this highlight? *" size="5" style="font-size:inherit; font-weight:inherit; line-height:inherit; color:inherit; margin:0;" />
+          </View>
+          <Choices name="ocr_confidence" toName="ocr" choice="single" showInline="false" perRegion="true" required="true" requiredMessage="Image-text highlight: choose how sure you are.">
+            <Choice value="1" html="1 · Unsure" />
+            <Choice value="2" html="2 · Borderline, but there is supporting evidence" />
+            <Choice value="3" html="3 · Clear evidence" />
+          </Choices>
+        </View>
+        <View className="copy muted">
+          <Header value="After each answer, click Add to save it. Check that the saved answer appears before selecting another highlight." size="5" style="font-size:inherit; font-weight:inherit; line-height:inherit; color:inherit; margin:0;" />
+        </View>
+      </View>
+    </View>
+    <View className="card">
+      <Header value="2. Choose the techniques you found" size="3" />
+      <View className="copy">
+        <Header value="Select every technique supported by your highlights. A highlighted label does not automatically tick this list." size="5" style="font-size:inherit; font-weight:inherit; line-height:inherit; color:inherit; margin:0;" />
+      </View>
+      <Choices name="techniques" toName="caption" choice="multiple" showInline="false">
+        <Choice value="T01" html="T01 · Loaded language" />
+        <Choice value="T02" html="T02 · Name calling / labeling" />
+        <Choice value="T03" html="T03 · Smears" />
+        <Choice value="T04" html="T04 · Appeal to fear / prejudice" />
+        <Choice value="T05" html="T05 · Exaggeration / minimisation" />
+        <Choice value="T06" html="T06 · Slogans" />
+        <Choice value="T07" html="T07 · Strong emotions (Stage B: picture evidence required)" />
+      </Choices>
+      <View visibleWhen="choice-selected" whenTagName="techniques" whenChoiceValue="T07" className="error">
+        <View className="copy">
+          <Header value="Check T07: this technique requires picture evidence under the CampNet codebook. Remove it from this text-only decision. For emotional wording, check whether T01 fits." size="5" style="font-size:inherit; font-weight:inherit; line-height:inherit; color:inherit; margin:0;" />
+        </View>
+      </View>
+      <View className="notice">
+        <Choices name="no_technique" toName="caption" choice="multiple" showInline="false">
+          <Choice value="No Propaganda Technique" html="I reviewed both text sections and found no supported main technique" />
+        </Choices>
+        <View className="copy muted">
+          <Header value="Use this only after a complete review. Leave all technique boxes above unticked. If you cannot decide, choose Needs review in step 4." size="5" style="font-size:inherit; font-weight:inherit; line-height:inherit; color:inherit; margin:0;" />
+        </View>
+      </View>
+      <View visibleWhen="choice-selected" whenTagName="no_technique" whenChoiceValue="No Propaganda Technique">
+        <View visibleWhen="choice-selected" whenTagName="techniques" whenChoiceValue="T01,T02,T03,T04,T05,T06,T07" className="error">
+          <View className="copy">
+            <Header value="Conflicting answers: you selected a technique and also selected no technique. Keep only the answer supported by your review. Remove any highlights that no longer apply." size="5" style="font-size:inherit; font-weight:inherit; line-height:inherit; color:inherit; margin:0;" />
+          </View>
+        </View>
+      </View>
+    </View>
+    <View className="card">
+      <Header value="3. Report a problem (if needed)" size="3" />
+      <View className="copy">
+        <Header value="Tick any issue you found. Describe where it occurs and what needs checking in the final note below." size="5" style="font-size:inherit; font-weight:inherit; line-height:inherit; color:inherit; margin:0;" />
+      </View>
+      <Choices name="review_flags" toName="caption" choice="multiple" showInline="false">
+        <Choice value="UNREADABLE_TEXT" html="I cannot read some of the words" />
+        <Choice value="MISSING_CONTEXT" html="Important information is missing" />
+        <Choice value="OCR_REVIEW" html="The copied image text may contain an error" />
+        <Choice value="ADJUDICATION" html="I need a reviewer to help with the decision" />
+        <Choice value="UNCERTAIN_VISUAL_CONTRIBUTION" html="I cannot judge the picture's contribution from this text alone" />
+      </Choices>
+      <View visibleWhen="choice-selected" whenTagName="review_flags" whenChoiceValue="OCR_REVIEW" className="warning">
+        <View className="copy">
+          <Header value="Possible text error: quote the suspicious words and explain the issue in your final note. Do not open the picture to check them during Stage A. Choose Needs review if the issue prevents a decision." size="5" style="font-size:inherit; font-weight:inherit; line-height:inherit; color:inherit; margin:0;" />
+        </View>
+      </View>
+      <View className="copy muted">
+        <Header value="The hidden picture is normal for Stage A. Report uncertainty about it only when it affects your decision; do not guess what it shows." size="5" style="font-size:inherit; font-weight:inherit; line-height:inherit; color:inherit; margin:0;" />
+      </View>
+      <Collapse>
+        <Panel value="Optional: another possible technique outside the main list">
+          <View>
+            <View className="copy">
+              <Header value="Record a candidate only if you can explain the evidence. These do not count as main technique labels." size="5" style="font-size:inherit; font-weight:inherit; line-height:inherit; color:inherit; margin:0;" />
+            </View>
+            <Choices name="watchlist" toName="caption" choice="multiple" showInline="false">
+              <Choice value="W01" html="W01 · Flag-waving / group identity — belonging is used to encourage support" />
+              <Choice value="W02" html="W02 · Transfer — a person's or symbol's associations are linked to a target" />
+              <Choice value="W03" html="W03 · Glittering generalities / virtue — attractive values invite support without explanation" />
+              <Choice value="other_candidate" html="Another possible technique — describe it in the final note" />
+            </Choices>
+          </View>
+        </Panel>
+      </Collapse>
+    </View>
+    <View className="card">
+      <Header value="4. Check your decision and submit" size="3" />
+      <View className="copy field-title">
+        <Header value="Is your text review complete? *" size="5" style="font-size:inherit; font-weight:inherit; line-height:inherit; color:inherit; margin:0;" />
+      </View>
+      <Choices name="status" toName="caption" choice="single" showInline="false" required="true" requiredMessage="Step 4: choose Complete, Needs review, or Exclude.">
+        <Choice value="COMPLETE" html="Complete — I can make a decision from the available text" />
+        <Choice value="UNRESOLVED" html="Needs review — I am unsure or information is missing" />
+        <Choice value="EXCLUDE" html="Exclude — this item is unusable or outside the task" />
+      </Choices>
+      <View visibleWhen="choice-selected" whenTagName="status" whenChoiceValue="UNRESOLVED,EXCLUDE" className="warning">
+        <View className="copy">
+          <Header value="Explain the reason below. For Needs review, say what prevents a decision. For Exclude, say why the item cannot be used. Do not choose no technique to mean unsure." size="5" style="font-size:inherit; font-weight:inherit; line-height:inherit; color:inherit; margin:0;" />
+        </View>
+      </View>
+      <View visibleWhen="choice-selected" whenTagName="no_technique" whenChoiceValue="No Propaganda Technique">
+        <View visibleWhen="choice-selected" whenTagName="status" whenChoiceValue="UNRESOLVED,EXCLUDE" className="error">
+          <View className="copy">
+            <Header value="Check your decision: no technique is for a completed review. Untick it if this item still needs review or must be excluded." size="5" style="font-size:inherit; font-weight:inherit; line-height:inherit; color:inherit; margin:0;" />
+          </View>
+        </View>
+      </View>
+      <View className="field">
+        <View className="copy field-title">
+          <Header value="Final note: explain your decision or the problem *" size="5" style="font-size:inherit; font-weight:inherit; line-height:inherit; color:inherit; margin:0;" />
+        </View>
+        <View className="copy muted">
+          <Header value="Write in Bangla or English. If no technique applies, explain why. For a problem, name the text section, quote the affected words, and say what needs checking. Include any uncertainty, quotation, satire, or optional candidate that matters." size="5" style="font-size:inherit; font-weight:inherit; line-height:inherit; color:inherit; margin:0;" />
+        </View>
+        <TextArea name="post_note" toName="caption" rows="3" placeholder="My decision is... because... / The problem is in... The words are... A reviewer should check..." editable="true" maxSubmissions="1" showSubmitButton="true" required="true" requiredMessage="Step 4: add a short final note explaining your decision or problem." />
+        <View className="copy muted">
+          <Header value="Click Add or press Shift + Enter to save this note." size="5" style="font-size:inherit; font-weight:inherit; line-height:inherit; color:inherit; margin:0;" />
+        </View>
+      </View>
+      <View className="notice">
+        <View className="copy field-title">
+          <Header value="Before you submit" size="5" style="font-size:inherit; font-weight:inherit; line-height:inherit; color:inherit; margin:0;" />
+        </View>
+        <View className="checklist">
+          <View className="copy check-item">
+            <Header value="• Read both text sections and their notices." size="5" style="font-size:inherit; font-weight:inherit; line-height:inherit; color:inherit; margin:0;" />
+          </View>
+          <View className="copy check-item">
+            <Header value="• Match each selected technique to highlighted evidence. Check every highlight's claim number, reason, and confidence." size="5" style="font-size:inherit; font-weight:inherit; line-height:inherit; color:inherit; margin:0;" />
+          </View>
+          <View className="copy check-item">
+            <Header value="• For a completed review, choose either supported techniques or no technique. Do not choose both." size="5" style="font-size:inherit; font-weight:inherit; line-height:inherit; color:inherit; margin:0;" />
+          </View>
+          <View className="copy check-item">
+            <Header value="• Record any problem, choose a review status, and save your final note." size="5" style="font-size:inherit; font-weight:inherit; line-height:inherit; color:inherit; margin:0;" />
+          </View>
+        </View>
+        <View className="copy">
+          <Header value="Finish: use Label Studio's Submit button. If a required-field message appears, return to the named section or click the relevant highlight to complete its answers." size="5" style="font-size:inherit; font-weight:inherit; line-height:inherit; color:inherit; margin:0;" />
+        </View>
+      </View>
+    </View>
+  </View>
+</View>

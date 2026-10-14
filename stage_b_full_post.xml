@@ -1,0 +1,39 @@
+<View>
+  <Header value="CampNet: Stage B — original image and text; make a fresh technique decision."/>
+  <Header value="OCR verification status"/>
+  <Text name="ocr_status" value="$ocr_status"/>
+  <Image name="image" value="$image" zoom="true"/>
+  <RectangleLabels name="visual_evidence" toName="image" choice="single">
+    <Label value="T01"/><Label value="T02"/><Label value="T03"/>
+    <Label value="T04"/><Label value="T05"/><Label value="T06"/><Label value="T07"/>
+    <Label value="W01"/><Label value="W02"/><Label value="W03"/>
+  </RectangleLabels>
+  <TextArea name="region_reason" toName="image" perRegion="true" rows="2" displayMode="region-list"
+            placeholder="Describe depicted action/symbol and why this region supports the attached technique; use another box if needed."/>
+  <Header value="Original caption"/>
+  <Text name="caption" value="$caption"/>
+  <Header value="Image text supplied for annotation"/>
+  <Text name="ocr" value="$ocr"/>
+  <Labels name="caption_spans" toName="caption" choice="single">
+    <Label value="T01"/><Label value="T02"/><Label value="T03"/>
+    <Label value="T04"/><Label value="T05"/><Label value="T06"/><Label value="T07"/>
+  </Labels>
+  <Labels name="ocr_spans" toName="ocr" choice="single">
+    <Label value="T01"/><Label value="T02"/><Label value="T03"/>
+    <Label value="T04"/><Label value="T05"/><Label value="T06"/><Label value="T07"/>
+  </Labels>
+  <Header value="Final core techniques (leave unchecked for no core technique)"/>
+  <Choices name="full_techniques" toName="image" choice="multiple">
+    <Choice value="T01"/><Choice value="T02"/><Choice value="T03"/>
+    <Choice value="T04"/><Choice value="T05"/><Choice value="T06"/><Choice value="T07"/>
+  </Choices>
+  <Header value="Visual watchlist — exploratory only"/>
+  <Choices name="watchlist" toName="image" choice="multiple">
+    <Choice value="W01"/><Choice value="W02"/><Choice value="W03"/>
+  </Choices>
+  <Choices name="full_status" toName="image" choice="single" required="true">
+    <Choice value="COMPLETE"/><Choice value="UNRESOLVED"/><Choice value="EXCLUDE"/>
+  </Choices>
+  <TextArea name="instance_evidence" toName="image" rows="5"
+            placeholder="For EACH selected Txx: Txx | CAPTION/EMBEDDED_TEXT/NON_TEXT_VISUAL/TYPOGRAPHY_LAYOUT | visual_contribution=REQUIRED/REINFORCING/NOT_USED/UNRESOLVED | text_sufficient=true/false/unknown | target=... | evidence=... . If none: NONE and why. Record satire/quote/context changes."/>
+</View>

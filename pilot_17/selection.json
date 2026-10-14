@@ -1,0 +1,35 @@
+{
+  "selected_ids": [
+    "138766cdb6d5541fa0f13e958c9146ed",
+    "a3da98879a3d23f6645b4e349fe76b26",
+    "5620b386af75f3487349c5487a6a5500",
+    "868b5679de36fb9df85c7898ece298d5",
+    "da1790a39c713c2f45f6141d1a6d4a7a",
+    "4ca43d0fe5ff9b12941105ae3378e26e",
+    "5c5cf50f8585bcc06f0ec419b798bd7a",
+    "05e4d38af26351203819b6c79a2d6b7d",
+    "d48b60995b080dd77a582b99ab9871c2",
+    "dfc319a63f4acaaa13939840ae35a115",
+    "755e9548155cd8048eefb249a2fca47f",
+    "a298de2014f664a4e2993ccb3d5be470",
+    "68705bbde7681de67744e5aaf04a24b3",
+    "595c546ce64096fb7b02a6a638eda3ea",
+    "35ef2aad041f1482330758e0a16aa9e2",
+    "4382b143978c36408cdfb966b4be9a50",
+    "ba069534340281fe3ea3c7677c6ed715"
+  ],
+  "excluded": [
+    {
+      "image_id": "c57c924614915ae39b9b392e6b82f45e",
+      "reason": "Explicit #excluded in corrected OCR"
+    },
+    {
+      "image_id": "31046aeb76a14839f55066846dc38304",
+      "reason": "Explicit #excluded in corrected OCR"
+    },
+    {
+      "image_id": "824ecd9bc2e288b5e4278dfe0911e673",
+      "reason": "Explicit #excluded in corrected OCR"
+    }
+  ]
+}

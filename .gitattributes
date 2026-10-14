@@ -1,0 +1,5 @@
+# Preserve the exact bytes used in recorded OCR/input fingerprints.
+*.csv -text -whitespace
+docs/CampNet_Annotation_Guideline_v1.md -text -whitespace
+# Markdown hard line breaks are intentional.
+*.md whitespace=-blank-at-eol
