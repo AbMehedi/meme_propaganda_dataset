@@ -1,12 +1,15 @@
 """Set up new pilot projects and export results from the isolated local server DB.
 
-Does not touch existing projects or connect storage with a sync operation.
+Setup never replaces existing projects. update-ui backs up the runtime and updates
+compatible form layouts without changing tasks, annotations, drafts or predictions.
 """
 import argparse
 import json
 import os
 import sys
 from pathlib import Path
+from datetime import datetime, timezone
+from xml.etree.ElementTree import fromstring
 
 from .common import ROOT, PILOT, read_json, write_json, sha
 
@@ -116,16 +119,84 @@ def setup_projects(pilot=PILOT, runtime=ROOT/'.pilot-runtime/label-studio'):
     return registry
 
 
+def control_signature(config):
+    """Layout/copy may change; stored control identities and options must not."""
+    return {n.attrib['name']:(n.tag,n.attrib.get('toName'),n.attrib.get('perRegion','false'),
+            tuple(sorted(c.attrib['value'] for c in n if c.tag in ('Label','Choice'))))
+            for n in fromstring(config).iter() if n.tag in ('Text','Image','Labels','RectangleLabels','Choices','TextArea')}
+
+
+def update_ui(pilot=PILOT, runtime=ROOT/'.pilot-runtime/label-studio', check=False):
+    """Apply a compatible layout update to the registered projects, with a DB backup."""
+    setup_django(runtime)
+    from django.conf import settings
+    from django.db import transaction
+    from projects.models import Project
+    from tasks.models import Task
+    from core.label_config import validate_label_config
+    import sqlite3
+    runtime=Path(runtime).resolve()
+    registry_path=runtime/'pilot-projects.json'
+    if not registry_path.exists():
+        raise ValueError('No registered pilot projects. Run setup first.')
+    registry=read_json(registry_path)
+    plan=[]
+    for key,entry in registry.items():
+        if key not in ('stage_a_manual','manual','assisted'):
+            raise ValueError('Unknown registered project: '+key)
+        project=Project.objects.get(pk=entry['project_id'])
+        config=(Path(pilot)/'config'/f'{key}.xml').read_text(encoding='utf-8')
+        tasks=read_json(Path(pilot)/'imports'/f'{key}.json')
+        validate_label_config(config)
+        if control_signature(project.label_config)!=control_signature(config):
+            raise ValueError(f'{key}: form entities changed; a layout-only update cannot migrate them')
+        expected={t['data']['task_id']:t['data'] for t in tasks}
+        actual=list(Task.objects.filter(project=project).values_list('data',flat=True))
+        if len(actual)!=len(expected) or any(d!=expected.get(d.get('task_id')) for d in actual):
+            raise ValueError(f'{key}: existing tasks differ from the pinned import')
+        plan.append((key,project,config,sha(config+str(tasks))))
+    if check:
+        print('Compatible UI update: '+', '.join(key for key,_,_,_ in plan))
+        return None
+    if all(p.label_config==c and registry[k]['fingerprint']==f for k,p,c,f in plan):
+        print('All registered forms are already current.')
+        return None
+    backup=ROOT/'.pilot-runtime/ui-backups'/datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S%fZ')
+    backup.mkdir(parents=True)
+    database=Path(settings.DATABASES['default']['NAME']).resolve()
+    if settings.DATABASES['default']['ENGINE']!='django.db.backends.sqlite3' or not database.is_relative_to(runtime):
+        raise ValueError('UI update expects the local SQLite runtime')
+    with sqlite3.connect(database.as_uri()+'?mode=ro',uri=True) as source, sqlite3.connect(backup/'label-studio.sqlite3') as dest:
+        source.backup(dest)
+    write_json(backup/'pilot-projects.json',registry)
+    for key,project,_,_ in plan:
+        (backup/(key+'.xml')).write_text(project.label_config,encoding='utf-8')
+    with transaction.atomic():
+        for key,project,config,fingerprint in plan:
+            response_json(api_client(project.created_by).patch(f'/api/projects/{project.pk}/',
+                          {'label_config':config},format='json'))
+            registry[key]['fingerprint']=fingerprint
+    temporary=registry_path.with_suffix('.pending.json')
+    write_json(temporary,registry)
+    temporary.replace(registry_path)
+    print('Updated all registered forms. Tasks, annotations, drafts and predictions were preserved.')
+    print('Backup: '+str(backup))
+    return backup
+
+
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('command',choices=['setup','export'])
+    parser.add_argument('command',choices=['setup','export','update-ui'])
     parser.add_argument('--runtime',type=Path,default=ROOT/'.pilot-runtime/label-studio')
     parser.add_argument('--pilot',type=Path,default=PILOT)
     parser.add_argument('--project',type=int)
     parser.add_argument('--output',type=Path)
+    parser.add_argument('--check',action='store_true',help='Validate an update-ui plan without changing projects')
     args=parser.parse_args()
     if args.command=='setup':
         setup_projects(pilot=args.pilot,runtime=args.runtime)
+    elif args.command=='update-ui':
+        update_ui(pilot=args.pilot,runtime=args.runtime,check=args.check)
     else:
         if not args.project or not args.output:
             parser.error('export needs --project and --output')

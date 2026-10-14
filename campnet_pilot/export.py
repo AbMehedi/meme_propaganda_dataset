@@ -4,17 +4,51 @@ import math
 from collections import defaultdict
 
 from .common import PILOT, TECHNIQUES, ROLES, read_json, write_json, sha, technique, utf16_to_cp
+from .config import result_contract
 
 
 def normalize_decision(data, decision, origin='human', canonical=None):
     errors = []
     results = decision.get('result', [])
+    if not isinstance(results,list):
+        errors.append('Annotation result must be a list of saved fields')
+        results=[]
+    stage=data.get('stage')
+    if stage not in ('A','B'):
+        errors.append('Missing or invalid annotation stage')
+    contract=result_contract(stage if stage in ('A','B') else 'B',
+                             data.get('annotation_mode')=='assisted' and stage!='A')
     fields, regions = {}, defaultdict(dict)
-    for r in results:
+    for index,r in enumerate(results):
+        if not isinstance(r,dict):
+            errors.append(f'Result {index}: expected a saved field object')
+            continue
         name = r.get('from_name', '')
-        if name in ('caption_spans','ocr_spans','visual_evidence') or any(
-                name.startswith(p+'_') for p in ('caption','ocr','visual')):
-            region = regions[r.get('id')]
+        spec=contract.get(name) if isinstance(name,str) else None
+        if spec is None:
+            errors.append(f'Unknown or unavailable form field: {name}')
+            continue
+        if r.get('type')!=spec['type'] or r.get('to_name')!=spec['target']:
+            errors.append(f'{name}: wrong field type or target (expected {spec["type"]} → {spec["target"]})')
+            continue
+        key={'textarea':'text','choices':'choices','labels':'labels','rectanglelabels':'rectanglelabels'}[spec['type']]
+        value=r.get('value')
+        vals=value.get(key) if isinstance(value,dict) else None
+        if not isinstance(vals,list) or any(not isinstance(v,str) for v in vals):
+            errors.append(f'{name}: saved {key} must be a list of strings')
+            continue
+        if (not spec['multiple'] and len(vals)!=1) or len(set(vals))!=len(vals):
+            errors.append(f'{name}: expected one answer, or found duplicate answers')
+            continue
+        if spec['values'] and any(v not in spec['values'] for v in vals):
+            errors.append(f'{name}: contains an unknown option')
+            continue
+        if spec['per_region']:
+            rid=r.get('id')
+            if not isinstance(rid,str) or not rid:
+                errors.append(f'{name}: evidence region lacks a stable ID')
+                continue
+            region = regions[rid]
             if name in region:
                 errors.append('Duplicate region control ' + name)
             region[name] = r
@@ -66,6 +100,16 @@ def normalize_decision(data, decision, origin='human', canonical=None):
             name, anchor = anchors[0]
             prefix = {'caption_spans':'caption','ocr_spans':'ocr','visual_evidence':'visual'}[name]
             target = 'image' if prefix == 'visual' else prefix
+            wrong=[n for n in parts if not n.startswith(prefix+'_')]
+            if wrong:
+                raise ValueError('Fields belong to another evidence channel: '+', '.join(wrong))
+            missing=[n for n,spec in contract.items() if n.startswith(prefix+'_') and spec['required'] and
+                     not (origin!='human' and n.endswith('_confidence')) and
+                     (n not in parts or (spec['type']=='textarea' and not one(parts,n,'text').strip()))]
+            if missing:
+                for n in missing:
+                    errors.append(f'Region {rid}: {contract[n]["message"]}')
+                continue
             if anchor.get('to_name') != target:
                 raise ValueError('Evidence has wrong to_name')
             kind = 'rectanglelabels' if prefix=='visual' else 'labels'
@@ -88,12 +132,6 @@ def normalize_decision(data, decision, origin='human', canonical=None):
             if role not in ROLES or suff not in ('true','false','unknown') or (origin=='human' and confidence not in ('1','2','3')):
                 raise ValueError('Missing/invalid contribution, text sufficiency, or confidence')
             sufficient = {'true':True,'false':False,'unknown':None}[suff]
-            instance = instances.setdefault(instance_id, {'instance_id':instance_id,'technique_id':code,
-                'technique_name':TECHNIQUES[code],'visual_contribution':role,'text_sufficient':sufficient,
-                'evidence':[],'evidence_channels':[],'target':one(parts,prefix+'_target','text'),
-                'confidence':int(confidence) if confidence in ('1','2','3') else None})
-            if (instance['visual_contribution'],instance['text_sufficient']) != (role,sufficient):
-                raise ValueError('Linked regions disagree on picture role/text sufficiency')
             value = anchor['value']
             if prefix != 'visual':
                 text = data[prefix]
@@ -125,6 +163,21 @@ def normalize_decision(data, decision, origin='human', canonical=None):
                 evidence={'region_id':rid,'type':'VISUAL','channel':channel,'kind':channel,
                           'scope':scope,'box':[x,y,min(1,x+w),min(1,y+h)],'reason':reason,
                           'grounding_verified':origin=='human','supervision_available':origin=='human' and role!='UNRESOLVED'}
+            target_name=one(parts,prefix+'_target','text')
+            target_name=target_name.strip() or None if isinstance(target_name,str) else None
+            confidence_value=int(confidence) if confidence in ('1','2','3') else None
+            # Keep each mark's metadata as well as the instance summary. Linked marks
+            # may have different confidence/target answers; raw_result remains lossless.
+            evidence.update(target=target_name,confidence=confidence_value,
+                            visual_contribution=role,text_sufficient=sufficient)
+            instance=instances.get(instance_id)
+            if instance and (instance['visual_contribution'],instance['text_sufficient'])!=(role,sufficient):
+                raise ValueError('Linked regions disagree on picture role/text sufficiency')
+            if instance is None:
+                instance={'instance_id':instance_id,'technique_id':code,'technique_name':TECHNIQUES[code],
+                          'visual_contribution':role,'text_sufficient':sufficient,'evidence':[],
+                          'evidence_channels':[],'target':target_name,'confidence':confidence_value}
+                instances[instance_id]=instance
             instance['evidence'].append(evidence)
             if channel not in instance['evidence_channels']:
                 instance['evidence_channels'].append(channel)
@@ -169,7 +222,10 @@ def normalize_decision(data, decision, origin='human', canonical=None):
             'techniques':selected,'instances':list(instances.values()),'watchlist':watchlist,
             'out_of_taxonomy':bool(watchlist),'review_flags':flags,
             'post_note':note,'valid':not errors,'validation_errors':errors,'is_gold':False,
-            'raw_result':results}
+            'raw_result':decision.get('result',[]),
+            'evidence_region_count':len(regions),
+            'exported_region_count':sum(len(i['evidence']) for i in instances.values()),
+            'unexported_region_ids':sorted(set(regions)-{e['region_id'] for i in instances.values() for e in i['evidence']})}
 
 
 def normalize_export(tasks, manifest):

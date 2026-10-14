@@ -81,6 +81,11 @@ The document root is the repository root, with URLs like
 
 ## Instructions for annotators
 
+Start with the [three-step annotator quick start](ANNOTATOR_QUICK_START.md).
+The form uses **Mark evidence → Explain each mark → Finish the review**.
+Click a mark to open the evidence panel; text answers do not need an Add click.
+The form calls the instance number **Claim number**.
+
 Choose a technique only when you can point to evidence in this post. Highlight the
 words or mark the image area that supports your choice. Explain why it matches
 the technique. A face, flag, or emotional picture needs a clear persuasive use.

@@ -1,191 +1,331 @@
 <View>
   <Style>
-      .campnet {font-family: "Nirmala UI", "Noto Sans Bengali", sans-serif; font-size:17px; line-height:1.7;}
-      .campnet .content {display:flex; flex-wrap:wrap; gap:24px; align-items:flex-start;}
-      .campnet .pane {flex:1; min-width:340px; padding:16px; background:#f7f9fc; border-radius:8px;}
-      .campnet .evidence {padding:16px; border:2px solid #aac4df; border-radius:8px; margin:16px 0;}
+      .campnet {font-family:"Nirmala UI","Noto Sans Bengali",sans-serif; font-size:16px; line-height:1.55; color:#172b4d;}
+      .campnet .content {display:flex; flex-wrap:wrap; gap:18px; align-items:flex-start;}
+      .campnet .source {flex:2 1 420px; min-width:0;}
+      .campnet .inspector {flex:1 1 310px; min-width:0; position:sticky; top:12px; padding:14px; border:2px solid #527db0; border-radius:8px; background:#f6f9ff;}
+      .campnet .card {padding:14px; border:1px solid #d5deea; border-radius:8px; margin:12px 0; background:#fff;}
+      .campnet .reading {padding:14px; border:1px solid #c6d2e2; border-radius:6px; font-size:20px; line-height:1.8; margin-top:10px; overflow-wrap:anywhere;}
+      .campnet .hint {color:#52647c; margin:6px 0 12px;}
+      .campnet .field {margin:12px 0;}
+      .campnet .warning {padding:10px; background:#fff3d6; border-left:4px solid #cb8c13; margin:10px 0;}
+      .campnet textarea {font-family:inherit; font-size:16px;}
+      @media (max-width:1050px) {.campnet .inspector {position:static;}}
     </Style>
   <View className="campnet">
-    <Header value="CampNet — review the full post" size="2" />
-    <Header value="Choose a technique only when you can point to evidence in this post. Highlight the words or mark the image area that supports your choice. Explain why it matches the technique." size="5" />
-    <Header value="Make a fresh decision. A famous face, flag, or emotional photograph needs a clear persuasive use. Use image zoom to inspect small details." size="5" />
-    <Header value="EXPERIMENTAL MODEL SUGGESTIONS — check, change, or reject them. These are not human labels." size="4" />
+    <Header value="CampNet · Stage B: full post" size="2" style="font-size:19px; font-weight:600; margin:0 0 8px;" />
+    <Header value="1. Mark evidence → 2. Explain each mark → 3. Finish and Submit" size="5" style="font-size:inherit; font-weight:400; line-height:inherit; margin:4px 0;" />
+    <View className="hint">
+      <Header value="Choose a technique, then drag over the supporting words. Click a mark to answer its questions. Write in Bangla or English." size="5" style="font-size:inherit; font-weight:400; line-height:inherit; margin:4px 0;" />
+    </View>
+    <View className="hint">
+      <Header value="Review the full post afresh. For picture evidence, draw the smallest useful box. Printed words are text evidence." size="5" style="font-size:inherit; font-weight:400; line-height:inherit; margin:4px 0;" />
+    </View>
+    <Header value="EXPERIMENTAL MODEL SUGGESTIONS — check, change, or reject them. These are not human labels." size="4" style="font-size:19px; font-weight:600; margin:0 0 8px;" />
     <Text name="model_notice" value="$model_notice" />
+    <Collapse>
+      <Panel value="Technique guide — open when needed">
+        <Header value="T01 · Loaded Language: Emotional words add praise or blame beyond a plain description." size="5" style="font-size:inherit; font-weight:400; line-height:inherit; margin:4px 0;" />
+        <Header value="T02 · Name Calling / Labeling: A judgmental name is given to a person or group." size="5" style="font-size:inherit; font-weight:400; line-height:inherit; margin:4px 0;" />
+        <Header value="T03 · Smears: An accusation or degrading connection attacks a reputation." size="5" style="font-size:inherit; font-weight:400; line-height:inherit; margin:4px 0;" />
+        <Header value="T04 · Appeal to Fear / Prejudice: A threat or prejudice pushes the reader to support or reject something." size="5" style="font-size:inherit; font-weight:400; line-height:inherit; margin:4px 0;" />
+        <Header value="T05 · Exaggeration / Minimisation: The message inflates or plays down scale, certainty, or importance. “All” alone is not enough." size="5" style="font-size:inherit; font-weight:400; line-height:inherit; margin:4px 0;" />
+        <Header value="T06 · Slogans: A memorable phrase rallies support or action. A short sentence alone is not enough." size="5" style="font-size:inherit; font-weight:400; line-height:inherit; margin:4px 0;" />
+        <Header value="T07 · Appeal to Strong Emotions: A picture creates strong emotion to support a position. Assess this only in Stage B." size="5" style="font-size:inherit; font-weight:400; line-height:inherit; margin:4px 0;" />
+        <View className="hint">
+          <Header value="Check whether the post supports, neutrally quotes, or rejects a message. Two techniques need two explanations, even when they use the same words." size="5" style="font-size:inherit; font-weight:400; line-height:inherit; margin:4px 0;" />
+        </View>
+      </Panel>
+    </Collapse>
     <View className="content">
-      <View className="pane">
-        <RectangleLabels name="visual_evidence" toName="image" choice="single">
-          <Label value="T01" hint="Loaded Language" />
-          <Label value="T02" hint="Name Calling / Labeling" />
-          <Label value="T03" hint="Smears" />
-          <Label value="T04" hint="Appeal to Fear / Prejudice" />
-          <Label value="T05" hint="Exaggeration / Minimisation" />
-          <Label value="T06" hint="Slogans" />
-          <Label value="T07" hint="Appeal to Strong Emotions" />
-        </RectangleLabels>
-        <Image name="image" value="$image" zoom="true" zoomControl="true" rotateControl="false" />
-        <View visibleWhen="region-selected" whenTagName="image" className="evidence">
-          <Header value="Explain the selected evidence" size="4" />
-          <Header value="Instance number: use the same number for words and picture areas that support the same claim." size="5" />
-          <TextArea name="visual_instance" toName="image" rows="1" placeholder="1 (use 2 for a separate claim of the same technique)" editable="true" maxSubmissions="1" perRegion="true" required="true" />
-          <Header value="Why does this evidence match the technique?" size="5" />
-          <TextArea name="visual_reason" toName="image" rows="2" placeholder="Describe the persuasive use. For combined evidence, explain how the words and picture work together." editable="true" maxSubmissions="1" perRegion="true" required="true" />
-          <Header value="Target named or depicted in this post (optional)" size="5" />
-          <TextArea name="visual_target" toName="image" rows="1" placeholder="Leave empty if the target is unknown." editable="true" maxSubmissions="1" perRegion="true" />
-          <Header value="Picture’s role for this technique instance" size="5" />
-          <Choices name="visual_role" toName="image" choice="single" showInline="true" perRegion="true" required="true">
-            <Choice value="REQUIRED" />
-            <Choice value="REINFORCING" />
-            <Choice value="NOT_USED" />
-            <Choice value="UNRESOLVED" />
-          </Choices>
-          <Header value="Can the words alone support this same instance?" size="5" />
-          <Choices name="visual_sufficient" toName="image" choice="single" showInline="true" perRegion="true" required="true">
-            <Choice value="true" />
-            <Choice value="false" />
-            <Choice value="unknown" />
-          </Choices>
-          <Header value="Confidence: 1 = uncertain; 2 = borderline; 3 = clear evidence" size="5" />
-          <Choices name="visual_confidence" toName="image" choice="single" showInline="true" perRegion="true" required="true">
-            <Choice value="1" />
-            <Choice value="2" />
-            <Choice value="3" />
-          </Choices>
-          <Header value="Kind of picture evidence" size="5" />
-          <Choices name="visual_kind" toName="image" choice="single" showInline="true" perRegion="true" required="true">
-            <Choice value="NON_TEXT_VISUAL" />
-            <Choice value="TYPOGRAPHY_LAYOUT" />
-          </Choices>
-          <Header value="Area: choose GLOBAL only for whole-image composition; draw the full-image box and explain why." size="5" />
-          <Choices name="visual_scope" toName="image" choice="single" showInline="true" perRegion="true" required="true">
-            <Choice value="LOCAL" />
-            <Choice value="GLOBAL" />
-          </Choices>
+      <View className="source">
+        <Header value="1. Read and mark the evidence" size="4" style="font-size:19px; font-weight:600; margin:0 0 8px;" />
+        <View className="card">
+          <Header value="Original post caption" size="4" style="font-size:19px; font-weight:600; margin:0 0 8px;" />
+          <Text name="caption_notice" value="$caption_notice" />
+          <Labels name="caption_spans" toName="caption" choice="single">
+            <Label value="T01" html="T01 · Loaded Language" hint="Emotional words add praise or blame beyond a plain description." background="#dbeafe" />
+            <Label value="T02" html="T02 · Name Calling / Labeling" hint="A judgmental name is given to a person or group." background="#ede9fe" />
+            <Label value="T03" html="T03 · Smears" hint="An accusation or degrading connection attacks a reputation." background="#fce7f3" />
+            <Label value="T04" html="T04 · Appeal to Fear / Prejudice" hint="A threat or prejudice pushes the reader to support or reject something." background="#ffedd5" />
+            <Label value="T05" html="T05 · Exaggeration / Minimisation" hint="The message inflates or plays down scale, certainty, or importance. “All” alone is not enough." background="#fef3c7" />
+            <Label value="T06" html="T06 · Slogans" hint="A memorable phrase rallies support or action. A short sentence alone is not enough." background="#ccfbf1" />
+            <Label value="T07" html="T07 · Appeal to Strong Emotions" hint="A picture creates strong emotion to support a position. Assess this only in Stage B." background="#e2e8f0" />
+          </Labels>
+          <View className="reading" idAttr="caption-reading">
+            <Text name="caption" value="$caption" granularity="symbol" />
+          </View>
+        </View>
+        <View className="card">
+          <Header value="Checked words inside the image" size="4" style="font-size:19px; font-weight:600; margin:0 0 8px;" />
+          <Text name="ocr_notice" value="$ocr_notice" />
+          <Labels name="ocr_spans" toName="ocr" choice="single">
+            <Label value="T01" html="T01 · Loaded Language" hint="Emotional words add praise or blame beyond a plain description." background="#dbeafe" />
+            <Label value="T02" html="T02 · Name Calling / Labeling" hint="A judgmental name is given to a person or group." background="#ede9fe" />
+            <Label value="T03" html="T03 · Smears" hint="An accusation or degrading connection attacks a reputation." background="#fce7f3" />
+            <Label value="T04" html="T04 · Appeal to Fear / Prejudice" hint="A threat or prejudice pushes the reader to support or reject something." background="#ffedd5" />
+            <Label value="T05" html="T05 · Exaggeration / Minimisation" hint="The message inflates or plays down scale, certainty, or importance. “All” alone is not enough." background="#fef3c7" />
+            <Label value="T06" html="T06 · Slogans" hint="A memorable phrase rallies support or action. A short sentence alone is not enough." background="#ccfbf1" />
+            <Label value="T07" html="T07 · Appeal to Strong Emotions" hint="A picture creates strong emotion to support a position. Assess this only in Stage B." background="#e2e8f0" />
+          </Labels>
+          <View className="reading" idAttr="ocr-reading">
+            <Text name="ocr" value="$ocr" granularity="symbol" />
+          </View>
+        </View>
+        <View className="card">
+          <Header value="Picture" size="4" style="font-size:19px; font-weight:600; margin:0 0 8px;" />
+          <RectangleLabels name="visual_evidence" toName="image" choice="single" canRotate="false">
+            <Label value="T01" html="T01 · Loaded Language" hint="Emotional words add praise or blame beyond a plain description." background="#dbeafe" />
+            <Label value="T02" html="T02 · Name Calling / Labeling" hint="A judgmental name is given to a person or group." background="#ede9fe" />
+            <Label value="T03" html="T03 · Smears" hint="An accusation or degrading connection attacks a reputation." background="#fce7f3" />
+            <Label value="T04" html="T04 · Appeal to Fear / Prejudice" hint="A threat or prejudice pushes the reader to support or reject something." background="#ffedd5" />
+            <Label value="T05" html="T05 · Exaggeration / Minimisation" hint="The message inflates or plays down scale, certainty, or importance. “All” alone is not enough." background="#fef3c7" />
+            <Label value="T06" html="T06 · Slogans" hint="A memorable phrase rallies support or action. A short sentence alone is not enough." background="#ccfbf1" />
+            <Label value="T07" html="T07 · Appeal to Strong Emotions" hint="A picture creates strong emotion to support a position. Assess this only in Stage B." background="#e2e8f0" />
+          </RectangleLabels>
+          <Image name="image" value="$image" zoom="true" zoomControl="true" rotateControl="false" />
         </View>
       </View>
-      <View className="pane">
-        <Header value="Original post caption" size="4" />
-        <Text name="caption_notice" value="$caption_notice" />
-        <Labels name="caption_spans" toName="caption" choice="single">
-          <Label value="T01" hint="Loaded Language" />
-          <Label value="T02" hint="Name Calling / Labeling" />
-          <Label value="T03" hint="Smears" />
-          <Label value="T04" hint="Appeal to Fear / Prejudice" />
-          <Label value="T05" hint="Exaggeration / Minimisation" />
-          <Label value="T06" hint="Slogans" />
-          <Label value="T07" hint="Appeal to Strong Emotions" />
-        </Labels>
-        <Text name="caption" value="$caption" granularity="symbol" />
-        <View visibleWhen="region-selected" whenTagName="caption" className="evidence">
-          <Header value="Explain the selected evidence" size="4" />
-          <Header value="Instance number: use the same number for words and picture areas that support the same claim." size="5" />
-          <TextArea name="caption_instance" toName="caption" rows="1" placeholder="1 (use 2 for a separate claim of the same technique)" editable="true" maxSubmissions="1" perRegion="true" required="true" />
-          <Header value="Why does this evidence match the technique?" size="5" />
-          <TextArea name="caption_reason" toName="caption" rows="2" placeholder="Describe the persuasive use. For combined evidence, explain how the words and picture work together." editable="true" maxSubmissions="1" perRegion="true" required="true" />
-          <Header value="Target named or depicted in this post (optional)" size="5" />
-          <TextArea name="caption_target" toName="caption" rows="1" placeholder="Leave empty if the target is unknown." editable="true" maxSubmissions="1" perRegion="true" />
-          <Header value="Picture’s role for this technique instance" size="5" />
-          <Choices name="caption_role" toName="caption" choice="single" showInline="true" perRegion="true" required="true">
-            <Choice value="REQUIRED" />
-            <Choice value="REINFORCING" />
-            <Choice value="NOT_USED" />
-            <Choice value="UNRESOLVED" />
-          </Choices>
-          <Header value="Can the words alone support this same instance?" size="5" />
-          <Choices name="caption_sufficient" toName="caption" choice="single" showInline="true" perRegion="true" required="true">
-            <Choice value="true" />
-            <Choice value="false" />
-            <Choice value="unknown" />
-          </Choices>
-          <Header value="Confidence: 1 = uncertain; 2 = borderline; 3 = clear evidence" size="5" />
-          <Choices name="caption_confidence" toName="caption" choice="single" showInline="true" perRegion="true" required="true">
-            <Choice value="1" />
-            <Choice value="2" />
-            <Choice value="3" />
-          </Choices>
+      <View className="inspector" idAttr="evidence-panel">
+        <Header value="2. Explain the selected mark" size="4" style="font-size:19px; font-weight:600; margin:0 0 8px;" />
+        <View visibleWhen="no-region-selected">
+          <View className="hint">
+            <Header value="Click a highlighted phrase or a box. Its questions appear here. You can also click it in the Regions list on the right." size="5" style="font-size:inherit; font-weight:400; line-height:inherit; margin:4px 0;" />
+          </View>
         </View>
-        <Header value="Checked words inside the image" size="4" />
-        <Text name="ocr_notice" value="$ocr_notice" />
-        <Labels name="ocr_spans" toName="ocr" choice="single">
-          <Label value="T01" hint="Loaded Language" />
-          <Label value="T02" hint="Name Calling / Labeling" />
-          <Label value="T03" hint="Smears" />
-          <Label value="T04" hint="Appeal to Fear / Prejudice" />
-          <Label value="T05" hint="Exaggeration / Minimisation" />
-          <Label value="T06" hint="Slogans" />
-          <Label value="T07" hint="Appeal to Strong Emotions" />
-        </Labels>
-        <Text name="ocr" value="$ocr" granularity="symbol" />
-        <View visibleWhen="region-selected" whenTagName="ocr" className="evidence">
-          <Header value="Explain the selected evidence" size="4" />
-          <Header value="Instance number: use the same number for words and picture areas that support the same claim." size="5" />
-          <TextArea name="ocr_instance" toName="ocr" rows="1" placeholder="1 (use 2 for a separate claim of the same technique)" editable="true" maxSubmissions="1" perRegion="true" required="true" />
-          <Header value="Why does this evidence match the technique?" size="5" />
-          <TextArea name="ocr_reason" toName="ocr" rows="2" placeholder="Describe the persuasive use. For combined evidence, explain how the words and picture work together." editable="true" maxSubmissions="1" perRegion="true" required="true" />
-          <Header value="Target named or depicted in this post (optional)" size="5" />
-          <TextArea name="ocr_target" toName="ocr" rows="1" placeholder="Leave empty if the target is unknown." editable="true" maxSubmissions="1" perRegion="true" />
-          <Header value="Picture’s role for this technique instance" size="5" />
-          <Choices name="ocr_role" toName="ocr" choice="single" showInline="true" perRegion="true" required="true">
-            <Choice value="REQUIRED" />
-            <Choice value="REINFORCING" />
-            <Choice value="NOT_USED" />
-            <Choice value="UNRESOLVED" />
-          </Choices>
-          <Header value="Can the words alone support this same instance?" size="5" />
-          <Choices name="ocr_sufficient" toName="ocr" choice="single" showInline="true" perRegion="true" required="true">
-            <Choice value="true" />
-            <Choice value="false" />
-            <Choice value="unknown" />
-          </Choices>
-          <Header value="Confidence: 1 = uncertain; 2 = borderline; 3 = clear evidence" size="5" />
-          <Choices name="ocr_confidence" toName="ocr" choice="single" showInline="true" perRegion="true" required="true">
-            <Choice value="1" />
-            <Choice value="2" />
-            <Choice value="3" />
-          </Choices>
+        <View visibleWhen="region-selected" whenTagName="caption_spans" className="evidence" idAttr="caption-details">
+          <Header value="Caption highlight" size="4" style="font-size:19px; font-weight:600; margin:0 0 8px;" />
+          <View className="hint">
+            <Header value="These answers belong to the selected mark. Repeat for every mark. * = required." size="5" style="font-size:inherit; font-weight:400; line-height:inherit; margin:4px 0;" />
+          </View>
+          <View className="field">
+            <Header value="Why does this evidence fit the technique? *" size="5" style="font-size:inherit; font-weight:400; line-height:inherit; margin:4px 0;" />
+            <TextArea name="caption_reason" toName="caption" rows="3" placeholder="These words / this picture use [technique] because…" editable="true" transcription="true" maxSubmissions="1" showSubmitButton="false" perRegion="true" required="true" requiredMessage="Step 2 — Caption highlight: write a reason in the evidence panel." />
+          </View>
+          <View className="field">
+            <Header value="How sure are you? *" size="5" style="font-size:inherit; font-weight:400; line-height:inherit; margin:4px 0;" />
+            <Choices name="caption_confidence" toName="caption" choice="single" showInline="false" perRegion="true" required="true" requiredMessage="Step 2 — Caption highlight: choose your confidence in the evidence panel.">
+              <Choice value="3" html="3 · Clear evidence" />
+              <Choice value="2" html="2 · Borderline, but supported" />
+              <Choice value="1" html="1 · Unsure" />
+            </Choices>
+          </View>
+          <View className="field">
+            <Header value="Claim number *" size="5" style="font-size:inherit; font-weight:400; line-height:inherit; margin:4px 0;" />
+            <TextArea name="caption_instance" toName="caption" rows="1" placeholder="Type 1 for the first claim" editable="true" transcription="true" maxSubmissions="1" showSubmitButton="false" perRegion="true" required="true" requiredMessage="Step 2 — Caption highlight: enter a claim number (usually 1) in the evidence panel." />
+          </View>
+          <View className="hint">
+            <Header value="Usually enter 1. Use 2 only for a separate claim of the SAME technique. Related marks use the same technique and number." size="5" style="font-size:inherit; font-weight:400; line-height:inherit; margin:4px 0;" />
+          </View>
+          <View className="field">
+            <Header value="How does the picture help this claim? *" size="5" style="font-size:inherit; font-weight:400; line-height:inherit; margin:4px 0;" />
+            <Choices name="caption_role" toName="caption" choice="single" showInline="false" perRegion="true" required="true" requiredMessage="Step 2 — Caption highlight: choose how the picture helps.">
+              <Choice value="REQUIRED" html="Needed — words alone do not support it" />
+              <Choice value="REINFORCING" html="Adds support — words already support it" />
+              <Choice value="NOT_USED" html="Not used — words provide the evidence" />
+              <Choice value="UNRESOLVED" html="Needs review — I am unsure" />
+            </Choices>
+          </View>
+          <View className="field">
+            <Header value="Do the words alone support this claim? *" size="5" style="font-size:inherit; font-weight:400; line-height:inherit; margin:4px 0;" />
+            <Choices name="caption_sufficient" toName="caption" choice="single" showInline="false" perRegion="true" required="true" requiredMessage="Step 2 — Caption highlight: answer whether words alone support the claim.">
+              <Choice value="true" html="Yes" />
+              <Choice value="false" html="No" />
+              <Choice value="unknown" html="Unsure" />
+            </Choices>
+          </View>
+          <View className="hint">
+            <Header value="Not used / Adds support → Yes. Needed → No. Use the same answers for related marks." size="5" style="font-size:inherit; font-weight:400; line-height:inherit; margin:4px 0;" />
+          </View>
+          <View className="field">
+            <Header value="Who or what is targeted? (optional)" size="5" style="font-size:inherit; font-weight:400; line-height:inherit; margin:4px 0;" />
+            <TextArea name="caption_target" toName="caption" rows="1" placeholder="Named person or group; leave blank if unknown" editable="true" transcription="true" maxSubmissions="1" showSubmitButton="false" perRegion="true" />
+          </View>
+        </View>
+        <View visibleWhen="region-selected" whenTagName="ocr_spans" className="evidence" idAttr="ocr-details">
+          <Header value="Image-text highlight" size="4" style="font-size:19px; font-weight:600; margin:0 0 8px;" />
+          <View className="hint">
+            <Header value="These answers belong to the selected mark. Repeat for every mark. * = required." size="5" style="font-size:inherit; font-weight:400; line-height:inherit; margin:4px 0;" />
+          </View>
+          <View className="field">
+            <Header value="Why does this evidence fit the technique? *" size="5" style="font-size:inherit; font-weight:400; line-height:inherit; margin:4px 0;" />
+            <TextArea name="ocr_reason" toName="ocr" rows="3" placeholder="These words / this picture use [technique] because…" editable="true" transcription="true" maxSubmissions="1" showSubmitButton="false" perRegion="true" required="true" requiredMessage="Step 2 — Image-text highlight: write a reason in the evidence panel." />
+          </View>
+          <View className="field">
+            <Header value="How sure are you? *" size="5" style="font-size:inherit; font-weight:400; line-height:inherit; margin:4px 0;" />
+            <Choices name="ocr_confidence" toName="ocr" choice="single" showInline="false" perRegion="true" required="true" requiredMessage="Step 2 — Image-text highlight: choose your confidence in the evidence panel.">
+              <Choice value="3" html="3 · Clear evidence" />
+              <Choice value="2" html="2 · Borderline, but supported" />
+              <Choice value="1" html="1 · Unsure" />
+            </Choices>
+          </View>
+          <View className="field">
+            <Header value="Claim number *" size="5" style="font-size:inherit; font-weight:400; line-height:inherit; margin:4px 0;" />
+            <TextArea name="ocr_instance" toName="ocr" rows="1" placeholder="Type 1 for the first claim" editable="true" transcription="true" maxSubmissions="1" showSubmitButton="false" perRegion="true" required="true" requiredMessage="Step 2 — Image-text highlight: enter a claim number (usually 1) in the evidence panel." />
+          </View>
+          <View className="hint">
+            <Header value="Usually enter 1. Use 2 only for a separate claim of the SAME technique. Related marks use the same technique and number." size="5" style="font-size:inherit; font-weight:400; line-height:inherit; margin:4px 0;" />
+          </View>
+          <View className="field">
+            <Header value="How does the picture help this claim? *" size="5" style="font-size:inherit; font-weight:400; line-height:inherit; margin:4px 0;" />
+            <Choices name="ocr_role" toName="ocr" choice="single" showInline="false" perRegion="true" required="true" requiredMessage="Step 2 — Image-text highlight: choose how the picture helps.">
+              <Choice value="REQUIRED" html="Needed — words alone do not support it" />
+              <Choice value="REINFORCING" html="Adds support — words already support it" />
+              <Choice value="NOT_USED" html="Not used — words provide the evidence" />
+              <Choice value="UNRESOLVED" html="Needs review — I am unsure" />
+            </Choices>
+          </View>
+          <View className="field">
+            <Header value="Do the words alone support this claim? *" size="5" style="font-size:inherit; font-weight:400; line-height:inherit; margin:4px 0;" />
+            <Choices name="ocr_sufficient" toName="ocr" choice="single" showInline="false" perRegion="true" required="true" requiredMessage="Step 2 — Image-text highlight: answer whether words alone support the claim.">
+              <Choice value="true" html="Yes" />
+              <Choice value="false" html="No" />
+              <Choice value="unknown" html="Unsure" />
+            </Choices>
+          </View>
+          <View className="hint">
+            <Header value="Not used / Adds support → Yes. Needed → No. Use the same answers for related marks." size="5" style="font-size:inherit; font-weight:400; line-height:inherit; margin:4px 0;" />
+          </View>
+          <View className="field">
+            <Header value="Who or what is targeted? (optional)" size="5" style="font-size:inherit; font-weight:400; line-height:inherit; margin:4px 0;" />
+            <TextArea name="ocr_target" toName="ocr" rows="1" placeholder="Named person or group; leave blank if unknown" editable="true" transcription="true" maxSubmissions="1" showSubmitButton="false" perRegion="true" />
+          </View>
+        </View>
+        <View visibleWhen="region-selected" whenTagName="visual_evidence" className="evidence" idAttr="visual-details">
+          <Header value="Picture box" size="4" style="font-size:19px; font-weight:600; margin:0 0 8px;" />
+          <View className="hint">
+            <Header value="These answers belong to the selected mark. Repeat for every mark. * = required." size="5" style="font-size:inherit; font-weight:400; line-height:inherit; margin:4px 0;" />
+          </View>
+          <View className="field">
+            <Header value="Why does this evidence fit the technique? *" size="5" style="font-size:inherit; font-weight:400; line-height:inherit; margin:4px 0;" />
+            <TextArea name="visual_reason" toName="image" rows="3" placeholder="These words / this picture use [technique] because…" editable="true" transcription="true" maxSubmissions="1" showSubmitButton="false" perRegion="true" required="true" requiredMessage="Step 2 — Picture box: write a reason in the evidence panel." />
+          </View>
+          <View className="field">
+            <Header value="How sure are you? *" size="5" style="font-size:inherit; font-weight:400; line-height:inherit; margin:4px 0;" />
+            <Choices name="visual_confidence" toName="image" choice="single" showInline="false" perRegion="true" required="true" requiredMessage="Step 2 — Picture box: choose your confidence in the evidence panel.">
+              <Choice value="3" html="3 · Clear evidence" />
+              <Choice value="2" html="2 · Borderline, but supported" />
+              <Choice value="1" html="1 · Unsure" />
+            </Choices>
+          </View>
+          <View className="field">
+            <Header value="Claim number *" size="5" style="font-size:inherit; font-weight:400; line-height:inherit; margin:4px 0;" />
+            <TextArea name="visual_instance" toName="image" rows="1" placeholder="Type 1 for the first claim" editable="true" transcription="true" maxSubmissions="1" showSubmitButton="false" perRegion="true" required="true" requiredMessage="Step 2 — Picture box: enter a claim number (usually 1) in the evidence panel." />
+          </View>
+          <View className="hint">
+            <Header value="Usually enter 1. Use 2 only for a separate claim of the SAME technique. Related marks use the same technique and number." size="5" style="font-size:inherit; font-weight:400; line-height:inherit; margin:4px 0;" />
+          </View>
+          <View className="field">
+            <Header value="How does the picture help this claim? *" size="5" style="font-size:inherit; font-weight:400; line-height:inherit; margin:4px 0;" />
+            <Choices name="visual_role" toName="image" choice="single" showInline="false" perRegion="true" required="true" requiredMessage="Step 2 — Picture box: choose how the picture helps.">
+              <Choice value="REQUIRED" html="Needed — words alone do not support it" />
+              <Choice value="REINFORCING" html="Adds support — words already support it" />
+              <Choice value="NOT_USED" html="Not used — words provide the evidence" />
+              <Choice value="UNRESOLVED" html="Needs review — I am unsure" />
+            </Choices>
+          </View>
+          <View className="field">
+            <Header value="Do the words alone support this claim? *" size="5" style="font-size:inherit; font-weight:400; line-height:inherit; margin:4px 0;" />
+            <Choices name="visual_sufficient" toName="image" choice="single" showInline="false" perRegion="true" required="true" requiredMessage="Step 2 — Picture box: answer whether words alone support the claim.">
+              <Choice value="true" html="Yes" />
+              <Choice value="false" html="No" />
+              <Choice value="unknown" html="Unsure" />
+            </Choices>
+          </View>
+          <View className="hint">
+            <Header value="Not used / Adds support → Yes. Needed → No. Use the same answers for related marks." size="5" style="font-size:inherit; font-weight:400; line-height:inherit; margin:4px 0;" />
+          </View>
+          <View className="field">
+            <Header value="What is inside the box? *" size="5" style="font-size:inherit; font-weight:400; line-height:inherit; margin:4px 0;" />
+            <Choices name="visual_kind" toName="image" choice="single" showInline="false" perRegion="true" required="true" requiredMessage="Step 2 — Picture box: choose the kind of picture evidence.">
+              <Choice value="NON_TEXT_VISUAL" html="Picture content: person, object, action, or symbol" />
+              <Choice value="TYPOGRAPHY_LAYOUT" html="Text appearance: size, style, or layout" />
+            </Choices>
+          </View>
+          <View className="field">
+            <Header value="How much of the picture matters? *" size="5" style="font-size:inherit; font-weight:400; line-height:inherit; margin:4px 0;" />
+            <Choices name="visual_scope" toName="image" choice="single" showInline="false" perRegion="true" required="true" requiredMessage="Step 2 — Picture box: choose a specific area or the whole picture.">
+              <Choice value="LOCAL" html="This specific area" />
+              <Choice value="GLOBAL" html="The whole picture (box must cover it all)" />
+            </Choices>
+          </View>
+          <View className="field">
+            <Header value="Who or what is targeted? (optional)" size="5" style="font-size:inherit; font-weight:400; line-height:inherit; margin:4px 0;" />
+            <TextArea name="visual_target" toName="image" rows="1" placeholder="Named person or group; leave blank if unknown" editable="true" transcription="true" maxSubmissions="1" showSubmitButton="false" perRegion="true" />
+          </View>
+        </View>
+        <View className="hint">
+          <Header value="Type your answers directly. They are kept when you select another mark and saved with Submit." size="5" style="font-size:inherit; font-weight:400; line-height:inherit; margin:4px 0;" />
         </View>
       </View>
     </View>
-    <Header value="Techniques supported by the evidence" size="4" />
-    <Choices name="techniques" toName="caption" choice="multiple" showInline="true">
-      <Choice value="T01" />
-      <Choice value="T02" />
-      <Choice value="T03" />
-      <Choice value="T04" />
-      <Choice value="T05" />
-      <Choice value="T06" />
-      <Choice value="T07" />
-    </Choices>
-    <Header value="T01 — Loaded Language | T02 — Name Calling / Labeling | T03 — Smears | T04 — Appeal to Fear / Prejudice | T05 — Exaggeration / Minimisation | T06 — Slogans | T07 — Appeal to Strong Emotions" size="5" />
-    <Header value="Is your decision complete?" size="4" />
-    <Choices name="status" toName="caption" choice="single" showInline="true" required="true">
-      <Choice value="COMPLETE" />
-      <Choice value="UNRESOLVED" />
-      <Choice value="EXCLUDE" />
-    </Choices>
-    <Choices name="no_technique" toName="caption" choice="multiple" showInline="true">
-      <Choice value="No Propaganda Technique" />
-    </Choices>
-    <Header value="Choose No Propaganda Technique only after complete review with no core technique selected. If you cannot decide, choose UNRESOLVED." size="5" />
-    <Choices name="review_flags" toName="caption" choice="multiple" showInline="true">
-      <Choice value="UNREADABLE_TEXT" />
-      <Choice value="MISSING_CONTEXT" />
-      <Choice value="OCR_REVIEW" />
-      <Choice value="ADJUDICATION" />
-      <Choice value="UNCERTAIN_VISUAL_CONTRIBUTION" />
-    </Choices>
-    <Choices name="watchlist" toName="caption" choice="multiple" showInline="true">
-      <Choice value="W01" />
-      <Choice value="W02" />
-      <Choice value="W03" />
-      <Choice value="other_candidate" />
-    </Choices>
-    <Header value="Post note: explain none, missing information, uncertainty, quotation, satire, or watchlist evidence." size="5" />
-    <TextArea name="post_note" toName="caption" rows="2" placeholder="For unresolved or excluded posts, say why. For no technique, explain your decision." editable="true" maxSubmissions="1" required="true" />
-    <Choices name="model_review" toName="caption" choice="single" showInline="true" required="true">
-      <Choice value="ACCEPTED" />
-      <Choice value="EDITED" />
-      <Choice value="REJECTED" />
-      <Choice value="NOT_AVAILABLE" />
-    </Choices>
+    <View className="card">
+      <Header value="3. Finish the review" size="4" style="font-size:19px; font-weight:600; margin:0 0 8px;" />
+      <Header value="Tick the techniques used in your marks. This list is separate from highlighting." size="5" style="font-size:inherit; font-weight:400; line-height:inherit; margin:4px 0;" />
+      <Choices name="techniques" toName="caption" choice="multiple" showInline="false">
+        <Choice value="T01" html="T01 · Loaded Language" />
+        <Choice value="T02" html="T02 · Name Calling / Labeling" />
+        <Choice value="T03" html="T03 · Smears" />
+        <Choice value="T04" html="T04 · Appeal to Fear / Prejudice" />
+        <Choice value="T05" html="T05 · Exaggeration / Minimisation" />
+        <Choice value="T06" html="T06 · Slogans" />
+        <Choice value="T07" html="T07 · Appeal to Strong Emotions" />
+      </Choices>
+      <Choices name="no_technique" toName="caption" choice="multiple" showInline="false">
+        <Choice value="No Propaganda Technique" html="No technique — I reviewed the whole item and found none" />
+      </Choices>
+      <View className="hint">
+        <Header value="Choose techniques OR “No technique”. If unsure, choose “Needs review” below." size="5" style="font-size:inherit; font-weight:400; line-height:inherit; margin:4px 0;" />
+      </View>
+      <View visibleWhen="choice-selected" whenTagName="no_technique" whenChoiceValue="No Propaganda Technique">
+        <View visibleWhen="choice-selected" whenTagName="techniques" whenChoiceValue="T01,T02,T03,T04,T05,T06,T07" className="warning">
+          <Header value="You selected techniques and “No technique”. Clear the answer that does not apply." size="5" style="font-size:inherit; font-weight:400; line-height:inherit; margin:4px 0;" />
+        </View>
+      </View>
+      <View className="field">
+        <Header value="Review status *" size="5" style="font-size:inherit; font-weight:400; line-height:inherit; margin:4px 0;" />
+        <Choices name="status" toName="caption" choice="single" showInline="false" required="true" requiredMessage="Step 3 — choose a review status.">
+          <Choice value="COMPLETE" html="Complete — I can make a decision" />
+          <Choice value="UNRESOLVED" html="Needs review — I am unsure" />
+          <Choice value="EXCLUDE" html="Exclude — this item cannot be used" />
+        </Choices>
+      </View>
+      <View className="field">
+        <Header value="Final note *" size="5" style="font-size:inherit; font-weight:400; line-height:inherit; margin:4px 0;" />
+        <TextArea name="post_note" toName="caption" rows="2" placeholder="Summarize your decision. If unsure, say what needs checking." editable="true" transcription="true" maxSubmissions="1" showSubmitButton="false" required="true" requiredMessage="Step 3 — write a final note under Review status." />
+      </View>
+      <Collapse>
+        <Panel value="Optional: report a problem or another technique">
+          <Choices name="review_flags" toName="caption" choice="multiple" showInline="false">
+            <Choice value="UNREADABLE_TEXT" html="Some words are unreadable" />
+            <Choice value="MISSING_CONTEXT" html="Important context is missing" />
+            <Choice value="OCR_REVIEW" html="The copied image text may be wrong" />
+            <Choice value="ADJUDICATION" html="I need a reviewer" />
+            <Choice value="UNCERTAIN_VISUAL_CONTRIBUTION" html="The picture’s contribution is unclear" />
+          </Choices>
+          <Choices name="watchlist" toName="caption" choice="multiple" showInline="false">
+            <Choice value="W01" html="W01 · Flag-waving / group identity" />
+            <Choice value="W02" html="W02 · Transfer" />
+            <Choice value="W03" html="W03 · Glittering generalities / virtue" />
+            <Choice value="other_candidate" html="Another technique" />
+          </Choices>
+          <View className="hint">
+            <Header value="Explain any problem or additional technique in the final note. Do not open the image during Stage A to check OCR." size="5" style="font-size:inherit; font-weight:400; line-height:inherit; margin:4px 0;" />
+          </View>
+        </Panel>
+      </Collapse>
+      <View className="field">
+        <Header value="What did you do with the model suggestion? *" size="5" style="font-size:inherit; font-weight:400; line-height:inherit; margin:4px 0;" />
+        <Choices name="model_review" toName="caption" choice="single" showInline="false" required="true" requiredMessage="Step 3 — choose how you reviewed the model suggestion.">
+          <Choice value="ACCEPTED" html="Accepted" />
+          <Choice value="EDITED" html="Changed it" />
+          <Choice value="REJECTED" html="Rejected it" />
+          <Choice value="NOT_AVAILABLE" html="No suggestion was available" />
+        </Choices>
+      </View>
+      <View className="hint">
+        <Header value="Before Submit: each mark has a reason, confidence, and claim number; the technique list matches your marks; status and final note are filled in. A missing-field message names what to fix." size="5" style="font-size:inherit; font-weight:400; line-height:inherit; margin:4px 0;" />
+      </View>
+    </View>
   </View>
 </View>

@@ -30,8 +30,26 @@ storage: the JSON tasks already reference each image.
 See [the pilot workflow](docs/PILOT_17_WORKFLOW.md) for independent Stage A/B
 annotation, export, model assistance and revision handling, and the
 [annotation guideline](docs/CampNet_Annotation_Guideline_v1.md) for evidence rules.
+New annotators should start with the [three-step quick start](docs/ANNOTATOR_QUICK_START.md).
 The older [20-image instructions](README_CampNet_Label_Studio_Starter.md) describe
 historical work; their full-data prerequisites must be restored separately.
+
+## Update the forms in existing pilot projects
+
+The source of all three pilot forms is `campnet_pilot/config.py`. Regenerate the
+XML after editing it, then apply the compatible layout update:
+
+```powershell
+.\.venv\Scripts\python.exe -m campnet_pilot.config
+.\.venv\Scripts\python.exe -m campnet_pilot.labelstudio update-ui --check
+.\.venv\Scripts\python.exe -m campnet_pilot.labelstudio update-ui
+```
+
+The updater checks stored field identities and task data, backs up the runtime
+database and old forms under `.pilot-runtime/ui-backups`, and updates registered
+projects without replacing tasks, annotations, drafts, or predictions. Refresh the
+browser after the update. Changed annotation entities require a separate migration;
+this command only permits compatible form updates.
 
 ## Frozen data and OCR
 
@@ -66,5 +84,10 @@ Two full-freeze tests skip when local source data is absent. The API dry run cre
 a separate disposable runtime, validates Label Studio XML, checks real image serving,
 and exercises synthetic save/export and assisted review. It does not create research
 annotations. Browser layout and mouse interactions still require manual inspection.
+
+For the optional browser regression check, install `playwright` in the venv and
+have Google Chrome installed, then run `python -m campnet_pilot.browser_check`
+using that venv. It uses an isolated database and headless Chrome with synthetic
+tasks. Screenshots and native export checks are saved in `.pilot-runtime/browser-check-*`.
 
 See [cleanup provenance](docs/CLEANUP_REPORT.md) for branch scope and preservation.

@@ -65,6 +65,19 @@ Regions linked to one instance must agree on visual contribution/text sufficienc
 The first region's human confidence/target are the instance summary; all original
 per-region entries are retained in `raw_result`.
 
+Every normalized evidence record also includes its own `target`, `confidence`,
+`visual_contribution`, and `text_sufficient`. These preserve each mark's answers
+even when linked marks differ in target wording or confidence. Instance summaries
+continue to use the first valid mark's target and confidence.
+
+`evidence_region_count`, `exported_region_count`, and `unexported_region_ids` make
+incomplete marks explicit. A malformed mark cannot create an empty instance.
+Invalid raw fields remain in `raw_result`; no incomplete record becomes gold.
+The validator checks every known UI control's name, type, target, allowed options,
+and region association, and lists all missing required fields for a mark together.
+These are export checks; Label Studio's Submit checks required fields but does not
+enforce all cross-field consistency rules.
+
 ## Text evidence
 
 ```json
